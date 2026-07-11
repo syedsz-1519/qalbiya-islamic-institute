@@ -1,0 +1,6 @@
+{
+  "name": "Qalbiya Islamic Institute",
+  "description": "A premium editorial and highly structured learning hub for Women's and Kids' Deeniyat programs with integrated Google Forms and Gemini Text-to-Speech.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

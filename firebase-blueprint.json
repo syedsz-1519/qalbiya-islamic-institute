@@ -1,0 +1,353 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with course enrollments, bookmarks, progress details, and personal study configurations.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique user ID matches authentication identifier."
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Profile picture URL."
+        },
+        "role": {
+          "type": "string",
+          "description": "User role: student or admin."
+        },
+        "enrollments": {
+          "type": "array",
+          "description": "Enrolled courses metadata with intake statuses."
+        },
+        "bookmarks": {
+          "type": "array",
+          "description": "List of course IDs bookmarked by the user."
+        },
+        "progress": {
+          "type": "object",
+          "description": "Index map tracking completed topics per course."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short description of the student."
+        },
+        "studyBackground": {
+          "type": "string",
+          "description": "Student Islamic or general academic background."
+        },
+        "ageGroup": {
+          "type": "string",
+          "description": "Age bracket for tailored course suggestions."
+        },
+        "goals": {
+          "type": "string",
+          "description": "Student primary goals of learning."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account registration timestamp."
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "Latest user sign-in timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "email"
+      ]
+    },
+    "CourseForm": {
+      "title": "CourseForm",
+      "description": "Tracks administrative Google Form bindings for admissions.",
+      "type": "object",
+      "properties": {
+        "courseId": {
+          "type": "string",
+          "description": "Identifier for the target course."
+        },
+        "formId": {
+          "type": "string",
+          "description": "Google Form ID identifier."
+        },
+        "formUrl": {
+          "type": "string",
+          "description": "Google Form registration responder URL."
+        },
+        "initializedAt": {
+          "type": "string",
+          "description": "Creation or mapping timestamp."
+        }
+      },
+      "required": [
+        "courseId",
+        "formId",
+        "formUrl"
+      ]
+    },
+    "TriggeredEmail": {
+      "title": "TriggeredEmail",
+      "description": "Automated welcome emails triggered by Firebase Cloud Functions emulation upon enrollment.",
+      "type": "object",
+      "properties": {
+        "studentUid": {
+          "type": "string",
+          "description": "Reference to the student's unique user ID."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Student display name."
+        },
+        "studentEmail": {
+          "type": "string",
+          "description": "Student target email address."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "ID of the enrolled course."
+        },
+        "courseTitle": {
+          "type": "string",
+          "description": "Title of the enrolled course."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject header."
+        },
+        "emailBody": {
+          "type": "string",
+          "description": "Personalized email message HTML generated via server-side Gemini."
+        },
+        "triggeredAt": {
+          "type": "string",
+          "description": "Timestamp of the trigger event."
+        },
+        "status": {
+          "type": "string",
+          "description": "Delivery status of the email: sent."
+        }
+      },
+      "required": [
+        "studentUid",
+        "studentEmail",
+        "courseId",
+        "subject",
+        "emailBody"
+      ]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "A testimonial submitted by a student for completed courses, pending admin review.",
+      "type": "object",
+      "properties": {
+        "studentUid": {
+          "type": "string",
+          "description": "Unique user ID of the student."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Name of the student."
+        },
+        "studentEmail": {
+          "type": "string",
+          "description": "Email of the student."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Target course identifier."
+        },
+        "courseTitle": {
+          "type": "string",
+          "description": "Title of the course."
+        },
+        "rating": {
+          "type": "integer",
+          "description": "Course rating between 1 and 5."
+        },
+        "content": {
+          "type": "string",
+          "description": "Testimonial text or review content."
+        },
+        "status": {
+          "type": "string",
+          "description": "Review status: pending, approved, rejected."
+        },
+        "submittedAt": {
+          "type": "string",
+          "description": "Submission ISO timestamp."
+        }
+      },
+      "required": [
+        "studentUid",
+        "studentName",
+        "courseId",
+        "courseTitle",
+        "rating",
+        "content",
+        "status",
+        "submittedAt"
+      ]
+    },
+    "ContactSubmission": {
+      "title": "ContactSubmission",
+      "description": "A submission made via the Admissions Inquiry Contact Form.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the inquirer."
+        },
+        "email": {
+          "type": "string",
+          "description": "Inquirer email address."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Optional phone number of the inquirer."
+        },
+        "topic": {
+          "type": "string",
+          "description": "The category or topic of interest."
+        },
+        "message": {
+          "type": "string",
+          "description": "Detailed question or case inquiry message text."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Preferred contact channel: email or whatsapp.",
+          "enum": ["email", "whatsapp"]
+        },
+        "status": {
+          "type": "string",
+          "description": "Tracking status: pending or resolved."
+        },
+        "submittedAt": {
+          "type": "string",
+          "description": "ISO timestamp of form submission."
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "topic",
+        "message",
+        "channel",
+        "status",
+        "submittedAt"
+      ]
+    },
+    "WhatsAppInquiry": {
+      "title": "WhatsAppInquiry",
+      "description": "A WhatsApp quick inquiry logged upon clicking the chat launcher.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the visitor."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Optional WhatsApp phone number provided."
+        },
+        "message": {
+          "type": "string",
+          "description": "Custom initial question or click statement."
+        },
+        "courseTitle": {
+          "type": "string",
+          "description": "Optional course name related to the launcher context."
+        },
+        "status": {
+          "type": "string",
+          "description": "Case tracking status: initiated or resolved."
+        },
+        "submittedAt": {
+          "type": "string",
+          "description": "ISO timestamp of the quick log entry."
+        }
+      },
+      "required": [
+        "name",
+        "message",
+        "status",
+        "submittedAt"
+      ]
+    },
+    "FAQ": {
+      "title": "FAQ",
+      "description": "A frequently asked question and answer item stored in Firestore.",
+      "type": "object",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question text."
+        },
+        "answer": {
+          "type": "string",
+          "description": "The detailed answer text."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the FAQ, e.g., General, Admissions, Curriculum, Technical."
+        },
+        "order": {
+          "type": "number",
+          "description": "Sorting order index."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Optional ID of a specific course this FAQ relates to."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the FAQ was created."
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Contains user registration profiles, bookmarks, and course progress records."
+    },
+    "course_forms/{courseId}": {
+      "schema": "CourseForm",
+      "description": "Links course syllabi to admin-managed Google intake forms."
+    },
+    "triggered_emails/{emailId}": {
+      "schema": "TriggeredEmail",
+      "description": "Stores copies of automated enrollment notification emails generated by Cloud Functions."
+    },
+    "testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Student testimonials submitted for course completion, reviewed by administrators."
+    },
+    "contact_submissions/{submissionId}": {
+      "schema": "ContactSubmission",
+      "description": "Inquiries submitted via the admissions contact form."
+    },
+    "whatsapp_inquiries/{inquiryId}": {
+      "schema": "WhatsAppInquiry",
+      "description": "Quick chat logs of inquiries initiated through WhatsApp buttons."
+    },
+    "faqs/{faqId}": {
+      "schema": "FAQ",
+      "description": "Frequently asked questions for potential students."
+    }
+  }
+}

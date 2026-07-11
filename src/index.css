@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    background-color: #FFDFE4; /* Richer Shaded Pink background */
+    color: #1A1A17; /* High contrast Deep Organic text */
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Make sure general paragraphs and text have enhanced weight for readability */
+  p, span, li, button, input, textarea {
+    font-weight: 400; /* Replaces any super thin styles with readable normal weight */
+  }
+}
+
+.stitched-line {
+  background-image: repeating-linear-gradient(to bottom, #C6B696 0 6px, transparent 6px 14px);
+}
+
+.stitched-line-horizontal {
+  background-image: repeating-linear-gradient(to right, #C6B696 0 6px, transparent 6px 14px);
+}
+
+.motif-glow {
+  background: radial-gradient(circle at center, #F4C1C8 0%, rgba(255,223,228,0) 70%);
+}
+
+.btn-shadow {
+  box-shadow: 0 12px 32px -18px rgba(43,42,37,0.45);
+}
+
+/* Islamic motifs animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-subtle {
+  0% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.08); }
+  100% { opacity: 0.1; transform: scale(1); }
+}
+
+.animate-float-rehal {
+  animation: float 7s ease-in-out infinite;
+}
+
+.animate-spin-islamic {
+  animation: spin-slow 60s linear infinite;
+}
+
+.animate-pulse-geometry {
+  animation: pulse-subtle 10s ease-in-out infinite;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+

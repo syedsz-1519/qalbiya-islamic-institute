@@ -1,0 +1,139 @@
+import React from "react";
+import { Course } from "../types";
+import { Clock, Calendar, User, ArrowRight, Star, ExternalLink, Bookmark, Check } from "lucide-react";
+
+interface CourseCardProps {
+  course: Course;
+  formDetails: { formId: string; formUrl: string } | null;
+  onExplore: (course: Course) => void;
+  user: any;
+  isBookmarked?: boolean;
+  onBookmarkToggle?: (courseId: string) => void;
+  isEnrolled?: boolean;
+}
+
+export const CourseCard: React.FC<CourseCardProps> = ({
+  course,
+  formDetails,
+  onExplore,
+  user,
+  isBookmarked = false,
+  onBookmarkToggle,
+  isEnrolled = false
+}) => {
+  // Compute text for TTS syllabus readout
+  const ttsText = `${course.title}. Instructed by ${course.instructor}. Duration: ${course.duration}. Schedule: ${course.schedule}. Course overview: ${course.description} The primary curriculum outline includes: ${course.outline.slice(0, 3).join(", ")}`;
+
+  return (
+    <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl relative group" id={`course-card-${course.id}`}>
+      
+      {/* Flagship / Enrolled Indicator Accent */}
+      <div className="absolute top-0 left-8 -translate-y-1/2 flex gap-2 z-10">
+        {course.flagship && (
+          <div className="bg-[#B0863A] text-white border border-[#87652A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
+            <Star className="w-2.5 h-2.5 fill-white text-white" />
+            <span>Flagship Course</span>
+          </div>
+        )}
+        {isEnrolled && (
+          <div className="bg-[#8CA394] text-white border border-[#33453A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`enrolled-badge-${course.id}`}>
+            <Check className="w-2.5 h-2.5 text-white" />
+            <span>Enrolled</span>
+          </div>
+        )}
+      </div>
+
+      {/* Bookmark ribbon action */}
+      {onBookmarkToggle && (
+        <button
+          id={`btn-card-bookmark-${course.id}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onBookmarkToggle(course.id);
+          }}
+          className="absolute top-4 right-4 p-1.5 bg-[#FCF1F3] hover:bg-white border border-[#DDD5C3] rounded-full text-[#8CA394] hover:text-[#B98072] transition-colors cursor-pointer z-10"
+          title={isBookmarked ? "Remove Bookmark" : "Bookmark Program"}
+        >
+          <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-[#B98072] text-[#B98072]" : ""}`} />
+        </button>
+      )}
+
+      <div className="space-y-5">
+        
+        {/* Category & Duration Row */}
+        <div className="flex justify-between items-center text-xs font-mono">
+          <span className={`uppercase tracking-widest text-[10px] font-bold ${course.category === 'women' ? 'text-[#8A5A4D]' : 'text-[#87652A]'}`}>
+            {course.category === "women" ? "Women Cources" : "Kids Cources"}
+          </span>
+          <span className="flex items-center gap-1 text-[#5B5648]/80">
+            <Clock className="w-3.5 h-3.5 text-[#8CA394]" />
+            {course.duration}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className={`font-serif text-xl md:text-2xl font-bold text-[#22301F] leading-tight transition-colors duration-300 ${course.category === 'women' ? 'group-hover:text-[#B98072]' : 'group-hover:text-[#B0863A]'}`}>
+          {course.title}
+        </h3>
+
+        {/* Short Description */}
+        <p className="font-sans text-[#5B5648] text-xs md:text-sm leading-relaxed font-light line-clamp-3">
+          {course.description}
+        </p>
+
+        {/* Highlights / Features list */}
+        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] font-sans border-t border-[#DDD5C3]/40">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+            <span className="truncate">{course.schedule}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <User className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+            <span className="truncate">Instructed by {course.instructor}</span>
+          </div>
+        </div>
+
+        {/* Google Form Intake Status Banner */}
+        {formDetails ? (
+          <div className="bg-[#8CA394]/10 border border-[#8CA394]/30 rounded-xl p-3 flex items-center justify-between text-[11px] text-[#33453A] font-sans">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 bg-[#8CA394] rounded-full animate-ping" />
+              <span className="font-bold">Intake open &bull; Register now</span>
+            </span>
+            <a 
+              href={formDetails.formUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[#33453A] hover:text-[#22301F] font-bold hover:underline"
+              id={`link-google-form-${course.id}`}
+            >
+              <span>Google Form</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        ) : (
+          <div className="bg-[#FCF1F3] border border-[#DDD5C3]/50 rounded-xl p-3 text-[11px] text-[#5B5648]/60 font-sans">
+            <span>Intake schedule pending initialization by administrators</span>
+          </div>
+        )}
+
+      </div>
+
+      {/* Actions row */}
+      <div className="mt-8 pt-4 border-t border-[#DDD5C3]/40 flex flex-wrap gap-3 items-center justify-end">
+        
+        {/* Explore more button */}
+        <button
+          id={`btn-explore-card-${course.id}`}
+          onClick={() => onExplore(course)}
+          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-bold text-[#22301F] hover:text-[#B98072] hover:underline transition-colors cursor-pointer"
+        >
+          <span>Syllabus & Details</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+
+      </div>
+
+    </div>
+  );
+};

@@ -26,13 +26,16 @@ import { CourseDetailsModal } from "./components/CourseDetailsModal";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { StudentPortal } from "./components/StudentPortal";
 import { CourseFAQ } from "./components/CourseFAQ";
-import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert } from "lucide-react";
+import { AuthModal } from "./components/AuthModal";
+import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp } from "lucide-react";
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>("home");
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<"admin" | "student">("student");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isMobileContactOpen, setIsMobileContactOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [activeFormDetails, setActiveFormDetails] = useState<Record<string, { formId: string; formUrl: string } | null>>({});
   const [userEnrollments, setUserEnrollments] = useState<string[]>([]);
@@ -152,45 +155,46 @@ export default function App() {
     }
   };
 
-  const handleLogin = async () => {
-    setIsLoggingIn(true);
-    try {
-      const result = await googleSignIn();
-      if (result) {
-        setUser(result.user);
-        (window as any).__googleAccessToken = result.accessToken;
-        
-        const role = await getUserRole(result.user.uid);
-        setUserRole(role);
+  const handleLogin = () => {
+    setIsAuthModalOpen(true);
+  };
 
-        const profile = await getUserProfile(result.user.uid);
-        if (profile) {
-          if (profile.enrollments) {
-            setUserEnrollments(profile.enrollments.map((e: any) => e.courseId));
-          } else {
-            setUserEnrollments([]);
-          }
-          setUserBookmarks(profile.bookmarks || []);
-          setUserProgress(profile.progress || {});
-          setProfileDetails({
-            bio: profile.bio || "",
-            studyBackground: profile.studyBackground || "",
-            ageGroup: profile.ageGroup || "",
-            goals: profile.goals || ""
-          });
-        }
-        
-        // Keep them on current view or dashboard
-        if (role === "admin") {
-          setCurrentTab("analytics");
-        } else {
-          setCurrentTab("portal");
-        }
+  const handleAuthSuccess = async (loggedInUser: User, role: "admin" | "student", profile: any) => {
+    setUser(loggedInUser);
+    setUserRole(role);
+    (window as any).__googleAccessToken = (loggedInUser as any).accessToken || "email-auth";
+
+    if (profile) {
+      if (profile.enrollments) {
+        setUserEnrollments(profile.enrollments.map((e: any) => e.courseId));
+      } else {
+        setUserEnrollments([]);
       }
-    } catch (err) {
-      console.error("Authentication failed", err);
-    } finally {
-      setIsLoggingIn(false);
+      setUserBookmarks(profile.bookmarks || []);
+      setUserProgress(profile.progress || {});
+      setProfileDetails({
+        bio: profile.bio || "",
+        studyBackground: profile.studyBackground || "",
+        ageGroup: profile.ageGroup || "",
+        goals: profile.goals || ""
+      });
+    } else {
+      setUserEnrollments([]);
+      setUserBookmarks([]);
+      setUserProgress({});
+      setProfileDetails({
+        bio: "",
+        studyBackground: "",
+        ageGroup: "",
+        goals: ""
+      });
+    }
+
+    // Keep them on current view or dashboard
+    if (role === "admin") {
+      setCurrentTab("analytics");
+    } else {
+      setCurrentTab("portal");
     }
   };
 
@@ -398,7 +402,7 @@ export default function App() {
   const kidsCourses = COURSES.filter(c => c.category === "kids");
 
   return (
-    <div className="min-h-screen bg-[#FFDFE4] text-[#1A1A17] flex flex-col justify-between relative overflow-hidden">
+    <div className="min-h-screen bg-[#FFDFE4] text-[#22301F] flex flex-col justify-between relative overflow-hidden">
       
       {/* Background Animated Islamic Motifs */}
       <div className="absolute top-24 left-4 w-28 h-28 pointer-events-none opacity-20 hidden xl:block animate-float-rehal" title="Rehal Motif">
@@ -997,14 +1001,21 @@ export default function App() {
         />
       )}
 
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
       {/* Floating Vertical Contact & Social Bubble Row on Right Side */}
-      <div className="fixed right-5 top-1/2 -translate-y-1/2 flex flex-col gap-4.5 z-40" id="social-bubble-dock">
-        
+      {/* Desktop view: persistent list */}
+      <div className="hidden md:flex fixed right-5 top-1/2 -translate-y-1/2 flex-col gap-4.5 z-40" id="social-bubble-dock-desktop">
         {/* Email Bubble */}
         <a 
           href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
           className="w-12 h-12 bg-[#22301F] hover:bg-[#33453A] text-[#FCF1F3] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
-          id="bubble-email"
+          id="bubble-email-desktop"
           title="Email Admissions Office"
         >
           <Mail className="w-5 h-5" />
@@ -1019,7 +1030,7 @@ export default function App() {
           target="_blank" 
           rel="noopener noreferrer"
           className="w-12 h-12 bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
-          id="bubble-instagram"
+          id="bubble-instagram-desktop"
           title="Follow Instagram"
         >
           <Instagram className="w-5 h-5" />
@@ -1034,7 +1045,7 @@ export default function App() {
           target="_blank" 
           rel="noopener noreferrer"
           className="w-12 h-12 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
-          id="bubble-whatsapp"
+          id="bubble-whatsapp-desktop"
           title="WhatsApp Admissions Chat"
         >
           <MessageCircle className="w-5 h-5" />
@@ -1042,6 +1053,67 @@ export default function App() {
             WhatsApp Admissions
           </span>
         </a>
+      </div>
+
+      {/* Mobile view: Collapsed 'Contact Us' single expandable button */}
+      <div className="md:hidden fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2.5" id="social-bubble-dock-mobile">
+        {isMobileContactOpen && (
+          <div className="flex flex-col gap-2.5 items-center animate-fade-in mb-1" id="mobile-social-options">
+            {/* WhatsApp option */}
+            <a 
+              href="https://wa.me/918145363290?text=Salam!%20I%20am%20interested%20in%20Qalbiya%20Islamic%20Institute%20admissions."
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 cursor-pointer"
+              title="WhatsApp Admissions Chat"
+              onClick={() => setIsMobileContactOpen(false)}
+            >
+              <MessageCircle className="w-5 h-5" />
+            </a>
+
+            {/* Instagram option */}
+            <a 
+              href="https://instagram.com/qalbiya_institute" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 cursor-pointer"
+              title="Follow Instagram"
+              onClick={() => setIsMobileContactOpen(false)}
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
+
+            {/* Email option */}
+            <a 
+              href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
+              className="w-10 h-10 bg-[#22301F] text-[#FCF1F3] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 cursor-pointer"
+              title="Email Admissions Office"
+              onClick={() => setIsMobileContactOpen(false)}
+            >
+              <Mail className="w-5 h-5" />
+            </a>
+          </div>
+        )}
+
+        {/* Collapsed main trigger button */}
+        <button
+          onClick={() => setIsMobileContactOpen(!isMobileContactOpen)}
+          className="w-12 h-12 bg-[#22301F] text-white rounded-full flex items-center justify-center shadow-2xl border border-[#DDD5C3]/50 cursor-pointer hover:bg-[#33453A] transition-all duration-300 relative"
+          title="Contact Us"
+        >
+          {isMobileContactOpen ? (
+            <ChevronUp className="w-5 h-5 rotate-180 transition-transform duration-300" />
+          ) : (
+            <PhoneCall className="w-5 h-5 animate-bounce" />
+          )}
+          {/* Subtle notification indicator dot */}
+          {!isMobileContactOpen && (
+            <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Cloud Function Automated Email Trigger Notification Toast */}

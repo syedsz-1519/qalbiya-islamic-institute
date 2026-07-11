@@ -144,6 +144,17 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     setGoals(profileDetails.goals || "");
   }, [profileDetails, user]);
 
+  const isBioComplete = bio.trim().length > 0;
+  const isGoalsComplete = goals.trim().length > 0;
+  const isBackgroundComplete = studyBackground.trim().length > 0;
+
+  let strengthPoints = 0;
+  if (isBioComplete) strengthPoints += 1;
+  if (isGoalsComplete) strengthPoints += 1;
+  if (isBackgroundComplete) strengthPoints += 1;
+
+  const strengthPercentage = Math.round((strengthPoints / 3) * 100);
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -257,13 +268,31 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               <span className="px-2.5 py-0.5 bg-[#F1E2DC] text-[#8A5A4D] border border-[#DDD5C3]/40 rounded-full text-[10px] uppercase font-bold tracking-wider">
                 {userRole} Member
               </span>
+              {strengthPercentage === 100 && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gradient-to-r from-[#B0863A] to-[#D4AF37] text-white rounded-full text-[9px] uppercase font-extrabold tracking-widest shadow-xs animate-pulse">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  <span>Honored Scholar</span>
+                </span>
+              )}
             </div>
             <p className="font-sans text-xs sm:text-sm text-[#5B5648] font-light max-w-md">
               {bio ? bio : "Welcome to your sacred learning dashboard. Track your deen study targets and manage your credentials below."}
             </p>
-            <div className="flex items-center gap-2 pt-1 font-mono text-[10px] text-[#8CA394]">
-              <Mail className="w-3 h-3 text-[#B98072]" />
-              <span>{user.email}</span>
+            <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-[10px] text-[#8CA394]">
+              <div className="flex items-center gap-1.5">
+                <Mail className="w-3 h-3 text-[#B98072]" />
+                <span>{user.email}</span>
+              </div>
+              <span className="text-[#DDD5C3] hidden sm:inline">&bull;</span>
+              <button 
+                onClick={() => setActiveSubTab("profile")}
+                className={`font-bold uppercase tracking-wider hover:underline flex items-center gap-1 ${
+                  strengthPercentage === 100 ? "text-[#B0863A]" : "text-[#B98072]"
+                }`}
+              >
+                <span>Profile: {strengthPercentage}% Done</span>
+                {strengthPercentage === 100 ? "⭐" : ""}
+              </button>
             </div>
           </div>
         </div>
@@ -284,6 +313,97 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               {Object.values(userProgress).flat().length}
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Profile Strength & Rewards Banner */}
+      <div 
+        id="profile-strength-banner"
+        className="bg-[#FCF1F3]/60 border border-[#DDD5C3]/80 rounded-[24px] p-5 sm:p-6 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-xs"
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+          <div className={`p-3 rounded-2xl shrink-0 transition-all duration-500 ${
+            strengthPercentage === 100 
+              ? "bg-[#B0863A] text-white shadow-md scale-105 rotate-3" 
+              : "bg-[#8CA394]/10 text-[#8CA394]"
+          }`}>
+            <Award className="w-6 h-6 animate-pulse" />
+          </div>
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-serif font-bold text-sm sm:text-base text-[#22301F]">
+                Scholar Registry Completion
+              </h3>
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                strengthPercentage === 100 ? "bg-[#B0863A]/20 text-[#87652A]" : "bg-[#8CA394]/20 text-[#33453A]"
+              }`}>
+                {strengthPercentage}% Complete
+              </span>
+              
+              {strengthPercentage === 100 && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gradient-to-r from-[#B0863A] to-[#D4AF37] text-white rounded-full text-[9px] uppercase font-extrabold tracking-widest shadow-xs">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  <span>Honored Scholar Badge Unlocked!</span>
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#5B5648] font-light max-w-xl">
+              {strengthPercentage === 100 
+                ? "Excellent! Your academic registration dossier is fully detailed and verified. JazakAllahu Khairan." 
+                : "Fill in your short bio, Islamic study background, and academic learning goals to unlock your exclusive Scholar badge."}
+            </p>
+          </div>
+        </div>
+
+        {/* Dynamic Completion Checklist & Progress Bar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5 w-full lg:w-auto shrink-0">
+          <div className="space-y-2 min-w-[200px]">
+            {/* Minimalist Progress Line */}
+            <div className="w-full bg-[#EDE3CE]/40 h-2 rounded-full overflow-hidden border border-[#DDD5C3]/30">
+              <motion.div 
+                className="bg-[#B98072] h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${strengthPercentage}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+            
+            {/* Horizontal checkboxes */}
+            <div className="flex items-center justify-between gap-3 text-[9px] font-mono text-[#5B5648]/60">
+              <button 
+                onClick={() => setActiveSubTab("profile")}
+                className="flex items-center gap-1 hover:text-[#22301F] transition-all cursor-pointer font-bold text-left"
+              >
+                <span className={isBioComplete ? "text-emerald-700 font-extrabold" : ""}>{isBioComplete ? "✓" : "○"}</span>
+                <span>Bio</span>
+              </button>
+              <button 
+                onClick={() => setActiveSubTab("profile")}
+                className="flex items-center gap-1 hover:text-[#22301F] transition-all cursor-pointer font-bold text-left"
+              >
+                <span className={isBackgroundComplete ? "text-emerald-700 font-extrabold" : ""}>{isBackgroundComplete ? "✓" : "○"}</span>
+                <span>Background</span>
+              </button>
+              <button 
+                onClick={() => setActiveSubTab("profile")}
+                className="flex items-center gap-1 hover:text-[#22301F] transition-all cursor-pointer font-bold text-left"
+              >
+                <span className={isGoalsComplete ? "text-emerald-700 font-extrabold" : ""}>{isGoalsComplete ? "✓" : "○"}</span>
+                <span>Goals</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setActiveSubTab("profile")}
+            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider cursor-pointer transition-all ${
+              strengthPercentage === 100
+                ? "bg-[#B0863A]/10 hover:bg-[#B0863A]/20 text-[#87652A] border border-[#B0863A]/20"
+                : "bg-[#22301F] hover:bg-[#33453A] text-white shadow-xs"
+            }`}
+          >
+            {strengthPercentage === 100 ? "View Badge" : "Complete Profile"}
+          </button>
         </div>
       </div>
 
@@ -436,7 +556,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${percentComplete}%` }}
-                                transition={{ duration: 0.5 }}
+                                transition={{ type: "spring", stiffness: 50, damping: 14, mass: 1 }}
                                 className={`h-full rounded-full ${isAllDone ? "bg-[#B0863A]" : "bg-[#8CA394]"}`}
                               />
                             </div>
@@ -599,20 +719,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           )}
 
           {/* Profile tab view */}
-          {activeSubTab === "profile" && (() => {
-            const isBioComplete = bio.trim().length > 0;
-            const isGoalsComplete = goals.trim().length > 0;
-            const isBackgroundComplete = studyBackground.trim().length > 0;
-
-            let strengthPoints = 0;
-            if (isBioComplete) strengthPoints += 1;
-            if (isGoalsComplete) strengthPoints += 1;
-            if (isBackgroundComplete) strengthPoints += 1;
-
-            const strengthPercentage = Math.round((strengthPoints / 3) * 100);
-
-            return (
-              <motion.div
+          {activeSubTab === "profile" && (
+            <motion.div
                 key="profile-tab"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -808,7 +916,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                 </form>
               </div>
             </motion.div>
-          )})()}
+          )}
 
           {/* Emails tab view */}
           {activeSubTab === "emails" && (

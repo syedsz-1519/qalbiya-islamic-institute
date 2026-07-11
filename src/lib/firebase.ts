@@ -285,16 +285,56 @@ export async function enforceAdminAccess(
 }
 
 // Enroll user in a course
-export async function enrollInCourse(uid: string, courseId: string, formResponseId?: string) {
+export async function enrollInCourse(
+  uid: string, 
+  courseId: string, 
+  studentName: string, 
+  studentEmail: string, 
+  courseTitle: string, 
+  acceptedTermsAt: string,
+  formResponseId?: string
+) {
   const userRef = doc(db, "users", uid);
+  const enrolledAt = new Date().toISOString();
+  
   await updateDoc(userRef, {
     enrollments: arrayUnion({
       courseId,
-      enrolledAt: new Date().toISOString(),
+      enrolledAt,
       status: "enrolled",
-      formResponseId: formResponseId || null
+      formResponseId: formResponseId || null,
+      acceptedTermsAt
     })
   });
+
+  const enrollmentsRef = collection(db, "enrollments");
+  await addDoc(enrollmentsRef, {
+    studentUid: uid,
+    studentName: studentName || "Respected Student",
+    studentEmail: studentEmail || "",
+    courseId,
+    courseTitle: courseTitle || "Unknown Course",
+    enrolledAt,
+    acceptedTermsAt,
+    status: "enrolled",
+    formResponseId: formResponseId || null
+  });
+}
+
+// Fetch all enrollments for Admin Ledger and charts
+export async function getAllEnrollments(): Promise<any[]> {
+  try {
+    const colRef = collection(db, "enrollments");
+    const snap = await getDocs(colRef);
+    const enrollments: any[] = [];
+    snap.forEach((doc) => {
+      enrollments.push({ id: doc.id, ...doc.data() });
+    });
+    return enrollments;
+  } catch (err) {
+    console.error("Failed to fetch all enrollments", err);
+    return [];
+  }
 }
 
 // Get user profile data
@@ -385,6 +425,22 @@ export async function saveTriggeredEmail(data: {
     triggeredAt: new Date().toISOString(),
     status: "sent"
   });
+}
+
+// Fetch triggered welcome emails (for students to view their inbox, or admins to view all logs)
+export async function getAllUsers(): Promise<any[]> {
+  try {
+    const colRef = collection(db, "users");
+    const snap = await getDocs(colRef);
+    const users: any[] = [];
+    snap.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+    return users;
+  } catch (err) {
+    console.error("Failed to fetch all users", err);
+    return [];
+  }
 }
 
 // Fetch triggered welcome emails (for students to view their inbox, or admins to view all logs)

@@ -233,10 +233,21 @@ export default function App() {
     }
   };
 
-  const handleEnrollSuccess = async (courseId: string) => {
+  const handleEnrollSuccess = async (courseId: string, acceptedTermsAt: string) => {
     if (!user) return;
     try {
-      await enrollInCourse(user.uid, courseId);
+      const course = COURSES.find(c => c.id === courseId);
+      const courseTitle = course ? course.title : "Unknown Course";
+      
+      await enrollInCourse(
+        user.uid, 
+        courseId, 
+        user.displayName || "Respected Student", 
+        user.email || "", 
+        courseTitle, 
+        acceptedTermsAt
+      );
+      
       setUserEnrollments(prev => {
         if (!prev.includes(courseId)) {
           return [...prev, courseId];
@@ -244,8 +255,6 @@ export default function App() {
         return prev;
       });
 
-      // Find course details
-      const course = COURSES.find(c => c.id === courseId);
       if (course) {
         // Trigger automated "Welcome to the Course" email via custom Cloud Function emulation
         console.log("Triggering Welcome Email Cloud Function emulation...");

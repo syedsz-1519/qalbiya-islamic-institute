@@ -8,7 +8,7 @@ interface CourseDetailsModalProps {
   onClose: () => void;
   user: any;
   handleLogin: () => void;
-  onEnrollSuccess: (courseId: string) => void;
+  onEnrollSuccess: (courseId: string, acceptedTermsAt: string) => void;
   isEnrolled: boolean;
 }
 
@@ -35,11 +35,12 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
 
   const handleConfirmEnrollment = () => {
     if (!termsAccepted) return;
+    const nowStr = new Date().toISOString();
     setShowTerms(false);
     if (pendingActionType === "form" && formDetails) {
       window.open(formDetails.formUrl, "_blank");
     }
-    onEnrollSuccess(course.id);
+    onEnrollSuccess(course.id, nowStr);
     setPendingActionType(null);
     setTermsAccepted(false);
   };
@@ -261,7 +262,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
                   id="btn-agree-terms"
                 >
                   <Check className="w-4 h-4" />
-                  <span>I Agree & Enroll</span>
+                  <span>Join Course</span>
                 </button>
               </div>
             </div>

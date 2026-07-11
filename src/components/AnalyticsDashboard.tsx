@@ -13,9 +13,20 @@ import {
   getFAQs,
   addFAQ,
   updateFAQ,
-  deleteFAQ
+  deleteFAQ,
+  getAllUsers,
+  getAllEnrollments
 } from "../lib/firebase";
 import { collection, query, onSnapshot } from "firebase/firestore";
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from "recharts";
 import { 
   ClipboardList, 
   Sparkles, 
@@ -45,7 +56,11 @@ import {
   Bell,
   BellRing,
   Volume2,
-  VolumeX
+  VolumeX,
+  BookOpen,
+  Download,
+  Mail,
+  Phone
 } from "lucide-react";
 
 interface AnalyticsDashboardProps {
@@ -78,9 +93,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"forms" | "testimonials" | "messages" | "faqs">("forms");
+  const [activeTab, setActiveTab] = useState<"forms" | "testimonials" | "messages" | "faqs" | "enrollments">("forms");
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(false);
+
+  // Enrollment Ledger States
+  const [usersList, setUsersList] = useState<any[]>([]);
+  const [collectionEnrollments, setCollectionEnrollments] = useState<any[]>([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
+  const [enrollmentSearch, setEnrollmentSearch] = useState("");
+  const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>("all");
+  const [selectedStudentForModal, setSelectedStudentForModal] = useState<any | null>(null);
+  const [enrollmentSortField, setEnrollmentSortField] = useState<"name" | "date">("date");
+  const [enrollmentSortOrder, setEnrollmentSortOrder] = useState<"asc" | "desc">("desc");
 
   // FAQ Desk States
   const [faqs, setFaqs] = useState<any[]>([]);
@@ -113,6 +138,183 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
   const isInitialContactsLoad = useRef(true);
   const isInitialWhatsappsLoad = useRef(true);
+
+  // Flatten student list into enrollments
+  const enrollmentRecords = React.useMemo(() => {
+    const recordsMap = new Map<string, any>();
+
+    // 1. Process items from dedicated 'enrollments' collection
+    collectionEnrollments.forEach((e: any) => {
+      const userProfile = usersList.find((u: any) => u.uid === e.studentUid);
+      const course = courses.find((c: any) => c.id === e.courseId);
+      const key = `${e.studentUid}-${e.courseId}`;
+      recordsMap.set(key, {
+        uid: e.studentUid,
+        displayName: e.studentName || userProfile?.displayName || "Unknown Student",
+        email: e.studentEmail || userProfile?.email || "",
+        photoURL: userProfile?.photoURL || null,
+        bio: userProfile?.bio || "",
+        studyBackground: userProfile?.studyBackground || "",
+        ageGroup: userProfile?.ageGroup || "",
+        goals: userProfile?.goals || "",
+        courseId: e.courseId,
+        courseTitle: course ? course.title : (e.courseTitle || e.courseId),
+        enrolledAt: e.enrolledAt,
+        status: e.status || "enrolled",
+        formResponseId: e.formResponseId || "",
+        acceptedTermsAt: e.acceptedTermsAt || ""
+      });
+    });
+
+    // 2. Fall back to users' nested enrollments for any historical items
+    usersList.forEach((u: any) => {
+      if (u.enrollments && Array.isArray(u.enrollments)) {
+        u.enrollments.forEach((e: any) => {
+          const key = `${u.uid}-${e.courseId}`;
+          if (!recordsMap.has(key)) {
+            const course = courses.find((c: any) => c.id === e.courseId);
+            recordsMap.set(key, {
+              uid: u.uid,
+              displayName: u.displayName || "Unknown Student",
+              email: u.email || "",
+              photoURL: u.photoURL || null,
+              bio: u.bio || "",
+              studyBackground: u.studyBackground || "",
+              ageGroup: u.ageGroup || "",
+              goals: u.goals || "",
+              courseId: e.courseId,
+              courseTitle: course ? course.title : e.courseId,
+              enrolledAt: e.enrolledAt,
+              status: e.status || "enrolled",
+              formResponseId: e.formResponseId || "",
+              acceptedTermsAt: e.acceptedTermsAt || ""
+            });
+          }
+        });
+      }
+    });
+
+    return Array.from(recordsMap.values());
+  }, [collectionEnrollments, usersList, courses]);
+
+  // Stats derived from all enrollment records
+  const uniqueStudentsCount = React.useMemo(() => {
+    const uids = new Set(enrollmentRecords.map(r => r.uid));
+    return uids.size;
+  }, [enrollmentRecords]);
+
+  const courseCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    courses.forEach(c => {
+      counts[c.id] = 0;
+    });
+    enrollmentRecords.forEach(r => {
+      counts[r.courseId] = (counts[r.courseId] || 0) + 1;
+    });
+    return counts;
+  }, [enrollmentRecords, courses]);
+
+  const sortedCourseStats = React.useMemo(() => {
+    return courses
+      .map(c => ({
+        id: c.id,
+        title: c.title,
+        count: courseCounts[c.id] || 0,
+        category: c.category
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [courses, courseCounts]);
+
+  // Registration daily trends data for Recharts area graph
+  const registrationTrends = React.useMemo(() => {
+    const countsByDate: Record<string, number> = {};
+    enrollmentRecords.forEach(r => {
+      if (r.enrolledAt) {
+        // Date format: YYYY-MM-DD
+        const dateStr = r.enrolledAt.split("T")[0];
+        countsByDate[dateStr] = (countsByDate[dateStr] || 0) + 1;
+      }
+    });
+
+    const sortedDates = Object.keys(countsByDate).sort();
+
+    if (sortedDates.length === 0) {
+      // Create empty placeholder trends of the last 7 days so it displays beautifully
+      const dummyTrends = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateLabel = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        dummyTrends.push({ date: dateLabel, count: 0 });
+      }
+      return dummyTrends;
+    }
+
+    // Map sorted dates to trend objects
+    return sortedDates.map(dateStr => {
+      const [year, month, day] = dateStr.split("-");
+      const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+      const formattedDate = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      return {
+        date: formattedDate,
+        count: countsByDate[dateStr]
+      };
+    });
+  }, [enrollmentRecords]);
+
+  // Filtered and sorted enrollment records for table view
+  const filteredEnrollments = React.useMemo(() => {
+    let list = enrollmentRecords.filter((record) => {
+      // Course filter
+      if (selectedCourseFilter !== "all" && record.courseId !== selectedCourseFilter) {
+        return false;
+      }
+      // Search filter (name or email)
+      if (enrollmentSearch.trim() !== "") {
+        const searchLower = enrollmentSearch.toLowerCase();
+        const nameMatch = record.displayName.toLowerCase().includes(searchLower);
+        const emailMatch = record.email.toLowerCase().includes(searchLower);
+        return nameMatch || emailMatch;
+      }
+      return true;
+    });
+
+    // Sort list
+    list.sort((a, b) => {
+      if (enrollmentSortField === "name") {
+        const compare = a.displayName.localeCompare(b.displayName);
+        return enrollmentSortOrder === "asc" ? compare : -compare;
+      } else {
+        const dateA = new Date(a.enrolledAt || 0).getTime();
+        const dateB = new Date(b.enrolledAt || 0).getTime();
+        return enrollmentSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+    });
+
+    return list;
+  }, [enrollmentRecords, selectedCourseFilter, enrollmentSearch, enrollmentSortField, enrollmentSortOrder]);
+
+  const [copyStatus, setCopyStatus] = useState<string | null>(null);
+  const handleExportCSV = () => {
+    try {
+      const headers = ["Student Name", "Email Address", "Course Title", "Enrollment Date", "Status"];
+      const rows = filteredEnrollments.map(e => [
+        e.displayName,
+        e.email,
+        e.courseTitle,
+        e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString() : "N/A",
+        e.status
+      ]);
+      const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+      
+      navigator.clipboard.writeText(csvContent);
+      setCopyStatus("CSV data copied to clipboard!");
+      setTimeout(() => setCopyStatus(null), 3000);
+    } catch (err) {
+      console.error("Export copy failed", err);
+      setCopyStatus("Failed to copy CSV.");
+    }
+  };
 
   const fetchAllTestimonials = async () => {
     setLoadingTestimonials(true);
@@ -151,6 +353,22 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       console.error("Failed to fetch FAQs", err);
     } finally {
       setLoadingFaqs(false);
+    }
+  };
+
+  const fetchEnrollments = async () => {
+    setLoadingEnrollments(true);
+    try {
+      const [users, enrolls] = await Promise.all([
+        getAllUsers(),
+        getAllEnrollments()
+      ]);
+      setUsersList(users);
+      setCollectionEnrollments(enrolls);
+    } catch (err) {
+      console.error("Failed to fetch enrollments", err);
+    } finally {
+      setLoadingEnrollments(false);
     }
   };
 
@@ -414,6 +632,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       fetchAllMessages();
     } else if (activeTab === "faqs") {
       fetchAllFaqs();
+    } else if (activeTab === "enrollments") {
+      fetchEnrollments();
     }
   }, [activeTab]);
 
@@ -731,7 +951,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       )}
 
       {/* Sub-tab Toggle Navigation */}
-      <div className="flex border-b border-[#DDD5C3] gap-6 text-xs uppercase font-bold tracking-widest pb-px">
+      <div className="flex flex-wrap border-b border-[#DDD5C3] gap-x-6 gap-y-2 text-xs uppercase font-bold tracking-widest pb-px">
         <button
           id="btn-tab-forms-desk"
           onClick={() => setActiveTab("forms")}
@@ -783,6 +1003,20 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           <span>Support FAQs Manager</span>
           <span className="font-mono text-[9px] bg-[#22301F]/10 text-[#22301F] px-1.5 py-0.5 rounded-full font-bold">
             {faqs.length || ""} Items
+          </span>
+        </button>
+        <button
+          id="btn-tab-enrollment-ledger"
+          onClick={() => setActiveTab("enrollments")}
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === "enrollments" 
+              ? "border-[#22301F] text-[#22301F]" 
+              : "border-transparent text-[#5B5648]/60 hover:text-[#22301F]"
+          }`}
+        >
+          <span>Enrollment Ledger</span>
+          <span className="font-mono text-[9px] bg-emerald-150 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">
+            {enrollmentRecords.length} Enrolled
           </span>
         </button>
       </div>
@@ -1787,6 +2021,582 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </div>
           </div>
 
+        </div>
+      )}
+
+      {activeTab === "enrollments" && (
+        <div className="space-y-8 animate-fade-in">
+          
+          {/* Bento Stats row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-[#FFF1F3] border border-[#DDD5C3]/70 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+              <div className="p-3.5 bg-[#22301F]/10 text-[#22301F] rounded-xl">
+                <Users className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Unique Students</p>
+                <h4 className="text-2xl font-serif font-extrabold text-[#22301F] mt-0.5">{uniqueStudentsCount}</h4>
+              </div>
+            </div>
+            
+            <div className="bg-[#FFF1F3] border border-[#DDD5C3]/70 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+              <div className="p-3.5 bg-emerald-100 text-emerald-800 rounded-xl">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Total Enrollments</p>
+                <h4 className="text-2xl font-serif font-extrabold text-[#22301F] mt-0.5">{enrollmentRecords.length}</h4>
+              </div>
+            </div>
+            
+            <div className="bg-[#FFF1F3] border border-[#DDD5C3]/70 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+              <div className="p-3.5 bg-amber-100 text-[#87652A] rounded-xl">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Active Programs</p>
+                <h4 className="text-2xl font-serif font-extrabold text-[#22301F] mt-0.5">
+                  {sortedCourseStats.filter(c => c.count > 0).length} / {courses.length}
+                </h4>
+              </div>
+            </div>
+            
+            <div className="bg-[#FFF1F3] border border-[#DDD5C3]/70 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+              <div className="p-3.5 bg-[#8A5A4D]/10 text-[#8A5A4D] rounded-xl">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Popular Program</p>
+                <h4 className="text-sm font-serif font-bold text-[#22301F] truncate mt-0.5" title={sortedCourseStats[0]?.title || "None yet"}>
+                  {sortedCourseStats[0]?.count > 0 ? sortedCourseStats[0].title : "N/A"}
+                </h4>
+              </div>
+            </div>
+          </div>
+
+          {/* Registration Trends Chart Section */}
+          <div className="bg-white border border-[#DDD5C3] rounded-3xl p-6 shadow-sm">
+            <div className="mb-4">
+              <h3 className="font-serif font-extrabold text-[#22301F] text-base">Registration Trends</h3>
+              <p className="text-xs text-[#5B5648] font-light">Daily course enrollment counts showing peak registration periods.</p>
+            </div>
+            
+            <div className="h-64 sm:h-72 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={registrationTrends}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22301F" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#22301F" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#DDD5C3" strokeOpacity={0.3} />
+                  <XAxis 
+                    dataKey="date" 
+                    tickLine={false} 
+                    axisLine={false}
+                    tick={{ fill: '#5B5648', fontSize: 10, fontFamily: 'monospace' }}
+                  />
+                  <YAxis 
+                    allowDecimals={false}
+                    tickLine={false} 
+                    axisLine={false}
+                    tick={{ fill: '#5B5648', fontSize: 10, fontFamily: 'monospace' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#FCF1F3', 
+                      borderColor: '#DDD5C3', 
+                      borderRadius: '12px',
+                      fontFamily: 'serif',
+                      fontSize: '11px',
+                      color: '#22301F'
+                    }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="count" 
+                    name="Enrollments"
+                    stroke="#22301F" 
+                    strokeWidth={2.5}
+                    fillOpacity={1} 
+                    fill="url(#colorCount)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* Left Column: Manage Class Sizes per Course */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="bg-[#FFF1F3]/40 border border-[#DDD5C3] rounded-3xl p-6 shadow-sm space-y-4">
+                <div>
+                  <h3 className="font-serif font-bold text-[#22301F] text-base">Class Size Distribution</h3>
+                  <p className="text-xs text-[#5B5648] font-light">Click a course card to filter the ledger view below.</p>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setSelectedCourseFilter("all")}
+                    className={`w-full text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                      selectedCourseFilter === "all"
+                        ? "bg-[#22301F] text-white border-[#22301F] shadow-sm"
+                        : "bg-white/60 hover:bg-[#EDE3CE]/35 border-[#DDD5C3]/60 text-[#22301F]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`p-1.5 rounded-lg ${selectedCourseFilter === "all" ? "bg-white/10" : "bg-[#22301F]/5"}`}>
+                        <Users className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-wider">All Courses Combined</span>
+                    </div>
+                    <span className={`font-mono text-xs font-extrabold px-2 py-0.5 rounded-full ${
+                      selectedCourseFilter === "all" ? "bg-white/20 text-white" : "bg-[#22301F]/10 text-[#22301F]"
+                    }`}>
+                      {enrollmentRecords.length}
+                    </span>
+                  </button>
+
+                  <div className="h-[1px] bg-[#DDD5C3]/60 my-2" />
+
+                  {sortedCourseStats.map(c => {
+                    const isSelected = selectedCourseFilter === c.id;
+                    const pct = enrollmentRecords.length > 0 ? (c.count / enrollmentRecords.length) * 100 : 0;
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setSelectedCourseFilter(c.id)}
+                        className={`w-full text-left p-4 rounded-2xl border transition-all space-y-2.5 cursor-pointer ${
+                          isSelected
+                            ? "bg-[#22301F] text-white border-[#22301F] shadow-md"
+                            : "bg-white/60 hover:bg-[#EDE3CE]/35 border-[#DDD5C3]/60 text-[#22301F]"
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="space-y-0.5">
+                            <span className={`text-[8px] font-mono uppercase tracking-widest font-extrabold px-1.5 py-0.5 rounded-full ${
+                              c.category === "women"
+                                ? "bg-rose-100 text-rose-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}>
+                              {c.category === "women" ? "Women's Dept" : "Kids' Dept"}
+                            </span>
+                            <h4 className="text-xs font-serif font-extrabold leading-tight mt-1">{c.title}</h4>
+                          </div>
+                          <span className={`font-mono text-xs font-extrabold px-2.5 py-1 rounded-full shrink-0 ${
+                            isSelected ? "bg-white/15 text-white" : "bg-[#22301F]/10 text-[#22301F]"
+                          }`}>
+                            {c.count} students
+                          </span>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="w-full bg-[#DDD5C3]/30 h-1.5 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                isSelected ? "bg-amber-300" : "bg-[#22301F]"
+                              }`}
+                              style={{ width: `${Math.max(pct, c.count > 0 ? 5 : 0)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Enrollment Records List */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="bg-white border border-[#DDD5C3] rounded-3xl p-6 shadow-sm space-y-6">
+                
+                {/* Header Actions */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDD5C3]/50 pb-5">
+                  <div>
+                    <h3 className="font-serif font-extrabold text-[#22301F] text-lg">Registrar Student Ledger</h3>
+                    <p className="text-xs text-[#5B5648] font-light">
+                      Showing {filteredEnrollments.length} of {enrollmentRecords.length} enrollments
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={fetchEnrollments}
+                      disabled={loadingEnrollments}
+                      className="p-2.5 rounded-xl border border-[#DDD5C3] hover:bg-[#EDE3CE]/30 text-[#22301F] cursor-pointer transition-colors"
+                      title="Refresh student records"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${loadingEnrollments ? "animate-spin" : ""}`} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExportCSV}
+                      disabled={filteredEnrollments.length === 0}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#22301F] text-white hover:bg-[#33453A] font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors shadow-sm disabled:opacity-50"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Copy CSV Ledger</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* CSV status bubble */}
+                {copyStatus && (
+                  <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl px-4 py-3 text-xs font-medium animate-fade-in">
+                    {copyStatus}
+                  </div>
+                )}
+
+                {/* Controls & Filters */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                  <div className="sm:col-span-6 relative">
+                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8CA394]" />
+                    <input
+                      type="text"
+                      placeholder="Search student name or email..."
+                      value={enrollmentSearch}
+                      onChange={(e) => setEnrollmentSearch(e.target.value)}
+                      className="w-full bg-[#FFF1F3]/25 border border-[#DDD5C3] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#22301F] focus:outline-none focus:border-[#22301F] placeholder:text-[#8CA394]/70 font-semibold"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <select
+                      value={enrollmentSortField}
+                      onChange={(e) => setEnrollmentSortField(e.target.value as any)}
+                      className="w-full bg-[#FFF1F3]/25 border border-[#DDD5C3] rounded-xl px-3 py-2.5 text-xs text-[#22301F] font-bold focus:outline-none focus:border-[#22301F]"
+                    >
+                      <option value="date">Sort by Date</option>
+                      <option value="name">Sort by Name</option>
+                    </select>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <select
+                      value={enrollmentSortOrder}
+                      onChange={(e) => setEnrollmentSortOrder(e.target.value as any)}
+                      className="w-full bg-[#FFF1F3]/25 border border-[#DDD5C3] rounded-xl px-3 py-2.5 text-xs text-[#22301F] font-bold focus:outline-none focus:border-[#22301F]"
+                    >
+                      <option value="desc">Descending</option>
+                      <option value="asc">Ascending</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Main Table / Mobile Cards */}
+                {loadingEnrollments ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-[#8CA394] space-y-3">
+                    <RefreshCw className="w-8 h-8 animate-spin" />
+                    <p className="text-xs font-mono tracking-wider uppercase font-bold">Synchronizing Student Database...</p>
+                  </div>
+                ) : filteredEnrollments.length === 0 ? (
+                  <div className="text-center py-16 bg-[#FFF1F3]/20 rounded-2xl border border-dashed border-[#DDD5C3]/80 space-y-2">
+                    <Users className="w-8 h-8 mx-auto text-[#8CA394]" />
+                    <h4 className="font-serif font-bold text-[#22301F] text-sm">No Enrollment Matches Found</h4>
+                    <p className="text-xs text-[#5B5648] font-light max-w-md mx-auto px-4">
+                      Try resetting your course selection filters or entering a different search query in the field.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto border border-[#DDD5C3]/60 rounded-2xl bg-white shadow-xs">
+                    {/* Desktop View */}
+                    <table className="hidden md:table w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-[#FFF1F3]/50 border-b border-[#DDD5C3]/60 text-[10px] font-mono text-[#8CA394] uppercase tracking-wider font-extrabold">
+                          <th className="p-4 pl-5">Student</th>
+                          <th className="p-4">Program Enrolled</th>
+                          <th className="p-4">Enrollment Date</th>
+                          <th className="p-4">Intake Status</th>
+                          <th className="p-4 pr-5 text-right">Profile</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#DDD5C3]/40">
+                        {filteredEnrollments.map((record, idx) => {
+                          const dateObj = record.enrolledAt ? new Date(record.enrolledAt) : null;
+                          const formattedDate = dateObj 
+                            ? dateObj.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+                            : "N/A";
+                          
+                          return (
+                            <tr 
+                              key={`${record.uid}-${record.courseId}-${idx}`}
+                              className="hover:bg-[#FFF1F3]/10 transition-colors"
+                            >
+                              <td className="p-4 pl-5">
+                                <div className="flex items-center gap-3">
+                                  {record.photoURL ? (
+                                    <img
+                                      src={record.photoURL}
+                                      alt={record.displayName}
+                                      className="w-8 h-8 rounded-full border border-[#DDD5C3] shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-xs font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
+                                      {record.displayName?.[0] || "U"}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <h4 className="font-serif font-extrabold text-[#22301F] leading-tight text-xs">{record.displayName}</h4>
+                                    <p className="text-[10px] font-mono text-[#8CA394] leading-normal">{record.email}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <div className="font-serif font-bold text-[#22301F] leading-snug">{record.courseTitle}</div>
+                              </td>
+                              <td className="p-4 font-mono text-xs font-bold text-[#5B5648] whitespace-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-[#8CA394]" />
+                                  <span>{formattedDate}</span>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                  <Check className="w-2.5 h-2.5" />
+                                  <span>{record.status}</span>
+                                </span>
+                              </td>
+                              <td className="p-4 pr-5 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedStudentForModal(record)}
+                                  className="inline-flex items-center gap-1 bg-[#22301F] text-white hover:bg-[#33453A] font-sans text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors shadow-sm"
+                                >
+                                  <span>Details</span>
+                                  <ChevronRight className="w-3 h-3" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden divide-y divide-[#DDD5C3]/40">
+                      {filteredEnrollments.map((record, idx) => {
+                        const dateObj = record.enrolledAt ? new Date(record.enrolledAt) : null;
+                        const formattedDate = dateObj 
+                          ? dateObj.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+                          : "N/A";
+                        
+                        return (
+                          <div 
+                            key={`mob-${record.uid}-${record.courseId}-${idx}`}
+                            className="p-4 space-y-3.5 hover:bg-[#FFF1F3]/10"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-3">
+                                {record.photoURL ? (
+                                  <img
+                                    src={record.photoURL}
+                                    alt={record.displayName}
+                                    className="w-9 h-9 rounded-full border border-[#DDD5C3] shrink-0"
+                                  />
+                                ) : (
+                                  <div className="w-9 h-9 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-sm font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
+                                    {record.displayName?.[0] || "U"}
+                                  </div>
+                                )}
+                                <div>
+                                  <h4 className="font-serif font-extrabold text-[#22301F] text-xs leading-tight">{record.displayName}</h4>
+                                  <p className="text-[10px] font-mono text-[#8CA394] leading-normal">{record.email}</p>
+                                </div>
+                              </div>
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0">
+                                {record.status}
+                              </span>
+                            </div>
+
+                            <div className="bg-[#FFF1F3]/20 rounded-xl p-3 border border-[#DDD5C3]/40 space-y-1">
+                              <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Program Enrolled</p>
+                              <h5 className="font-serif font-extrabold text-[#22301F] text-xs leading-snug">{record.courseTitle}</h5>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[11px]">
+                              <div className="flex items-center gap-1.5 font-mono text-[#5B5648] font-bold">
+                                <Calendar className="w-3.5 h-3.5 text-[#8CA394]" />
+                                <span>Enrolled: {formattedDate}</span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setSelectedStudentForModal(record)}
+                                className="inline-flex items-center gap-1 bg-[#22301F] text-white hover:bg-[#33453A] font-sans text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg cursor-pointer transition-colors shadow-sm"
+                              >
+                                <span>Details</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      )}
+
+      {/* Student Details Intake Profile Modal Backdrop & Card */}
+      {selectedStudentForModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-[#FFDFE4] border border-[#DDD5C3] shadow-2xl rounded-3xl w-full max-w-xl overflow-hidden animate-fade-in flex flex-col justify-between"
+          >
+            {/* Header */}
+            <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FFDFE4]">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-[#22301F]/10 text-[#22301F] rounded-lg">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-base font-extrabold text-[#22301F] uppercase tracking-wider">
+                    Student Registrar Card
+                  </h3>
+                  <p className="text-[10px] font-mono tracking-wider uppercase text-[#8CA394] font-bold">
+                    Official Admissions Profile Record
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedStudentForModal(null)}
+                className="p-2 text-[#22301F] hover:bg-[#EDE3CE]/50 rounded-full transition-all cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Profile Content Body */}
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+              {/* Student Overview Row */}
+              <div className="flex items-center gap-4 bg-white/50 border border-[#DDD5C3]/60 rounded-2xl p-4">
+                {selectedStudentForModal.photoURL ? (
+                  <img
+                    src={selectedStudentForModal.photoURL}
+                    alt={selectedStudentForModal.displayName}
+                    className="w-16 h-16 rounded-full border border-[#DDD5C3] shadow-sm shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-2xl font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
+                    {selectedStudentForModal.displayName?.[0] || "U"}
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-serif text-lg font-extrabold text-[#22301F] leading-tight">
+                    {selectedStudentForModal.displayName}
+                  </h4>
+                  <p className="text-xs text-[#5B5648] font-bold mt-0.5">{selectedStudentForModal.email}</p>
+                  
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest font-extrabold bg-[#22301F]/10 text-[#22301F]">
+                      UID: {selectedStudentForModal.uid.slice(0, 8)}...
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      Active Student
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Class Intake Status Block */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-[#FFF1F3]/40 border border-[#DDD5C3]/60 rounded-xl p-3.5 space-y-1">
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Program Enrolled</span>
+                  <h5 className="font-serif font-extrabold text-[#22301F] text-xs leading-snug">
+                    {selectedStudentForModal.courseTitle}
+                  </h5>
+                </div>
+
+                <div className="bg-[#FFF1F3]/40 border border-[#DDD5C3]/60 rounded-xl p-3.5 space-y-1">
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Admissions Timestamp</span>
+                  <h5 className="font-mono text-xs font-extrabold text-[#22301F] flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#8CA394]" />
+                    <span>
+                      {selectedStudentForModal.enrolledAt 
+                        ? new Date(selectedStudentForModal.enrolledAt).toLocaleString("en-US", { 
+                            year: "numeric", 
+                            month: "short", 
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                          })
+                        : "N/A"
+                      }
+                    </span>
+                  </h5>
+                </div>
+              </div>
+
+              {/* Educational background, age & goals */}
+              <div className="space-y-4">
+                <h4 className="font-serif text-xs font-extrabold uppercase tracking-wider text-[#22301F] pb-1.5 border-b border-[#DDD5C3]/60">
+                  Student Registration Dossier
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1 bg-white/40 p-3 rounded-xl border border-[#DDD5C3]/40">
+                    <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Age Demographic</p>
+                    <p className="text-xs font-semibold text-[#22301F]">
+                      {selectedStudentForModal.ageGroup || "Not declared"}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-1 bg-white/40 p-3 rounded-xl border border-[#DDD5C3]/40 sm:col-span-2">
+                    <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Educational / Study Background</p>
+                    <p className="text-xs font-semibold text-[#22301F] leading-snug">
+                      {selectedStudentForModal.studyBackground || "Not declared"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 bg-white/50 p-4 rounded-xl border border-[#DDD5C3]/50">
+                  <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Primary Educational & Spiritual Goals</p>
+                  <p className="text-xs font-medium text-[#22301F] leading-relaxed whitespace-pre-line">
+                    {selectedStudentForModal.goals || "No target goals specified by the student during registration."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 bg-white/50 p-4 rounded-xl border border-[#DDD5C3]/50">
+                  <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Student Bio / Custom Notes</p>
+                  <p className="text-xs font-medium text-[#22301F] leading-relaxed whitespace-pre-line italic">
+                    {selectedStudentForModal.bio ? `"${selectedStudentForModal.bio}"` : "No bio or self-description provided."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FFDFE4]/40 flex flex-wrap gap-2 justify-end">
+              <a
+                href={`mailto:${selectedStudentForModal.email}?subject=Qalbiya%20Islamic%20Institute%20-%20Update%20regarding%20your%20enrollment%20in%20${encodeURIComponent(selectedStudentForModal.courseTitle)}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-[#DDD5C3] hover:border-[#22301F] text-[#22301F] hover:bg-[#EDE3CE]/30 font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
+              >
+                <Mail className="w-4 h-4 text-[#8CA394]" />
+                <span>Email Student</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => setSelectedStudentForModal(null)}
+                className="px-5 py-2.5 bg-[#22301F] hover:bg-[#33453A] text-white font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer shadow-sm transition-all"
+              >
+                Close Dossier
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

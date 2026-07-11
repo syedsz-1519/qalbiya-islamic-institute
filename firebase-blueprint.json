@@ -318,6 +318,57 @@
         "question",
         "answer"
       ]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "Indicates a student's enrollment in a course, including course name, status, and terms acceptance timestamp.",
+      "type": "object",
+      "properties": {
+        "studentUid": {
+          "type": "string",
+          "description": "Unique user ID of the student."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Name of the student."
+        },
+        "studentEmail": {
+          "type": "string",
+          "description": "Email of the student."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "ID of the enrolled course."
+        },
+        "courseTitle": {
+          "type": "string",
+          "description": "Title of the course."
+        },
+        "enrolledAt": {
+          "type": "string",
+          "description": "Timestamp of enrollment."
+        },
+        "acceptedTermsAt": {
+          "type": "string",
+          "description": "Timestamp of accepting the terms and conditions agreement."
+        },
+        "status": {
+          "type": "string",
+          "description": "Enrollment status: enrolled or completed."
+        },
+        "formResponseId": {
+          "type": "string",
+          "description": "Optional Google Form response identifier."
+        }
+      },
+      "required": [
+        "studentUid",
+        "studentEmail",
+        "courseId",
+        "enrolledAt",
+        "acceptedTermsAt",
+        "status"
+      ]
     }
   },
   "firestore": {
@@ -348,6 +399,10 @@
     "faqs/{faqId}": {
       "schema": "FAQ",
       "description": "Frequently asked questions for potential students."
+    },
+    "enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "Master enrollments collection containing student course subscriptions, statuses, and terms agreement stamps."
     }
   }
 }

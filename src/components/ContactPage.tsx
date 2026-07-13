@@ -16,6 +16,30 @@ export function ContactPage() {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Construct the email fields synchronously
+    const subject = `Admission Inquiry [${contactTopic}] - ${contactName}`;
+    const body = `Assalamu'alaikum wa rehmatullahi wa barakatuhu,
+
+I am interested in Qalbiya Islamic Institute's programs and would like to submit an inquiry.
+
+--- INQUIRY DETAILS ---
+• Name: ${contactName}
+• Email: ${contactEmail}
+• Phone: ${contactPhone || "Not provided"}
+• Topic of Interest: ${contactTopic}
+• Preferred Reply Channel: ${contactChannel === "email" ? "Email Response" : "WhatsApp Outreach"}
+
+--- MESSAGE / QUESTIONS ---
+${contactMessage}
+
+---
+Please guide me with the next steps. JazakAllahu Khairan!`;
+
+    // Open user's default email client pre-filled with the inquiry details
+    const mailtoUrl = `mailto:qalbiyaislamicinstitute@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl, "_blank");
+
     try {
       await submitContactForm({
         name: contactName,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ClipboardList, Menu, X, ChevronRight, MapPin, Mail, Phone } from "lucide-react";
+import { ClipboardList, Menu, X, ChevronRight, MapPin, Mail, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import logo from "@/logo.png";
 
 interface HeaderProps {
@@ -14,13 +14,11 @@ export const Header: React.FC<HeaderProps> = ({
   userRole = "student",
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileProgramsOpen, setIsMobileProgramsOpen] = useState(currentTab === "women" || currentTab === "kids");
 
-  // Removed "My Portal" from the navigation items
   const navItems = [
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
     { id: "resources", label: "Resources" },
     { id: "scholarship", label: "Scholarship" },
   ];
@@ -70,8 +68,69 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation links */}
           <nav className="hidden md:flex items-center space-x-1.5 lg:space-x-2 xl:space-x-5">
-            {navItems.map((item) => {
-              const isActive = currentTab === item.id || (item.id === "faqs" && currentTab === "faqs");
+            {navItems.slice(0, 2).map((item) => {
+              const isActive = currentTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleTabClick(item.id)}
+                  className={`relative py-1 px-1 lg:px-1.5 xl:px-2 text-[9px] lg:text-[10px] xl:text-[11px] uppercase tracking-wider xl:tracking-widest font-bold transition-colors duration-300 ${
+                    isActive 
+                      ? "text-[#22301F]" 
+                      : "text-[#5B5648] hover:text-[#22301F]"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-[-10px] left-0 right-0 h-[2px] bg-[#B98072]" />
+                  )}
+                </button>
+              );
+            })}
+
+            {/* Programs Dropdown */}
+            <div className="relative group py-1">
+              <button
+                className={`flex items-center gap-1 py-1 px-1 lg:px-1.5 xl:px-2 text-[9px] lg:text-[10px] xl:text-[11px] uppercase tracking-wider xl:tracking-widest font-bold transition-colors duration-300 cursor-pointer ${
+                  currentTab === "women" || currentTab === "kids"
+                    ? "text-[#22301F]"
+                    : "text-[#5B5648] hover:text-[#22301F]"
+                }`}
+              >
+                <span>Programs</span>
+                <ChevronDown className="w-3 h-3 text-[#8CA394] group-hover:rotate-180 transition-transform" />
+                {(currentTab === "women" || currentTab === "kids") && (
+                  <span className="absolute bottom-[-10px] left-0 right-0 h-[2px] bg-[#B98072]" />
+                )}
+              </button>
+              
+              {/* Dropdown Menu */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-[#DDD5C3] rounded-2xl shadow-xl py-2 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 z-50">
+                <button
+                  onClick={() => handleTabClick("women")}
+                  className={`w-full text-left px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer ${
+                    currentTab === "women"
+                      ? "bg-[#FAF8F1] text-[#8A5A4D]"
+                      : "text-[#22301F] hover:bg-[#FAF8F1] hover:text-[#8A5A4D]"
+                  }`}
+                >
+                  Women's Programs
+                </button>
+                <button
+                  onClick={() => handleTabClick("kids")}
+                  className={`w-full text-left px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer ${
+                    currentTab === "kids"
+                      ? "bg-[#FAF8F1] text-[#8A5A4D]"
+                      : "text-[#22301F] hover:bg-[#FAF8F1] hover:text-[#8A5A4D]"
+                  }`}
+                >
+                  Kids' Programs
+                </button>
+              </div>
+            </div>
+
+            {navItems.slice(2).map((item) => {
+              const isActive = currentTab === item.id;
               return (
                 <button
                   key={item.id}
@@ -183,13 +242,65 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <div className="flex flex-col items-center space-y-3 w-full">
-              {navItems.map((item) => {
+              {navItems.slice(0, 2).map((item) => {
                 const isActive = currentTab === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleTabClick(item.id)}
-                    className={`w-full flex items-center justify-center py-4 px-6 rounded-2xl text-center text-sm uppercase tracking-wider font-extrabold transition-all border-2 ${
+                    className={`w-full flex items-center justify-center py-3.5 px-6 rounded-2xl text-center text-sm uppercase tracking-wider font-extrabold transition-all border-2 ${
+                      isActive 
+                        ? "bg-[#22301F] text-white border-[#22301F] shadow-md" 
+                        : "text-[#22301F] hover:bg-[#EDE3CE]/45 border-transparent"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+
+              {/* Programs Accordion for Mobile */}
+              <div className="w-full border border-dashed border-[#DDD5C3] rounded-2xl overflow-hidden bg-[#FAF8F1]/40">
+                <button
+                  onClick={() => setIsMobileProgramsOpen(!isMobileProgramsOpen)}
+                  className="w-full flex items-center justify-between py-3.5 px-6 text-sm uppercase tracking-wider font-extrabold text-[#22301F] cursor-pointer"
+                >
+                  <span>Programs</span>
+                  {isMobileProgramsOpen ? <ChevronUp className="w-4 h-4 text-[#8A5A4D]" /> : <ChevronDown className="w-4 h-4 text-[#8CA394]" />}
+                </button>
+                {isMobileProgramsOpen && (
+                  <div className="bg-white border-t border-[#DDD5C3]/40 p-2 space-y-1">
+                    <button
+                      onClick={() => handleTabClick("women")}
+                      className={`w-full py-2.5 px-4 rounded-xl text-left text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        currentTab === "women"
+                          ? "bg-[#FAF8F1] text-[#8A5A4D]"
+                          : "text-[#22301F] hover:bg-[#FAF8F1]/50"
+                      }`}
+                    >
+                      Women's Programs
+                    </button>
+                    <button
+                      onClick={() => handleTabClick("kids")}
+                      className={`w-full py-2.5 px-4 rounded-xl text-left text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        currentTab === "kids"
+                          ? "bg-[#FAF8F1] text-[#8A5A4D]"
+                          : "text-[#22301F] hover:bg-[#FAF8F1]/50"
+                      }`}
+                    >
+                      Kids' Programs
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {navItems.slice(2).map((item) => {
+                const isActive = currentTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleTabClick(item.id)}
+                    className={`w-full flex items-center justify-center py-3.5 px-6 rounded-2xl text-center text-sm uppercase tracking-wider font-extrabold transition-all border-2 ${
                       isActive 
                         ? "bg-[#22301F] text-white border-[#22301F] shadow-md" 
                         : "text-[#22301F] hover:bg-[#EDE3CE]/45 border-transparent"

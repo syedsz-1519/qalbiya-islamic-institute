@@ -3,26 +3,31 @@ import { Course } from '../types';
 export const COURSES: Course[] = [
   {
     id: 'pre-diploma-deeniyat',
-    title: 'Women Course Hub',
+    title: 'Pre-Diploma in Deeniyat',
     category: 'women',
     flagship: true,
-    duration: '1 Year',
-    schedule: 'Mon & Wed, 10:00 AM - 11:30 AM',
-    instructor: 'Ustadha Fatima Al-Hassan',
-    description: 'A comprehensive, systematic foundation in Islamic sciences. This structured program is designed for women seeking to build deep, authentic knowledge of their faith.',
-    longDescription: 'The Pre-Diploma in Deeniyat is a premier academic and spiritual program designed specifically for adult women. Over the course of one year, we study the absolute essentials of Islamic creed, practical jurisprudence (Fiqh), the historical context of the Seerah, and spiritual purification (Akhlaq). It provides a structured, supportive environment that fits the demanding schedule of modern life while holding high academic standards.',
+    duration: '6 Months',
+    schedule: 'Group or Personal (1-on-1) — your choice',
+    instructor: 'Mustara, Founder of Qalbiya Institute',
+    description: 'Your complete foundation in Deen.',
+    longDescription: 'This is Qalbiya\'s most complete beginner-to-strong-foundation course — built for the woman who wants to stop learning her deen in scattered pieces and finally learn it as one connected whole. A structured, six-month journey covering everything from correcting your recitation to understanding your beliefs — so you don\'t just follow Islam, you understand it, live it, and feel closer to Allah.',
     outline: [
-      'Aqeedah (Islamic Creed) – Core beliefs and understanding Tawheed',
-      'Fiqh of Worship (Taharah, Salah, Sawm, and Zakah)',
-      'Seerah (The Prophet’s Life) – Foundations of the prophetic era',
-      'Tazkiyah & Akhlaq – Islamic ethics, mindfulness, and purification of the heart',
-      'Daily Duas & Hadith – Selected studies of prophetic traditions'
+      'Makhraj (correct pronunciation points)',
+      'Basic Tajweed',
+      'Hifz-e-Hadith',
+      'Daily Duas & Sunnah',
+      'Aqaid (core beliefs)',
+      'Akhlaq',
+      'Namaz & Masail',
+      'Asma-ul-Husna'
     ],
     benefits: [
-      'A structured, semester-based curriculum with assessments',
-      'Live interactive Q&A sessions with qualified scholars',
-      'Comprehensive study materials and recorded lecture access',
-      'An inspiring community of fellow female students'
+      '📚 Notes provided for key topics, plus your own notes for personal reflection and retention',
+      '🧠 Weekly quizzes to reinforce your learning',
+      '🗓️ Monthly test at the end of every month to track your progress',
+      '📝 Final exam at the end of the course',
+      '💬 WhatsApp support outside class hours for questions and guidance',
+      '🎓 Certificate on completion'
     ],
     imagePrompt: 'A highly sophisticated editorial layout showing an open Quran with subtle lighting, gold ink calligraphic accents, and a warm cream minimalist background',
     bgGradient: 'from-amber-50 to-orange-100/50 text-amber-900 border-amber-200'
@@ -109,7 +114,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 'juniors-deeniyat-mastercourse',
-    title: 'Kids Course Hub',
+    title: 'Juniors Deeniyat Mastercourse',
     category: 'kids',
     flagship: true,
     duration: '1 Year (Ages 7-12)',

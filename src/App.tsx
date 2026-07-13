@@ -9,7 +9,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { Course } from "./types";
 import { COURSES } from "./data/courses";
 import { Header } from "./components/Header";
-import logo from "@/logo.png";
+import { LogoSVG } from "./components/LogoSVG";
 import { Hero } from "./components/Hero";
 import { CourseCard } from "./components/CourseCard";
 import { CourseDetailsModal } from "./components/CourseDetailsModal";
@@ -320,7 +320,7 @@ export default function App() {
     const subject = `Admission Inquiry [${contactTopic}] - ${contactName}`;
     const body = `Assalamu'alaikum wa rehmatullahi wa barakatuhu,
 
-I am interested in Qalbiya Islamic Institute's programs and would like to submit an inquiry.
+I am interested in QALBIYA Islamic Institute's programs and would like to submit an inquiry.
 
 --- INQUIRY DETAILS ---
 • Name: ${contactName}
@@ -375,7 +375,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
       setWaSuccess(true);
       
       // Build WhatsApp message and open link
-      const text = encodeURIComponent(`Assalamu'alaikum wa rehmatullahi wa barakatuhu. I am ${waName}. I am interested in Qalbiya Islamic Institute's programs. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
+      const text = encodeURIComponent(`Assalamu'alaikum wa rehmatullahi wa barakatuhu. I am ${waName}. I am interested in QALBIYA Islamic Institute's programs. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
       const waUrl = `https://wa.me/918145363290?text=${text}`;
       
       // Safe redirect inside sandbox
@@ -559,16 +559,15 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     {/* Elegant Watercolor dome ornament watermark inside the frame */}
                     <div className="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-8 text-center z-10">
                       <div className="w-16 h-16 mx-auto rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
-                        <img 
-                          src={logo} 
-                          alt="Qalbiya Logo" 
-                          className="w-11 h-11 object-contain" 
+                        <LogoSVG 
+                          className="w-11 h-11" 
+                          fillColor="#FAF4F2" 
                         />
                       </div>
                       
                       <div className="space-y-2 bg-[#22301F]/85 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-white shadow-lg">
                         <span className="font-mono text-[9px] uppercase tracking-widest text-[#B0863A] font-bold">Principal Scholar</span>
-                        <h4 className="font-serif text-lg font-bold">Ustadha Syed Mustara</h4>
+                        <h4 className="font-serif text-lg font-bold">Ms. Mustara</h4>
                         <p className="text-[10px] text-gray-200 font-light font-sans">Holder of Traditional Ijazat & Classical Licenses</p>
                       </div>
                     </div>
@@ -590,20 +589,20 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                   </div>
 
                   <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Qalbiya Islamic Institute was founded under the vision and academic guidance of <strong>Ustadha Syed Mustara</strong>, a dedicated Islamic scholar and educator. Deeply committed to the traditional sciences of the Deen, she holds multiple classical licenses (<em>Ijazat</em>) in Quranic Tajweed, Hadith sciences, and Fiqh from recognized traditional seminaries.
+                    QALBIYA Islamic Institute was founded under the vision and academic guidance of <strong>Ms. Mustara</strong>, a dedicated Islamic scholar and educator. Deeply committed to the traditional sciences of the Deen, she holds multiple classical licenses (<em>Ijazat</em>) in Quranic Tajweed, Hadith sciences, and Fiqh from recognized traditional seminaries.
                   </p>
 
                   <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Having taught hundreds of sisters worldwide, Ustadha realized that modern women and families require a highly structured, semester-based approach to Deeniyat—one that respects their busy modern lives without compromising on academic depth, precision, and spiritual nurture.
+                    Having taught hundreds of sisters worldwide, Ms. Mustara realized that modern women and families require a highly structured, semester-based approach to Deeniyat—one that respects their busy modern lives without compromising on academic depth, precision, and spiritual nurture.
                   </p>
 
                   <div className="bg-[#FAF4F2] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] font-serif text-sm relative">
                     <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
                     <p className="relative z-10 leading-relaxed font-light pl-4">
-                      My vision for Qalbiya was to build an authentic spiritual sanctuary—a place where Deen is studied with intellectual rigor, yet polished with prophetic manners (Akhlaq) and heart-purification (Tazkiyah). We welcome you to find focus in an age of distractions.
+                      My vision for QALBIYA Islamic Institute was to build an authentic spiritual sanctuary—a place where Deen is studied with intellectual rigor, yet polished with prophetic manners (Akhlaq) and heart-purification (Tazkiyah). We welcome you to find focus in an age of distractions.
                     </p>
                     <div className="mt-3 pl-4 text-right">
-                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; Ustadha Syed Mustara</span>
+                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; Ms. Mustara</span>
                     </div>
                   </div>
                 </div>
@@ -654,7 +653,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     </div>
                     <h4 className="font-serif font-bold text-[#22301F]">Inquiry Submitted Successfully</h4>
                     <p className="text-xs text-[#5B5648] max-w-sm mx-auto font-light leading-relaxed">
-                      Assalamu alaikum! Thank you for reaching out to Qalbiya Islamic Institute. Your inquiry has been routed to our staff messaging dashboard, and an advisor will contact you soon.
+                      Assalamu alaikum! Thank you for reaching out to QALBIYA Islamic Institute. Your inquiry has been routed to our staff messaging dashboard, and an advisor will contact you soon.
                     </p>
                   </div>
                 ) : (
@@ -841,7 +840,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                       <span className="w-1.5 h-1.5 rounded-full bg-[#B98072]" />
                       2 months
                     </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 299</span>
+                    <span className="text-sm font-bold text-[#22301F]">From Rs. 299/month</span>
                   </div>
                   <button 
                     onClick={() => setCurrentTab("course-seerah-prophet")}
@@ -996,7 +995,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
                 <a 
-                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20Qalbiya%20Women%27s%20Programs."
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Women%27s%20Programs."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-8 py-3.5 rounded-full text-xs font-mono uppercase tracking-widest font-bold shadow-md cursor-pointer transition-transform hover:scale-[1.02]"
@@ -1077,7 +1076,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                   <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
                     <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#B0863A]" />
-                      1.5–2 years
+                      1 Year (Ages 6-12)
                     </span>
                     <span className="text-sm font-bold text-[#22301F]">From Rs. 600/month</span>
                   </div>
@@ -1146,7 +1145,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
                 <a 
-                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20Qalbiya%20Kids%20Programs."
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Kids%20Programs."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-8 py-3.5 rounded-full text-xs font-mono uppercase tracking-widest font-bold shadow-md cursor-pointer transition-transform hover:scale-[1.02]"
@@ -1178,7 +1177,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                 The Heritage
               </span>
               <h2 className="font-serif text-4xl font-bold text-[#22301F] leading-tight">
-                About Qalbiya Islamic Institute
+                About QALBIYA Islamic Institute
               </h2>
               <div className="w-12 h-[1.5px] bg-[#B98072] mx-auto mt-4" />
             </div>
@@ -1192,7 +1191,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               <p>
                 In a fast-paced digital world, finding high-quality spiritual guidance can be 
                 overwhelming. High-quality learning requires structure, consistency, and highly qualified 
-                mentors. We founded Qalbiya Islamic Institute to solve this problem.
+                mentors. We founded QALBIYA Islamic Institute to solve this problem.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6 my-6 border-y border-[#DDD5C3]">
@@ -1353,14 +1352,13 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full overflow-hidden flex items-center justify-center border border-white/20">
-                <img 
-                  src={logo} 
-                  alt="Qalbiya Logo" 
-                  className="w-8 h-8 object-contain brightness-0 invert" 
+                <LogoSVG 
+                  className="w-8 h-8" 
+                  fillColor="white" 
                 />
               </div>
               <h4 className="font-serif text-xl tracking-[0.2em] font-bold text-white uppercase">
-                Qalbiya
+                QALBIYA
               </h4>
             </div>
             <p className="font-sans text-xs text-[#FAF4F2]/70 font-light leading-relaxed max-w-xs">
@@ -1369,7 +1367,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             </p>
             <div className="pt-2 border-t border-[#FAF9F6]/10 text-xs">
               <span className="font-serif font-bold text-[#B0863A]">Founder: </span>
-              <span className="font-sans text-white font-medium">USTAZA MUSTARA</span>
+              <span className="font-sans text-white font-medium">MS. MUSTARA</span>
             </div>
           </div>
 
@@ -1420,7 +1418,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
 
         {/* Legal copyrights */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-[#FAF9F6]/10 flex flex-col sm:flex-row justify-between text-[11px] font-mono text-[#FAF4F2]/60 gap-4">
-          <p>© {new Date().getFullYear()} Qalbiya Islamic Institute. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} QALBIYA Islamic Institute. All Rights Reserved.</p>
           <p className="flex items-center gap-1.5 hover:text-[#B0863A] transition-colors cursor-help" title="Traditional structured study in a loud world">
             <Heart className="w-3 h-3 text-[#B98072] fill-[#B98072]" />
             <span>Nourishing hearts with pristine knowledge.</span>
@@ -1446,7 +1444,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
       <div className="hidden md:flex fixed right-5 top-1/2 -translate-y-1/2 flex-col gap-4.5 z-40" id="social-bubble-dock-desktop">
         {/* Email Bubble */}
         <a 
-          href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
+          href="mailto:qalbiyaislamicinstitute@gmail.com?subject=QALBIYA%20Islamic%20Institute%20Admissions%20Inquiry"
           className="w-12 h-12 bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
           id="bubble-email-desktop"
           title="Email Admissions Office"
@@ -1468,13 +1466,13 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
         >
           <Instagram className="w-5 h-5" />
           <span className="absolute right-14 bg-[#DD2A7B] text-white text-[10px] uppercase tracking-wider font-mono font-medium px-2.5 py-1 rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 whitespace-nowrap shadow-md border border-white/10">
-            Qalbiya Instagram
+            QALBIYA Islamic Institute Instagram
           </span>
         </a>
 
         {/* WhatsApp Bubble */}
         <a 
-          href="https://wa.me/918145363290?text=Salam!%20I%20am%20interested%20in%20Qalbiya%20Islamic%20Institute%20admissions."
+          href="https://wa.me/918145363290?text=Salam!%20I%20am%20interested%20in%20QALBIYA%20Islamic%20Institute%20admissions."
           target="_blank" 
           rel="noopener noreferrer"
           className="w-12 h-12 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
@@ -1494,7 +1492,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
           <div className="flex flex-col gap-2.5 items-center animate-fade-in mb-1" id="mobile-social-options">
             {/* WhatsApp option */}
             <a 
-              href="https://wa.me/918145363290?text=Salam!%20I%20am%20interested%20in%20Qalbiya%20Islamic%20Institute%20admissions."
+              href="https://wa.me/918145363290?text=Salam!%20I%20am%20interested%20in%20QALBIYA%20Islamic%20Institute%20admissions."
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl border border-white/20 cursor-pointer"
@@ -1518,7 +1516,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
 
             {/* Email option */}
             <a 
-              href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
+              href="mailto:qalbiyaislamicinstitute@gmail.com?subject=QALBIYA%20Islamic%20Institute%20Admissions%20Inquiry"
               className="w-10 h-10 bg-[#22301F] text-[#FAF4F2] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 cursor-pointer"
               title="Email Admissions Office"
               onClick={() => setIsMobileContactOpen(false)}

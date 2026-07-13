@@ -650,7 +650,7 @@ export async function updateSubmissionStatus(
 export async function getFAQs(): Promise<any[]> {
   const defaultFAQs = [
     {
-      question: "Who are the instructors at Qalbiya?",
+      question: "Who are the instructors at QALBIYA Islamic Institute?",
       answer: "All of our courses are designed and taught by highly qualified instructors holding certified diplomas (Ijazah) in Quran Tajweed and classical Islamic studies, with extensive experience in pediatric and adult pedagogy.",
       category: "Instructors",
       order: 1,
@@ -686,7 +686,7 @@ export async function getFAQs(): Promise<any[]> {
     },
     {
       question: "Do you offer certificates upon course completion?",
-      answer: "Yes, students who maintain over 80% class attendance and complete the short final capstone project receive an elegant, signed digital certificate of completion from the Qalbiya Islamic Institute.",
+      answer: "Yes, students who maintain over 80% class attendance and complete the short final capstone project receive an elegant, signed digital certificate of completion from the QALBIYA Islamic Institute.",
       category: "Graduation",
       order: 6,
       createdAt: new Date().toISOString()

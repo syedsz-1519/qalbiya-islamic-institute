@@ -37,7 +37,7 @@ export function GeneralFAQ({ onTabChange, onBackToHome }: GeneralFAQProps) {
       )
     },
     {
-      question: "Is Qalbiya Islamic Institute authentic / who teaches the courses?",
+      question: "Is QALBIYA Islamic Institute authentic / who teaches the courses?",
       answer: (
         <span>
           All our courses are taught by qualified, dedicated teachers rooted in authentic Qur'an and Sunnah teaching. You can read more about our founder and approach on our{" "}

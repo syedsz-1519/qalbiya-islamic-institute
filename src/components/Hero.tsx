@@ -47,7 +47,7 @@ export const Hero: React.FC<HeroProps> = ({ onChoosePath }) => {
         </p>
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#5B5648] mt-2.5 flex items-center justify-center gap-1.5">
           <Award className="w-3.5 h-3.5 text-[#B0863A]" />
-          <span>The Holy Qur'an, Surah Az-Zumar (39:9) &bull; Trusted by 1,200+ students globally</span>
+          <span>The Holy Qur'an, Surah Az-Zumar (39:9)</span>
         </p>
       </div>
 

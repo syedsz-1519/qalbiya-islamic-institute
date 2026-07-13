@@ -10,9 +10,9 @@ interface Lecture {
 }
 
 const TARBIYAH_LECTURES: Lecture[] = [
-  { id: "tz-1", title: "Introduction to Tazkiyah (Purification of the Soul)", duration: "45 mins", speaker: "Ustaza Mustara", audioPitch: 130 },
-  { id: "tz-2", title: "Sincerity (Ikhlas) and the Secrets of the Heart", duration: "52 mins", speaker: "Ustaza Mustara", audioPitch: 140 },
-  { id: "tz-3", title: "Developing Khushu' (Humility & Presence) in Prayer", duration: "48 mins", speaker: "Ustaza Mustara", audioPitch: 120 }
+  { id: "tz-1", title: "Introduction to Tazkiyah (Purification of the Soul)", duration: "45 mins", speaker: "Ms. Mustara", audioPitch: 130 },
+  { id: "tz-2", title: "Sincerity (Ikhlas) and the Secrets of the Heart", duration: "52 mins", speaker: "Ms. Mustara", audioPitch: 140 },
+  { id: "tz-3", title: "Developing Khushu' (Humility & Presence) in Prayer", duration: "48 mins", speaker: "Ms. Mustara", audioPitch: 120 }
 ];
 
 const CALLIGRAPHY_TUTORIALS = [
@@ -153,7 +153,7 @@ export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}
               </h3>
 
               <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F]">Ustaza Mustara</span>, this complementary program provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.
+                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F]">Ms. Mustara</span>, this complementary program provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -181,7 +181,7 @@ export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}
                 M
               </div>
               <div>
-                <p className="font-serif font-bold">Instructed by Founder Ustaza Mustara</p>
+                <p className="font-serif font-bold">Instructed by Founder Ms. Mustara</p>
                 <p className="text-[10px] text-[#5B5648] font-light">Holding a decade of traditional curriculum delivery expertise</p>
               </div>
             </div>

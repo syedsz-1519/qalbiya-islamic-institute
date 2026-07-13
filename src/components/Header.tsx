@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ClipboardList, Menu, X, ChevronRight, MapPin, Mail, Phone, ChevronDown, ChevronUp } from "lucide-react";
-import logo from "@/logo.png";
+import { LogoSVG } from "./LogoSVG";
 
 interface HeaderProps {
   currentTab: string;
@@ -50,10 +50,9 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
             <div className="relative w-12 h-12 bg-[#FAF4F2] rounded-full overflow-hidden border border-[#DDD5C3]/40 flex items-center justify-center shadow-sm">
-              <img 
-                src={logo} 
-                alt="Qalbiya Logo" 
-                className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110" 
+              <LogoSVG 
+                className="w-10 h-10 transition-transform duration-300 group-hover:scale-110" 
+                fillColor="#5C061B" 
               />
             </div>
             <div className="flex flex-col">

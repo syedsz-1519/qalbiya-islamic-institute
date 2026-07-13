@@ -117,12 +117,11 @@ export function CourseDetailPage({
       const studentName = user?.displayName || user?.email?.split('@')[0] || "Sincere Student";
       const studentEmail = user?.email || "";
       
-      const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ustadha Syed Mustara.
+      const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ms. Mustara.
 
-I would like to enroll in the following course at Qalbiya Islamic Institute:
+I would like to enroll in the following course at QALBIYA Islamic Institute:
 📚 *Course:* ${course.title}
-⏳ *Duration:* ${course.duration}
-🗓️ *Schedule:* ${course.schedule}
+⏳ *Duration:* ${course.duration}${course.schedule ? `\n🗓️ *Schedule:* ${course.schedule}` : ''}
 
 *My Details:*
 • *Name:* ${studentName}
@@ -243,7 +242,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 
                 <div className="flex justify-between items-start">
                   <span className="text-[9px] font-mono uppercase tracking-widest text-[#8A5A4D] font-bold">
-                    Qalbiya Academy
+                    QALBIYA Islamic Institute
                   </span>
                   <BookOpen className="w-5 h-5 text-[#8CA394]" />
                 </div>
@@ -296,7 +295,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               What This Course Covers
             </h2>
             <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-              This is Qalbiya's most complete beginner-to-strong-foundation course — built for the woman who wants to stop learning her deen in scattered pieces and finally learn it as one connected whole.
+              This is QALBIYA Islamic Institute's most complete beginner-to-strong-foundation course — built for the woman who wants to stop learning her deen in scattered pieces and finally learn it as one connected whole.
             </p>
           </div>
 
@@ -369,12 +368,12 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
           </span>
           
           <p className="font-serif italic text-lg sm:text-2xl text-[#22301F] leading-relaxed max-w-3xl mx-auto relative z-10">
-            "This course builds your foundation in Deen — helping you correct your recitation, understand your beliefs, and practice Islam with clarity in daily life. By the end, you won't just follow Islam — you'll understand it, live it, and feel closer to Allah."
+            "This course builds your foundation in Deen, helping you correct your recitation, understand your beliefs, and practice Islam with clarity in daily life. By the end, you won't just follow Islam, you'll understand it, live it, and feel closer to Allah."
           </p>
 
           <div className="w-12 h-[1px] bg-[#8A5A4D] mx-auto relative z-10" />
           <p className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648] font-bold relative z-10">
-            Qalbiya Foundation Standard
+            QALBIYA Islamic Institute Standard
           </p>
         </div>
 
@@ -387,8 +386,8 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <Heart className="w-32 h-32 text-[#8A5A4D]" />
               </div>
               <div className="relative z-20 space-y-1 text-center bg-white/90 backdrop-blur-xs p-3 rounded-xl border border-[#DDD5C3]/40">
-                <p className="font-serif font-bold text-xs text-[#22301F]">Ustadha Mustara</p>
-                <p className="text-[8px] font-mono uppercase tracking-wider text-[#8A5A4D]">Founder & Ustadha</p>
+                <p className="font-serif font-bold text-xs text-[#22301F]">Ms. Mustara</p>
+                <p className="text-[8px] font-mono uppercase tracking-wider text-[#8A5A4D]">Founder & Instructor</p>
               </div>
             </div>
           </div>
@@ -406,8 +405,8 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
             </blockquote>
 
             <div>
-              <p className="font-serif font-bold text-sm text-[#22301F]">Mustara</p>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[#5B5648]">Founder of Qalbiya Institute</p>
+              <p className="font-serif font-bold text-sm text-[#22301F]">Ms. Mustara</p>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[#5B5648]">Founder of QALBIYA Islamic Institute</p>
             </div>
           </div>
         </div>
@@ -453,7 +452,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
                   <div className="flex justify-between">
                     <span>Format:</span>
-                    <span className="font-medium text-[#22301F]">Sisters Cohort</span>
+                    <span className="font-medium text-[#22301F]">Sisters Group</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Platform:</span>
@@ -469,7 +468,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   </div>
                 </div>
                 <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
-                  <span className="text-xs text-[#5B5648]">Monthly Tuition:</span>
+                  <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
                   <div className="text-right">
                     <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 499</span>
                     <span className="text-[10px] text-gray-400">/mo</span>
@@ -505,7 +504,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   </div>
                 </div>
                 <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
-                  <span className="text-xs text-[#5B5648]">Monthly Tuition:</span>
+                  <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
                   <div className="text-right">
                     <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 699</span>
                     <span className="text-[10px] text-gray-400">/mo</span>
@@ -627,7 +626,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
-                      Select Cohort Format
+                      Select Study Format
                     </label>
                     <div className="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-xl">
                       <button
@@ -635,14 +634,14 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                         onClick={() => setPricingMode("group")}
                         className={`py-2 text-center text-xs font-bold rounded-lg cursor-pointer transition-all ${pricingMode === "group" ? "bg-white text-[#22301F] shadow-2xs" : "text-[#5B5648]/70 hover:text-[#22301F]"}`}
                       >
-                        Group (Rs. 499/mo)
+                        Sisters Group (Rs. 499/mo)
                       </button>
                       <button
                         type="button"
                         onClick={() => setPricingMode("personal")}
                         className={`py-2 text-center text-xs font-bold rounded-lg cursor-pointer transition-all ${pricingMode === "personal" ? "bg-white text-[#22301F] shadow-2xs" : "text-[#5B5648]/70 hover:text-[#22301F]"}`}
                       >
-                        Personal (Rs. 699/mo)
+                        Dedicated 1-on-1 (Rs. 699/mo)
                       </button>
                     </div>
                   </div>
@@ -678,7 +677,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                         className="accent-[#B98072] mt-0.5 shrink-0"
                       />
                       <span>
-                        I have reviewed and accept the <span className="font-semibold text-[#22301F]">Qalbiya Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
+                        I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
                       </span>
                     </label>
                   </div>
@@ -767,20 +766,24 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <p className="font-bold">{course.duration}</p>
               </div>
             </div>
-            <div className="flex gap-2.5 items-center">
-              <Calendar className="w-5 h-5 opacity-80" />
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-wider opacity-60">Weekly Schedule</p>
-                <p className="font-bold">{course.schedule}</p>
+            {course.schedule && (
+              <div className="flex gap-2.5 items-center">
+                <Calendar className="w-5 h-5 opacity-80" />
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-wider opacity-60">Weekly Schedule</p>
+                  <p className="font-bold">{course.schedule}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2.5 items-center">
-              <UserIcon className="w-5 h-5 opacity-80" />
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-wider opacity-60">Head Instructor</p>
-                <p className="font-bold">{course.instructor}</p>
+            )}
+            {course.instructor && (
+              <div className="flex gap-2.5 items-center">
+                <UserIcon className="w-5 h-5 opacity-80" />
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-wider opacity-60">Head Instructor</p>
+                  <p className="font-bold">{course.instructor}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -1028,7 +1031,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                       className="accent-[#B98072] mt-0.5 shrink-0"
                     />
                     <span>
-                      I have reviewed and accept the <span className="font-semibold text-[#22301F]">Qalbiya Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
+                      I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
                     </span>
                   </label>
                 </div>

@@ -97,29 +97,47 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F]" />
             <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-[#B98072] rounded-full animate-pulse" />
-              <span>Schedule & Faculty Info</span>
+              <span>{(course.instructor || course.schedule) ? "Schedule & Faculty Info" : "Program Information"}</span>
             </p>
             <p className="font-light leading-relaxed text-[#FAF4F2]/95">
-              Join <strong className="font-medium text-[#FAF4F2]">{course.instructor}</strong> for interactive study sessions conducted on <span className="font-medium text-[#EDE3CE]">{course.schedule}</span>.
+              {course.instructor || course.schedule ? (
+                <>
+                  Join <strong className="font-medium text-[#FAF4F2]">{course.instructor}</strong> for interactive study sessions conducted on <span className="font-medium text-[#EDE3CE]">{course.schedule}</span>.
+                </>
+              ) : (
+                <span>A complete academic program for children designed to instil enduring Islamic values.</span>
+              )}
             </p>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] font-mono">Session Info</span>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] font-mono">
+              {(course.instructor || course.schedule) ? "Session Info" : "Program Info"}
+            </span>
             <span className="text-[9px] font-medium text-[#B98072]/80 bg-[#B98072]/5 px-1.5 py-0.5 rounded border border-[#B98072]/15 flex items-center gap-1">
               <span className="inline-block w-1.5 h-1.5 bg-[#B98072] rounded-full" />
               <span>Hover for Summary</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Calendar className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
-            <span className="truncate">{course.schedule}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <User className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
-            <span className="truncate">Instructed by {course.instructor}</span>
-          </div>
+          {course.schedule ? (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <span className="truncate">{course.schedule}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <span className="truncate">Duration: {course.duration}</span>
+            </div>
+          )}
+
+          {course.instructor && (
+            <div className="flex items-center gap-2">
+              <User className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <span className="truncate">Instructed by {course.instructor}</span>
+            </div>
+          )}
         </div>
 
         {/* Google Form Intake Status Banner */}

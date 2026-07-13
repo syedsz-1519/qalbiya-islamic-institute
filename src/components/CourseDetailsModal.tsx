@@ -52,12 +52,11 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
     const studentName = user?.displayName || user?.email?.split('@')[0] || "Sincere Student";
     const studentEmail = user?.email || "";
     
-    const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ustadha Syed Mustara.
+    const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ms. Mustara.
 
-I would like to enroll in the following course at Qalbiya Islamic Institute:
+I would like to enroll in the following course at QALBIYA Islamic Institute:
 📚 *Course:* ${course.title}
-⏳ *Duration:* ${course.duration}
-🗓️ *Schedule:* ${course.schedule}
+⏳ *Duration:* ${course.duration}${course.schedule ? `\n🗓️ *Schedule:* ${course.schedule}` : ''}
 
 *My Details:*
 • *Name:* ${studentName}
@@ -119,10 +118,12 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <Clock className="w-3.5 h-3.5 text-[#8CA394]" />
                 Duration: {course.duration}
               </span>
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-[#8CA394]" />
-                Schedule: {course.schedule}
-              </span>
+              {course.schedule && (
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-[#8CA394]" />
+                  Schedule: {course.schedule}
+                </span>
+              )}
             </p>
           </div>
 
@@ -230,7 +231,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               <div className="flex flex-wrap gap-2 w-full md:w-auto relative">
                 <button
                   onClick={() => {
-                    const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                    const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from QALBIYA Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
                     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
                     setShareStatus("Shared via WhatsApp!");
                     setTimeout(() => setShareStatus(null), 3000);
@@ -244,7 +245,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
 
                 <button
                   onClick={() => {
-                    const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at Qalbiya Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
+                    const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at QALBIYA Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
                     navigator.clipboard.writeText(shareText);
                     setShareStatus("Instagram text copied!");
                     setTimeout(() => setShareStatus(null), 3000);
@@ -319,7 +320,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
             <div className="space-y-5 overflow-y-auto max-h-[75%] pr-2">
               <div className="border-b border-[#DDD5C3] pb-4">
                 <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#22301F]" id="terms-title">
-                  Qalbiya Institute Enrollment Agreement
+                  QALBIYA Islamic Institute Enrollment Agreement
                 </h3>
                 <p className="text-xs text-[#5B5648] font-light mt-1">
                   Please review and accept our academic conduct agreements before completing registration in this course.
@@ -330,7 +331,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3]/60 p-4 rounded-xl space-y-1.5">
                   <h4 className="font-serif font-bold text-[#22301F] text-xs">1. Academic Integrity & Scholar Respect</h4>
                   <p>
-                    Qalbiya is built upon traditional sacred study principles. Students commit to treating our qualified certified female scholars, instructors, and student peers with utmost respect and standard ethics in all class environments.
+                    QALBIYA Islamic Institute is built upon traditional sacred study principles. Students commit to treating our qualified certified female scholars, instructors, and student peers with utmost respect and standard ethics in all class environments.
                   </p>
                 </div>
 
@@ -344,14 +345,14 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3]/60 p-4 rounded-xl space-y-1.5">
                   <h4 className="font-serif font-bold text-[#22301F] text-xs">3. Material Security & Intellectual Respect</h4>
                   <p>
-                    All visual cohort slides, homework worksheets, private recitations, and proprietary syllabi outlines are carefully curated. Sharing, copying, or distributing Qalbiya assets without official authorization is strictly forbidden.
+                    All visual cohort slides, homework worksheets, private recitations, and proprietary syllabi outlines are carefully curated. Sharing, copying, or distributing QALBIYA Islamic Institute assets without official authorization is strictly forbidden.
                   </p>
                 </div>
 
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3]/60 p-4 rounded-xl space-y-1.5">
                   <h4 className="font-serif font-bold text-[#22301F] text-xs">4. Communications Consent</h4>
                   <p>
-                    By accepting, you consent to Qalbiya synchronizing your student enrollment history. This triggers automatic admissions notifications and welcome packets to be emailed securely to you.
+                    By accepting, you consent to QALBIYA Islamic Institute synchronizing your student enrollment history. This triggers automatic admissions notifications and welcome packets to be emailed securely to you.
                   </p>
                 </div>
               </div>
@@ -367,7 +368,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   id="checkbox-accept-terms"
                 />
                 <span className="text-[11px] text-[#22301F] font-semibold leading-relaxed">
-                  I solemnly agree to accept and abide by Qalbiya's Academic Conduct, Admissions Rules, and Integrity guidelines.
+                  I solemnly agree to accept and abide by QALBIYA Islamic Institute's Academic Conduct, Admissions Rules, and Integrity guidelines.
                 </span>
               </label>
 

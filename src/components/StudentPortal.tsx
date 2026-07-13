@@ -322,7 +322,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             Your Personal Study Path
           </h2>
           <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-            Welcome to the Qalbiya Student Sanctuary. Sign in to your account to manage your profile, 
+            Welcome to the QALBIYA Islamic Institute Student Sanctuary. Sign in to your account to manage your profile, 
             track your completion progress on weekly syllabi outlines, and bookmark programs you wish 
             to join in upcoming semesters.
           </p>
@@ -1108,8 +1108,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                           </div>
 
                           <div className="space-y-1 text-xs text-[#5B5648] font-light">
-                            <p>Instructor: <span className="font-semibold text-[#22301F]">{course.instructor}</span></p>
-                            <p>Schedule: <span>{course.schedule}</span></p>
+                            {course.instructor && <p>Instructor: <span className="font-semibold text-[#22301F]">{course.instructor}</span></p>}
+                            {course.schedule && <p>Schedule: <span>{course.schedule}</span></p>}
                           </div>
 
                           {/* Dynamic Progress Bar */}
@@ -1399,7 +1399,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       >
                         <option value="">Select Age Group</option>
                         <option value="Kids (5-10)">Kids (5-10)</option>
-                        <option value="Juniors (7-12)">Juniors (7-12)</option>
+                        <option value="Juniors (6-12)">Juniors (6-12)</option>
                         <option value="Teens (13-19)">Teens (13-19)</option>
                         <option value="Adults (20+)">Adults (20+)</option>
                       </select>
@@ -1704,7 +1704,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
                 <div className="space-y-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8CA394] font-bold">
-                    Qalbiya Islamic Institute
+                    QALBIYA Islamic Institute
                   </span>
                   <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#22301F] tracking-wide">
                     Certificate of Completion

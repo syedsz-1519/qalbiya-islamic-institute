@@ -1778,7 +1778,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                               {/* Mail outreach link */}
                               {msg.email !== "N/A" && (
                                 <a
-                                  href={`mailto:${msg.email}?subject=Reply%20from%20Qalbiya%20Islamic%20Institute%20re:%20${encodeURIComponent(msg.topic)}&body=Assalamu%20alaikum%20${encodeURIComponent(msg.name)},%0D%0DThank%20you%20for%20reaching%20out...`}
+                                  href={`mailto:${msg.email}?subject=Reply%20from%20QALBIYA%20Islamic%20Institute%20re:%20${encodeURIComponent(msg.topic)}&body=Assalamu%20alaikum%20${encodeURIComponent(msg.name)},%0D%0DThank%20you%20for%20reaching%20out...`}
                                   className="inline-flex items-center gap-1.5 border border-gray-300 hover:border-[#8CA394] text-[#5B5648] hover:text-[#22301F] py-1 px-2.5 rounded bg-white transition-colors cursor-pointer text-[9px]"
                                 >
                                   <span>Direct Email Response</span>
@@ -1789,7 +1789,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                               {/* WhatsApp Direct outreach link */}
                               {msg.phone !== "Not specified" && msg.phone !== "N/A" && (
                                 <a
-                                  href={`https://wa.me/${msg.phone.replace(/[^0-9]/g, "")}?text=Assalamu%20alaikum%20${encodeURIComponent(msg.name)}!%20This%20is%20the%20admissions%20officer%20from%20Qalbiya%20Islamic%20Institute%20responding%20to%20your%20inquiry.`}
+                                  href={`https://wa.me/${msg.phone.replace(/[^0-9]/g, "")}?text=Assalamu%20alaikum%20${encodeURIComponent(msg.name)}!%20This%20is%20the%20admissions%20officer%20from%20QALBIYA%20Islamic%20Institute%20responding%20to%20your%20inquiry.`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1.5 border border-emerald-300 hover:border-emerald-500 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 py-1 px-2.5 rounded transition-colors cursor-pointer text-[9px]"
@@ -2582,7 +2582,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             {/* Footer actions */}
             <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FAF4F2]/40 flex flex-wrap gap-2 justify-end">
               <a
-                href={`mailto:${selectedStudentForModal.email}?subject=Qalbiya%20Islamic%20Institute%20-%20Update%20regarding%20your%20enrollment%20in%20${encodeURIComponent(selectedStudentForModal.courseTitle)}`}
+                href={`mailto:${selectedStudentForModal.email}?subject=QALBIYA%20Islamic%20Institute%20-%20Update%20regarding%20your%20enrollment%20in%20${encodeURIComponent(selectedStudentForModal.courseTitle)}`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 border border-[#DDD5C3] hover:border-[#22301F] text-[#22301F] hover:bg-[#EDE3CE]/30 font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
               >
                 <Mail className="w-4 h-4 text-[#8CA394]" />

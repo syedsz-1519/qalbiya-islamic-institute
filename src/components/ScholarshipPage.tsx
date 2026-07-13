@@ -103,7 +103,7 @@ ${dedicationPledge}
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-lg text-[#22301F]">The Prophetic Legacy Sponsorship</h3>
-                  <p className="text-xs text-[#5B5648] font-light">Established by Ustaza Mustara & local community partners</p>
+                  <p className="text-xs text-[#5B5648] font-light">Established by Ms. Mustara & local community partners</p>
                 </div>
               </div>
 

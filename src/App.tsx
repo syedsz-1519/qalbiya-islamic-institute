@@ -594,241 +594,150 @@ export default function App() {
               />
             </div>
 
-            {/* Admissions Inquiry & WhatsApp Desk Section */}
+            {/* Admissions Inquiry Section */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-[#DDD5C3]">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                
-                {/* Left Column: Direct WhatsApp Connection & Office Details */}
-                <div className="lg:col-span-5 space-y-8 text-left">
-                  <div className="space-y-3">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
-                      Direct Support Channels
-                    </span>
-                    <h3 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">
-                      Connect with our Advisors
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                      Have specific questions about our curricula, age criteria, or textbook requirements? Submit an inquiry form or immediately connect with our admissions desk on WhatsApp.
+              <div className="max-w-2xl mx-auto bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 text-left">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#8A5A4D] font-bold block">
+                    Inquiry Form
+                  </span>
+                  <h3 className="font-serif text-2xl font-bold text-[#22301F] tracking-tight">
+                    Submit an Admissions Case
+                  </h3>
+                  <p className="text-xs text-[#5B5648] font-light leading-relaxed">
+                    Send our administrative desk a direct message. We review case inquiries daily and respond within 12 hours.
+                  </p>
+                </div>
+
+                {contactSuccess ? (
+                  <div className="bg-[#8CA394]/15 border border-[#8CA394]/40 rounded-2xl p-6 text-center space-y-3 py-10">
+                    <div className="w-10 h-10 bg-[#8CA394]/20 text-[#33453A] border border-[#8CA394]/40 rounded-full flex items-center justify-center mx-auto">
+                      ✓
+                    </div>
+                    <h4 className="font-serif font-bold text-[#22301F]">Inquiry Submitted Successfully</h4>
+                    <p className="text-xs text-[#5B5648] max-w-sm mx-auto font-light leading-relaxed">
+                      Assalamu alaikum! Thank you for reaching out to Qalbiya Islamic Institute. Your inquiry has been routed to our staff messaging dashboard, and an advisor will contact you soon.
                     </p>
                   </div>
-
-                  {/* Quick WhatsApp Log Form */}
-                  <div className="bg-[#25D366]/5 border border-[#25D366]/20 rounded-3xl p-6 sm:p-7 space-y-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#25D366]/15 text-[#20ba59] flex items-center justify-center border border-[#25D366]/20 shrink-0">
-                        <MessageCircle className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="font-serif font-bold text-sm text-[#22301F]">WhatsApp Live Inquiry Desk</h4>
-                        <p className="text-[10px] text-[#5B5648] font-light">Direct and fast-track admissions response</p>
-                      </div>
+                ) : (
+                  <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Full Name *
+                      </label>
+                      <input
+                        id="contact-input-name"
+                        type="text"
+                        required
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
+                        placeholder="e.g. Amina Siddiqui"
+                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
+                      />
                     </div>
 
-                    <form onSubmit={handleWhatsAppQuickLog} className="space-y-3.5">
-                      <div>
-                        <label htmlFor="wa-input-name" className="sr-only">Your Name</label>
-                        <input
-                          id="wa-input-name"
-                          type="text"
-                          required
-                          value={waName}
-                          onChange={(e) => setWaName(e.target.value)}
-                          placeholder="Your Name *"
-                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all font-light"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="wa-input-phone" className="sr-only">WhatsApp Phone (Optional)</label>
-                        <input
-                          id="wa-input-phone"
-                          type="tel"
-                          value={waPhone}
-                          onChange={(e) => setWaPhone(e.target.value)}
-                          placeholder="WhatsApp Phone (Optional)"
-                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all font-light"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="wa-input-message" className="sr-only">What would you like to ask? (Optional)</label>
-                        <textarea
-                          id="wa-input-message"
-                          value={waMessage}
-                          onChange={(e) => setWaMessage(e.target.value)}
-                          placeholder="What would you like to ask? (Optional)"
-                          rows={2.5}
-                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all resize-none font-light"
-                        />
-                      </div>
-                      <button
-                        id="btn-submit-wa-inquiry"
-                        type="submit"
-                        disabled={isLoggingWA}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] disabled:bg-[#DDD5C3] text-white disabled:text-gray-400 px-4 py-3 rounded-full text-xs font-mono uppercase tracking-wider font-bold cursor-pointer transition-all active:scale-[0.98] shadow-md hover:shadow-lg"
+                    <div>
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Email Address *
+                      </label>
+                      <input
+                        id="contact-input-email"
+                        type="email"
+                        required
+                        value={contactEmail}
+                        onChange={(e) => setContactEmail(e.target.value)}
+                        placeholder="amina@example.com"
+                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Phone Number
+                      </label>
+                      <input
+                        id="contact-input-phone"
+                        type="tel"
+                        value={contactPhone}
+                        onChange={(e) => setContactPhone(e.target.value)}
+                        placeholder="e.g. +1 (555) 019-2834"
+                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Topic of Interest
+                      </label>
+                      <select
+                        id="contact-input-topic"
+                        value={contactTopic}
+                        onChange={(e) => setContactTopic(e.target.value)}
+                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#8CA394]"
                       >
-                        {isLoggingWA ? (
-                          <span>Logging Inquiry...</span>
-                        ) : (
-                          <>
-                            <MessageCircle className="w-4 h-4 shrink-0" />
-                            <span>Start WhatsApp Chat</span>
-                          </>
-                        )}
-                      </button>
-                    </form>
-
-                    {waSuccess && (
-                      <div className="bg-emerald-50 border border-emerald-200/50 rounded-xl p-3 text-center text-[11px] text-emerald-800 font-medium">
-                        ✓ Inquiry logged! Redirecting to WhatsApp...
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Column: Admissions Inquiry Email Form */}
-                <div className="lg:col-span-7 bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 text-left">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#8A5A4D] font-bold block">
-                      Inquiry Form
-                    </span>
-                    <h3 className="font-serif text-2xl font-bold text-[#22301F] tracking-tight">
-                      Submit an Admissions Case
-                    </h3>
-                    <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                      Send our administrative desk a direct message. We review case inquiries daily and respond within 12 hours.
-                    </p>
-                  </div>
-
-                  {contactSuccess ? (
-                    <div className="bg-[#8CA394]/15 border border-[#8CA394]/40 rounded-2xl p-6 text-center space-y-3 py-10">
-                      <div className="w-10 h-10 bg-[#8CA394]/20 text-[#33453A] border border-[#8CA394]/40 rounded-full flex items-center justify-center mx-auto">
-                        ✓
-                      </div>
-                      <h4 className="font-serif font-bold text-[#22301F]">Inquiry Submitted Successfully</h4>
-                      <p className="text-xs text-[#5B5648] max-w-sm mx-auto font-light leading-relaxed">
-                        Assalamu alaikum! Thank you for reaching out to Qalbiya Islamic Institute. Your inquiry has been routed to our staff messaging dashboard, and an advisor will contact you soon.
-                      </p>
+                        <option value="General Inquiry">General Admissions Question</option>
+                        <option value="Women's Intake">Women Course Hub</option>
+                        <option value="Kids' Intake">Kids Course Hub</option>
+                        <option value="Feedback & Support">Platform Feedback or Support</option>
+                        <option value="Sponsorship & Partnering">Scholarship Sponsorships</option>
+                      </select>
                     </div>
-                  ) : (
-                    <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="sm:col-span-2">
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Full Name *
+
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Preferred Reply Channel
+                      </label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
+                          <input
+                            type="radio"
+                            name="channel"
+                            checked={contactChannel === "email"}
+                            onChange={() => setContactChannel("email")}
+                            className="accent-[#8CA394]"
+                          />
+                          <span>Email Response</span>
                         </label>
-                        <input
-                          id="contact-input-name"
-                          type="text"
-                          required
-                          value={contactName}
-                          onChange={(e) => setContactName(e.target.value)}
-                          placeholder="e.g. Amina Siddiqui"
-                          className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Email Address *
+                        <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
+                          <input
+                            type="radio"
+                            name="channel"
+                            checked={contactChannel === "whatsapp"}
+                            onChange={() => setContactChannel("whatsapp")}
+                            className="accent-[#8CA394]"
+                          />
+                          <span>WhatsApp Outreach</span>
                         </label>
-                        <input
-                          id="contact-input-email"
-                          type="email"
-                          required
-                          value={contactEmail}
-                          onChange={(e) => setContactEmail(e.target.value)}
-                          placeholder="amina@example.com"
-                          className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                        />
                       </div>
+                    </div>
 
-                      <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Phone Number
-                        </label>
-                        <input
-                          id="contact-input-phone"
-                          type="tel"
-                          value={contactPhone}
-                          onChange={(e) => setContactPhone(e.target.value)}
-                          placeholder="e.g. +1 (555) 019-2834"
-                          className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                        />
-                      </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
+                        Message / Questions *
+                      </label>
+                      <textarea
+                        id="contact-input-message"
+                        required
+                        value={contactMessage}
+                        onChange={(e) => setContactMessage(e.target.value)}
+                        placeholder="Assalamu'alaikum wa rehmatullahi wa barakatuhu, I would like to inquire about..."
+                        rows={4}
+                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394] resize-none"
+                      />
+                    </div>
 
-                      <div className="sm:col-span-2">
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Topic of Interest
-                        </label>
-                        <select
-                          id="contact-input-topic"
-                          value={contactTopic}
-                          onChange={(e) => setContactTopic(e.target.value)}
-                          className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#8CA394]"
-                        >
-                          <option value="General Inquiry">General Admissions Question</option>
-                          <option value="Women's Intake">Women Course Hub</option>
-                          <option value="Kids' Intake">Kids Course Hub</option>
-                          <option value="Feedback & Support">Platform Feedback or Support</option>
-                          <option value="Sponsorship & Partnering">Scholarship Sponsorships</option>
-                        </select>
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Preferred Reply Channel
-                        </label>
-                        <div className="flex gap-4">
-                          <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
-                            <input
-                              type="radio"
-                              name="channel"
-                              checked={contactChannel === "email"}
-                              onChange={() => setContactChannel("email")}
-                              className="accent-[#8CA394]"
-                            />
-                            <span>Email Response</span>
-                          </label>
-                          <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
-                            <input
-                              type="radio"
-                              name="channel"
-                              checked={contactChannel === "whatsapp"}
-                              onChange={() => setContactChannel("whatsapp")}
-                              className="accent-[#8CA394]"
-                            />
-                            <span>WhatsApp Outreach</span>
-                          </label>
-                        </div>
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                          Message / Questions *
-                        </label>
-                        <textarea
-                          id="contact-input-message"
-                          required
-                          value={contactMessage}
-                          onChange={(e) => setContactMessage(e.target.value)}
-                          placeholder="Assalamu'alaikum wa rehmatullahi wa barakatuhu, I would like to inquire about..."
-                          rows={4}
-                          className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394] resize-none"
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2 pt-2">
-                        <button
-                          id="btn-submit-contact"
-                          type="submit"
-                          disabled={isSubmittingContact}
-                          className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-bold uppercase tracking-widest btn-shadow cursor-pointer transition-all hover:scale-[1.01]"
-                        >
-                          {isSubmittingContact ? "Sending Message..." : "Submit Case to Registrar"}
-                        </button>
-                      </div>
-                    </form>
-                  )}
-                </div>
-
+                    <div className="sm:col-span-2 pt-2">
+                      <button
+                        id="btn-submit-contact"
+                        type="submit"
+                        disabled={isSubmittingContact}
+                        className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-bold uppercase tracking-widest btn-shadow cursor-pointer transition-all hover:scale-[1.01]"
+                      >
+                        {isSubmittingContact ? "Sending Message..." : "Submit Case to Registrar"}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
           </div>

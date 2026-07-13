@@ -59,3 +59,4 @@ export interface FAQ {
   courseId?: string;
   createdAt: string;
 }
+

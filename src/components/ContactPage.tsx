@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { submitContactForm, logWhatsAppInquiry } from "../lib/firebase";
-import { Mail, Phone, MapPin, Clock, MessageSquare, ShieldCheck, ArrowUpRight, Send, CheckCircle2 } from "lucide-react";
+import { submitContactForm } from "../lib/firebase";
+import { Mail, Phone, MapPin, Clock, ShieldCheck, ArrowUpRight, Send, CheckCircle2 } from "lucide-react";
 
 export function ContactPage() {
   // Contact form state
@@ -12,13 +12,6 @@ export function ContactPage() {
   const [contactMessage, setContactMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  // WhatsApp quick log state
-  const [waName, setWaName] = useState("");
-  const [waPhone, setWaPhone] = useState("");
-  const [waMessage, setWaMessage] = useState("");
-  const [isLoggingWA, setIsLoggingWA] = useState(false);
-  const [waSuccess, setWaSuccess] = useState(false);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,32 +34,6 @@ export function ContactPage() {
       console.error(err);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleWASubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoggingWA(true);
-    try {
-      await logWhatsAppInquiry({
-        name: waName,
-        phone: waPhone,
-        message: waMessage
-      });
-      setWaSuccess(true);
-      setTimeout(() => {
-        // Redirect to WhatsApp
-        const encodedText = encodeURIComponent(`Assalamu alaikum! My name is ${waName}. I would like to inquire about Qalbiya admissions: ${waMessage}`);
-        window.open(`https://wa.me/918145363290?text=${encodedText}`, "_blank");
-        setWaName("");
-        setWaPhone("");
-        setWaMessage("");
-        setWaSuccess(false);
-      }, 1500);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoggingWA(false);
     }
   };
 
@@ -136,64 +103,6 @@ export function ContactPage() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* WhatsApp Quick Chat */}
-            <div className="bg-[#25D366]/5 border border-[#25D366]/30 rounded-3xl p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[#25D366]/15 text-[#20ba59] flex items-center justify-center">
-                  <MessageSquare className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="font-serif font-bold text-sm text-[#22301F]">WhatsApp Live Admissions</h4>
-                  <p className="text-[10px] text-gray-400">Immediate response from registrars</p>
-                </div>
-              </div>
-
-              <form onSubmit={handleWASubmit} className="space-y-3">
-                <div>
-                  <input
-                    type="text"
-                    required
-                    value={waName}
-                    onChange={(e) => setWaName(e.target.value)}
-                    placeholder="Your Name *"
-                    className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3 py-2 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="tel"
-                    value={waPhone}
-                    onChange={(e) => setWaPhone(e.target.value)}
-                    placeholder="WhatsApp Phone (Optional)"
-                    className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3 py-2 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <textarea
-                    value={waMessage}
-                    onChange={(e) => setWaMessage(e.target.value)}
-                    placeholder="Ask us anything about textbooks, ages, or scheduling..."
-                    rows={2}
-                    className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3 py-2 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/50 transition-colors resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoggingWA}
-                  className="w-full inline-flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20ba59] text-white disabled:bg-gray-200 disabled:text-gray-400 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider font-bold cursor-pointer transition-transform active:scale-95 shadow-sm"
-                >
-                  {isLoggingWA ? "Saving Inquiry..." : "Start WhatsApp Chat"}
-                </button>
-              </form>
-
-              {waSuccess && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center text-[10px] text-emerald-800 font-mono">
-                  ✓ Logging inquiry... Opening WhatsApp Admissions Desk...
-                </div>
-              )}
             </div>
           </div>
 

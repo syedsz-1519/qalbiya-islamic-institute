@@ -91,7 +91,27 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </p>
 
         {/* Highlights / Features list */}
-        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] font-sans border-t border-[#DDD5C3]/40">
+        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] font-sans border-t border-[#DDD5C3]/40 relative group/tooltip cursor-help" id={`highlights-${course.id}`}>
+          {/* Hover Tooltip Container */}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 bg-[#22301F] text-[#FAF4F2] text-xs p-3.5 rounded-2xl shadow-2xl opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-all duration-300 ease-out z-30 font-sans border border-[#B0863A]/40 transform translate-y-1 group-hover/tooltip:translate-y-0 text-left">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F]" />
+            <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#B98072] rounded-full animate-pulse" />
+              <span>Schedule & Faculty Info</span>
+            </p>
+            <p className="font-light leading-relaxed text-[#FAF4F2]/95">
+              Join <strong className="font-medium text-[#FAF4F2]">{course.instructor}</strong> for interactive study sessions conducted on <span className="font-medium text-[#EDE3CE]">{course.schedule}</span>.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] font-mono">Session Info</span>
+            <span className="text-[9px] font-medium text-[#B98072]/80 bg-[#B98072]/5 px-1.5 py-0.5 rounded border border-[#B98072]/15 flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 bg-[#B98072] rounded-full" />
+              <span>Hover for Summary</span>
+            </span>
+          </div>
+
           <div className="flex items-center gap-2">
             <Calendar className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
             <span className="truncate">{course.schedule}</span>

@@ -9,6 +9,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { Course } from "./types";
 import { COURSES } from "./data/courses";
 import { Header } from "./components/Header";
+import logo from "@/logo.png";
 import { Hero } from "./components/Hero";
 import { CourseCard } from "./components/CourseCard";
 import { CourseDetailsModal } from "./components/CourseDetailsModal";
@@ -22,17 +23,58 @@ import { ScholarshipPage } from "./components/ScholarshipPage";
 import { ContactPage } from "./components/ContactPage";
 import { LegalPages } from "./components/LegalPages";
 import { CourseDetailPage } from "./components/CourseDetailPage";
-import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp } from "lucide-react";
+import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
+
+function parseDurationToWeeks(durationStr: string): number {
+  const normalized = durationStr.toLowerCase();
+  if (normalized.includes("1 year") || normalized.includes("year")) {
+    return 52;
+  }
+  if (normalized.includes("ongoing") || normalized.includes("monthly")) {
+    return 4;
+  }
+  const matchWeeks = normalized.match(/(\d+)\s*week/);
+  if (matchWeeks) {
+    return parseInt(matchWeeks[1], 10);
+  }
+  return 0;
+}
+
+function sortCourses(courses: Course[], sortBy: "newest" | "alphabetical" | "duration"): Course[] {
+  const list = [...courses];
+  if (sortBy === "newest") {
+    return list.sort((a, b) => {
+      if (a.isNew && !b.isNew) return -1;
+      if (!a.isNew && b.isNew) return 1;
+      if (a.flagship && !b.flagship) return -1;
+      if (!a.flagship && b.flagship) return 1;
+      return a.title.localeCompare(b.title);
+    });
+  } else if (sortBy === "alphabetical") {
+    return list.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy === "duration") {
+    return list.sort((a, b) => {
+      const weeksA = parseDurationToWeeks(a.duration);
+      const weeksB = parseDurationToWeeks(b.duration);
+      return weeksA - weeksB;
+    });
+  }
+  return list;
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>("home");
-  const [user, setUser] = useState<User | null>({
-    uid: "guest_student_id",
-    displayName: "Respected Student",
-    email: "student@qalbiya.org",
-    photoURL: null,
-    emailVerified: true
-  } as any);
+
+  useEffect(() => {
+    try {
+      localStorage.removeItem("qalbiya_theme");
+      document.documentElement.classList.remove("dark");
+    } catch (e) {
+      console.warn("Could not clean up theme setting", e);
+    }
+  }, []);
+
+  const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<"admin" | "student">("student");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -72,6 +114,12 @@ export default function App() {
   const [waMessage, setWaMessage] = useState("");
   const [isLoggingWA, setIsLoggingWA] = useState(false);
   const [waSuccess, setWaSuccess] = useState(false);
+
+  // Course Sorting and Filtering States
+  const [womenSort, setWomenSort] = useState<"newest" | "alphabetical" | "duration">("newest");
+  const [kidsSort, setKidsSort] = useState<"newest" | "alphabetical" | "duration">("newest");
+  const [womenSearch, setWomenSearch] = useState("");
+  const [kidsSearch, setKidsSearch] = useState("");
 
   // 1. Load local mock student data from localStorage on mount
   useEffect(() => {
@@ -302,7 +350,7 @@ export default function App() {
       setWaSuccess(true);
       
       // Build WhatsApp message and open link
-      const text = encodeURIComponent(`Assalamu alaikum! I am ${waName}. I am interested in Qalbiya Islamic Institute's programs. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
+      const text = encodeURIComponent(`Assalamu'alaikum wa rehmatullahi wa barakatuhu. I am ${waName}. I am interested in Qalbiya Islamic Institute's programs. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
       const waUrl = `https://wa.me/918145363290?text=${text}`;
       
       // Safe redirect inside sandbox
@@ -320,13 +368,46 @@ export default function App() {
     }
   };
 
-  // Filter courses by tab
-  const womenCourses = COURSES.filter(c => c.category === "women");
-  const kidsCourses = COURSES.filter(c => c.category === "kids");
+  // Filter and sort courses by tab
+  const womenCourses = sortCourses(
+    COURSES.filter(c => 
+      c.category === "women" && (
+        !womenSearch ||
+        c.title.toLowerCase().includes(womenSearch.toLowerCase()) ||
+        c.description.toLowerCase().includes(womenSearch.toLowerCase()) ||
+        c.instructor.toLowerCase().includes(womenSearch.toLowerCase())
+      )
+    ),
+    womenSort
+  );
+
+  const kidsCourses = sortCourses(
+    COURSES.filter(c => 
+      c.category === "kids" && (
+        !kidsSearch ||
+        c.title.toLowerCase().includes(kidsSearch.toLowerCase()) ||
+        c.description.toLowerCase().includes(kidsSearch.toLowerCase()) ||
+        c.instructor.toLowerCase().includes(kidsSearch.toLowerCase())
+      )
+    ),
+    kidsSort
+  );
 
   return (
-    <div className="min-h-screen bg-[#FAF4F2] text-[#22301F] flex flex-col justify-between relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FCEDE9] via-[#FAF4F2] to-[#FCEEEB] text-[#22301F] flex flex-col justify-between relative overflow-hidden transition-colors duration-500">
       
+      {/* Premium Animated Pink Background Blobs & Floating Orbs */}
+      <div className="absolute top-[-15%] left-[-15%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-radial from-[#FCDED9]/40 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0"></div>
+      <div className="absolute bottom-[-15%] right-[-15%] w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] rounded-full bg-radial from-[#FBDBD3]/45 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-two z-0"></div>
+      <div className="absolute top-[40%] left-[20%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] rounded-full bg-radial from-[#FCE6E2]/35 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0" style={{ animationDelay: '6s' }}></div>
+
+      {/* Elegant Drifting Pink Sparks & Soft Particles */}
+      <div className="absolute bottom-0 left-[10%] w-2 h-2 rounded-full bg-[#B98072]/30 pointer-events-none blur-xs animate-rise-particle-1"></div>
+      <div className="absolute bottom-0 left-[35%] w-3 h-3 rounded-full bg-[#E0A395]/40 pointer-events-none blur-xs animate-rise-particle-2"></div>
+      <div className="absolute bottom-0 left-[65%] w-1.5 h-1.5 rounded-full bg-[#B98072]/50 pointer-events-none blur-xs animate-rise-particle-3"></div>
+      <div className="absolute bottom-0 left-[85%] w-2 h-2 rounded-full bg-[#E0A395]/30 pointer-events-none blur-xs animate-rise-particle-1" style={{ animationDelay: "5s" }}></div>
+      <div className="absolute bottom-0 left-[50%] w-2.5 h-2.5 rounded-full bg-[#B98072]/40 pointer-events-none blur-xs animate-rise-particle-3" style={{ animationDelay: "10s" }}></div>
+
       {/* Background Animated Islamic Motifs */}
       <div className="absolute top-24 left-4 w-28 h-28 pointer-events-none opacity-20 hidden xl:block animate-float-rehal" title="Rehal Motif">
         <svg viewBox="0 0 100 100" className="w-full h-full text-[#8A5A4D] fill-none stroke-current" strokeWidth="2">
@@ -361,11 +442,7 @@ export default function App() {
       <Header
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
-        user={user}
         userRole={userRole}
-        handleLogin={handleLogin}
-        handleLogout={handleLogout}
-        isLoggingIn={isLoggingIn}
       />
 
       {/* Main Content Area */}
@@ -375,7 +452,7 @@ export default function App() {
             <Hero onChoosePath={(path) => setCurrentTab(path)} />
 
             {/* Featured Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in" id="flagship-section">
               <div className="border-t border-[#DDD5C3] pt-12">
                 <div className="text-center space-y-3 mb-16">
                   <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">
@@ -404,6 +481,108 @@ export default function App() {
                     />
                   ))}
                 </div>
+
+                {/* Sponsorship & Scholarship Promo Card */}
+                <div className="mt-12 max-w-5xl mx-auto">
+                  <div className="relative bg-[#FAF4F2]/90 border border-[#DDD5C3] rounded-[32px] p-8 md:p-10 overflow-hidden shadow-sm group hover:border-[#8CA394] transition-all duration-300">
+                    {/* Watermark Heart Outline */}
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none group-hover:scale-105 group-hover:opacity-[0.06] transition-transform duration-500">
+                      <Heart className="w-64 h-64 text-[#33453A]" strokeWidth={1} />
+                    </div>
+                    
+                    <div className="relative z-10 space-y-6 md:max-w-2xl text-left">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#EAE8E3] text-[#33453A] text-[9px] uppercase font-mono tracking-widest font-bold rounded-full">
+                        <Heart className="w-3.5 h-3.5 text-[#33453A]" />
+                        <span>Sadaqah Jariyah</span>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <h4 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+                          Sponsorship & Scholarship
+                        </h4>
+                        <p className="font-sans text-[#5B5648] text-xs sm:text-sm font-light leading-relaxed">
+                          Support deserving students or apply for full tuition waivers. We believe sacred Deen education must be accessible to all.
+                        </p>
+                      </div>
+
+                      <div>
+                        <button
+                          onClick={() => setCurrentTab("scholarship")}
+                          className="inline-flex items-center gap-2 bg-[#8CA394] hover:bg-[#33453A] text-white px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:scale-[1.02] shadow-sm cursor-pointer"
+                        >
+                          <span>Apply or Sponsor</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* About Founder Section */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-[#DDD5C3] animate-fade-in">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+                
+                {/* Left Column: Artistic Portrait Frame with Islamic Arch / Soft Watercolor Pink styling */}
+                <div className="lg:col-span-5 flex justify-center">
+                  <div className="relative w-72 h-96 max-w-full rounded-[40px] overflow-hidden shadow-2xl border-4 border-white/60 bg-gradient-to-tr from-[#FCEDE9] to-[#FBDBD3]">
+                    
+                    {/* Artistic Islamic arch background overlay */}
+                    <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800')" }}></div>
+                    
+                    {/* Elegant Watercolor dome ornament watermark inside the frame */}
+                    <div className="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-8 text-center z-10">
+                      <div className="w-16 h-16 mx-auto rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+                        <img 
+                          src={logo} 
+                          alt="Qalbiya Logo" 
+                          className="w-11 h-11 object-contain" 
+                        />
+                      </div>
+                      
+                      <div className="space-y-2 bg-[#22301F]/85 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-white shadow-lg">
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-[#B0863A] font-bold">Principal Scholar</span>
+                        <h4 className="font-serif text-lg font-bold">Ustadha Syed Mustara</h4>
+                        <p className="text-[10px] text-gray-200 font-light font-sans">Holder of Traditional Ijazat & Classical Licenses</p>
+                      </div>
+                    </div>
+
+                    {/* Pink Watercolor Blotches behind portrait container */}
+                    <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-radial from-[#B98072]/45 to-transparent pointer-events-none blur-2xl z-0"></div>
+                  </div>
+                </div>
+
+                {/* Right Column: Narrative Biography & Vision statement */}
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+                      The Heart of the Institute
+                    </span>
+                    <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
+                      About Our Founder
+                    </h3>
+                  </div>
+
+                  <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
+                    Qalbiya Islamic Institute was founded under the vision and academic guidance of <strong>Ustadha Syed Mustara</strong>, a dedicated Islamic scholar and educator. Deeply committed to the traditional sciences of the Deen, she holds multiple classical licenses (<em>Ijazat</em>) in Quranic Tajweed, Hadith sciences, and Fiqh from recognized traditional seminaries.
+                  </p>
+
+                  <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
+                    Having taught hundreds of sisters worldwide, Ustadha realized that modern women and families require a highly structured, semester-based approach to Deeniyat—one that respects their busy modern lives without compromising on academic depth, precision, and spiritual nurture.
+                  </p>
+
+                  <div className="bg-[#FAF4F2] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] font-serif text-sm relative">
+                    <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
+                    <p className="relative z-10 leading-relaxed font-light pl-4">
+                      My vision for Qalbiya was to build an authentic spiritual sanctuary—a place where Deen is studied with intellectual rigor, yet polished with prophetic manners (Akhlaq) and heart-purification (Tazkiyah). We welcome you to find focus in an age of distractions.
+                    </p>
+                    <div className="mt-3 pl-4 text-right">
+                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; Ustadha Syed Mustara</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -434,19 +613,20 @@ export default function App() {
                   </div>
 
                   {/* Quick WhatsApp Log Form */}
-                  <div className="bg-[#25D366]/5 border border-[#25D366]/30 rounded-3xl p-6 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#25D366]/10 text-[#20ba59] flex items-center justify-center">
+                  <div className="bg-[#25D366]/5 border border-[#25D366]/20 rounded-3xl p-6 sm:p-7 space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[#25D366]/15 text-[#20ba59] flex items-center justify-center border border-[#25D366]/20 shrink-0">
                         <MessageCircle className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="font-serif font-bold text-sm text-[#22301F]">WhatsApp Live Inquiry</h4>
-                        <p className="text-[10px] text-[#5B5648] font-light">Fast-track response from our registrars</p>
+                        <h4 className="font-serif font-bold text-sm text-[#22301F]">WhatsApp Live Inquiry Desk</h4>
+                        <p className="text-[10px] text-[#5B5648] font-light">Direct and fast-track admissions response</p>
                       </div>
                     </div>
 
-                    <form onSubmit={handleWhatsAppQuickLog} className="space-y-3">
+                    <form onSubmit={handleWhatsAppQuickLog} className="space-y-3.5">
                       <div>
+                        <label htmlFor="wa-input-name" className="sr-only">Your Name</label>
                         <input
                           id="wa-input-name"
                           type="text"
@@ -454,40 +634,42 @@ export default function App() {
                           value={waName}
                           onChange={(e) => setWaName(e.target.value)}
                           placeholder="Your Name *"
-                          className="w-full bg-[#FBF8F1] border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2 text-xs font-sans placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/60 transition-colors"
+                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all font-light"
                         />
                       </div>
                       <div>
+                        <label htmlFor="wa-input-phone" className="sr-only">WhatsApp Phone (Optional)</label>
                         <input
                           id="wa-input-phone"
                           type="tel"
                           value={waPhone}
                           onChange={(e) => setWaPhone(e.target.value)}
                           placeholder="WhatsApp Phone (Optional)"
-                          className="w-full bg-[#FBF8F1] border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2 text-xs font-sans placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/60 transition-colors"
+                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all font-light"
                         />
                       </div>
                       <div>
+                        <label htmlFor="wa-input-message" className="sr-only">What would you like to ask? (Optional)</label>
                         <textarea
                           id="wa-input-message"
                           value={waMessage}
                           onChange={(e) => setWaMessage(e.target.value)}
                           placeholder="What would you like to ask? (Optional)"
-                          rows={2}
-                          className="w-full bg-[#FBF8F1] border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2 text-xs font-sans placeholder-[#5B5648]/40 focus:outline-none focus:border-[#25D366]/60 transition-colors resize-none"
+                          rows={2.5}
+                          className="w-full bg-white border border-[#DDD5C3]/80 rounded-xl px-3.5 py-2.5 text-xs font-sans text-[#22301F] placeholder-[#5B5648]/55 focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366]/30 shadow-sm transition-all resize-none font-light"
                         />
                       </div>
                       <button
                         id="btn-submit-wa-inquiry"
                         type="submit"
                         disabled={isLoggingWA}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white disabled:bg-[#DDD5C3] px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest cursor-pointer transition-all hover:scale-[1.01] shadow-sm"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] disabled:bg-[#DDD5C3] text-white disabled:text-gray-400 px-4 py-3 rounded-full text-xs font-mono uppercase tracking-wider font-bold cursor-pointer transition-all active:scale-[0.98] shadow-md hover:shadow-lg"
                       >
                         {isLoggingWA ? (
                           <span>Logging Inquiry...</span>
                         ) : (
                           <>
-                            <MessageCircle className="w-3.5 h-3.5" />
+                            <MessageCircle className="w-4 h-4 shrink-0" />
                             <span>Start WhatsApp Chat</span>
                           </>
                         )}
@@ -583,8 +765,8 @@ export default function App() {
                           className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#8CA394]"
                         >
                           <option value="General Inquiry">General Admissions Question</option>
-                          <option value="Women's Intake">Women's Cohort Hub</option>
-                          <option value="Kids' Intake">Kids' Studies Hub</option>
+                          <option value="Women's Intake">Women Course Hub</option>
+                          <option value="Kids' Intake">Kids Course Hub</option>
                           <option value="Feedback & Support">Platform Feedback or Support</option>
                           <option value="Sponsorship & Partnering">Scholarship Sponsorships</option>
                         </select>
@@ -627,7 +809,7 @@ export default function App() {
                           required
                           value={contactMessage}
                           onChange={(e) => setContactMessage(e.target.value)}
-                          placeholder="Assalamu alaikum, I would like to inquire about..."
+                          placeholder="Assalamu'alaikum wa rehmatullahi wa barakatuhu, I would like to inquire about..."
                           rows={4}
                           className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394] resize-none"
                         />
@@ -669,21 +851,70 @@ export default function App() {
               </p>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {womenCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  formDetails={activeFormDetails[course.id] || null}
-                  onExplore={(c) => setCurrentTab("course-" + c.id)}
-                  user={user}
-                  isBookmarked={userBookmarks.includes(course.id)}
-                  onBookmarkToggle={handleBookmarkToggle}
-                  isEnrolled={userEnrollments.includes(course.id)}
+            {/* Filter and Sort Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border transition-colors bg-[#FAF4F2]/50 border-[#DDD5C3]/60 text-[#22301F]">
+              {/* Search Control */}
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8CA394]" />
+                <input
+                  id="women-search-input"
+                  type="text"
+                  placeholder="Search courses..."
+                  value={womenSearch}
+                  onChange={(e) => setWomenSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border focus:outline-none focus:ring-1 transition-all bg-white border-[#DDD5C3]/80 text-[#22301F] placeholder-[#5B5648]/40 focus:border-[#22301F] focus:ring-[#22301F]"
                 />
-              ))}
+              </div>
+
+              {/* Sort Control */}
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#8CA394]" />
+                <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#5B5648]">
+                  Sort By:
+                </span>
+                <select
+                  id="women-sort-dropdown"
+                  value={womenSort}
+                  onChange={(e) => setWomenSort(e.target.value as any)}
+                  className="text-xs px-3 py-2 rounded-xl border font-sans focus:outline-none cursor-pointer transition-all bg-white border-[#DDD5C3]/80 text-[#22301F] focus:border-[#22301F]"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="alphabetical">Alphabetical</option>
+                  <option value="duration">Duration (Shortest to Longest)</option>
+                </select>
+              </div>
             </div>
+
+            {/* Grid or Empty State */}
+            {womenCourses.length === 0 ? (
+              <div className="text-center py-16 px-4 rounded-3xl border bg-[#FBF8F1]/50 border-[#DDD5C3]/40">
+                <p className="text-sm text-[#5B5648]">
+                  No courses match your search or filters. Try searching for other keywords.
+                </p>
+                <button
+                  id="reset-women-filters"
+                  onClick={() => { setWomenSearch(""); setWomenSort("newest"); }}
+                  className="mt-4 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors bg-[#EDE3CE] hover:bg-[#DDD5C3] text-[#22301F]"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {womenCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    formDetails={activeFormDetails[course.id] || null}
+                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    user={user}
+                    isBookmarked={userBookmarks.includes(course.id)}
+                    onBookmarkToggle={handleBookmarkToggle}
+                    isEnrolled={userEnrollments.includes(course.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -704,21 +935,70 @@ export default function App() {
               </p>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {kidsCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  formDetails={activeFormDetails[course.id] || null}
-                  onExplore={(c) => setCurrentTab("course-" + c.id)}
-                  user={user}
-                  isBookmarked={userBookmarks.includes(course.id)}
-                  onBookmarkToggle={handleBookmarkToggle}
-                  isEnrolled={userEnrollments.includes(course.id)}
+            {/* Filter and Sort Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border transition-colors bg-[#FAF4F2]/50 border-[#DDD5C3]/60 text-[#22301F]">
+              {/* Search Control */}
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8CA394]" />
+                <input
+                  id="kids-search-input"
+                  type="text"
+                  placeholder="Search kids courses..."
+                  value={kidsSearch}
+                  onChange={(e) => setKidsSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border focus:outline-none focus:ring-1 transition-all bg-white border-[#DDD5C3]/80 text-[#22301F] placeholder-[#5B5648]/40 focus:border-[#22301F] focus:ring-[#22301F]"
                 />
-              ))}
+              </div>
+
+              {/* Sort Control */}
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#8CA394]" />
+                <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#5B5648]">
+                  Sort By:
+                </span>
+                <select
+                  id="kids-sort-dropdown"
+                  value={kidsSort}
+                  onChange={(e) => setKidsSort(e.target.value as any)}
+                  className="text-xs px-3 py-2 rounded-xl border font-sans focus:outline-none cursor-pointer transition-all bg-white border-[#DDD5C3]/80 text-[#22301F] focus:border-[#22301F]"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="alphabetical">Alphabetical</option>
+                  <option value="duration">Duration (Shortest to Longest)</option>
+                </select>
+              </div>
             </div>
+
+            {/* Grid or Empty State */}
+            {kidsCourses.length === 0 ? (
+              <div className="text-center py-16 px-4 rounded-3xl border bg-[#FBF8F1]/50 border-[#DDD5C3]/40">
+                <p className="text-sm text-[#5B5648]">
+                  No courses match your search or filters. Try searching for other keywords.
+                </p>
+                <button
+                  id="reset-kids-filters"
+                  onClick={() => { setKidsSearch(""); setKidsSort("newest"); }}
+                  className="mt-4 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors bg-[#EDE3CE] hover:bg-[#DDD5C3] text-[#22301F]"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {kidsCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    formDetails={activeFormDetails[course.id] || null}
+                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    user={user}
+                    isBookmarked={userBookmarks.includes(course.id)}
+                    onBookmarkToggle={handleBookmarkToggle}
+                    isEnrolled={userEnrollments.includes(course.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -858,22 +1138,7 @@ export default function App() {
           );
         })()}
 
-        {currentTab === "portal" && (
-          <StudentPortal
-            user={user}
-            userRole={userRole}
-            handleLogin={handleLogin}
-            courses={COURSES}
-            userEnrollments={userEnrollments}
-            userBookmarks={userBookmarks}
-            userProgress={userProgress}
-            profileDetails={profileDetails}
-            onToggleBookmark={handleBookmarkToggle}
-            onUpdateProgress={handleUpdateProgress}
-            onUpdateProfile={handleUpdateProfile}
-            onExploreCourse={(course) => setCurrentTab("course-" + course.id)}
-          />
-        )}
+        {/* Student Portal component has been deprecated and removed */}
 
         {currentTab === "analytics" && (
           userRole === "admin" ? (
@@ -911,9 +1176,18 @@ export default function App() {
           
           {/* Logo Brand column */}
           <div className="space-y-4">
-            <h4 className="font-serif text-xl tracking-[0.2em] font-bold text-white uppercase">
-              Qalbiya
-            </h4>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full overflow-hidden flex items-center justify-center border border-white/20">
+                <img 
+                  src={logo} 
+                  alt="Qalbiya Logo" 
+                  className="w-8 h-8 object-contain brightness-0 invert" 
+                />
+              </div>
+              <h4 className="font-serif text-xl tracking-[0.2em] font-bold text-white uppercase">
+                Qalbiya
+              </h4>
+            </div>
             <p className="font-sans text-xs text-[#FAF4F2]/70 font-light leading-relaxed max-w-xs">
               A premium, traditional cohort learning institute for modern families. Restoring true 
               intellectual focus and faith foundations.

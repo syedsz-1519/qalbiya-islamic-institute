@@ -10,7 +10,7 @@
 
 @layer base {
   body {
-    background-color: #FAF4F2; /* Premium Warm Rose-Cream background */
+    background-color: #FCEDE9; /* Premium Soft Rosy Pink-Cream background */
     color: #111B11; /* Maximum contrast Ultra-Deep Forest Green */
     font-family: var(--font-serif);
     text-rendering: optimizeLegibility;
@@ -91,5 +91,134 @@
 .animate-fade-in {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Dynamic High-Contrast Evening Night Study Mode */
+.dark body {
+  background-color: #0B0E0A !important;
+  color: #ECE5D8 !important;
+}
+
+/* Ensure global elements are readable and dark styled */
+.dark p, .dark span, .dark li, .dark label, .dark button:not(.bg-\[\#D4AF37\]):not(.bg-\[\#E0A395\]), .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ECE5D8;
+}
+
+.dark input, .dark textarea, .dark select {
+  background-color: #121812 !important;
+  color: #FAF4F2 !important;
+  border-color: #2E402D !important;
+}
+
+/* Specific background and border adaptation utilities */
+.dark .bg-\[\#FAF4F2\], .dark .bg-white, .dark .bg-[#FAF4F2], .dark .bg-white\/95 {
+  background-color: #0B0E0A !important;
+}
+
+.dark .bg-\[\#FBF8F1\], .dark .bg-[#FBF8F1] {
+  background-color: #111610 !important;
+}
+
+.dark .bg-\[\#EDE3CE\]\/30, .dark .bg-\[\#EDE3CE\]\/20, .dark .bg-[#EDE3CE]/20, .dark .bg-[#EDE3CE]/10 {
+  background-color: rgba(46, 64, 45, 0.35) !important;
+}
+
+.dark .border-\[\#DDD5C3\], .dark .border-[#DDD5C3], .dark .border-[#DDD5C3]/40, .dark .border-[#DDD5C3]/30, .dark .border-[#DDD5C3]/60 {
+  border-color: #243524 !important;
+}
+
+/* Stitched line decor for darker reading theme */
+.dark .stitched-line {
+  background-image: repeating-linear-gradient(to bottom, #425D41 0 6px, transparent 6px 14px) !important;
+}
+
+.dark .stitched-line-horizontal {
+  background-image: repeating-linear-gradient(to right, #425D41 0 6px, transparent 6px 14px) !important;
+}
+
+.dark .text-\[\#22301F\], .dark .text-[#22301F] {
+  color: #FAF4F2 !important;
+}
+
+.dark .text-\[\#5B5648\], .dark .text-[#5B5648] {
+  color: #ABB9AB !important;
+}
+
+.dark .text-\[\#8CA394\], .dark .text-[#8CA394] {
+  color: #7E9C7E !important;
+}
+
+/* Re-adjust glow motifs for low light evening reading */
+.dark .motif-glow {
+  background: radial-gradient(circle at center, #1E2D1D 0%, rgba(11,14,10,0) 70%) !important;
+}
+
+.dark svg {
+  stroke-opacity: 0.6;
+}
+
+.dark svg.text-\[\#B98072\], .dark svg.text-[#B98072] {
+  color: #E0A395 !important;
+}
+
+.dark svg.text-\[\#8CA394\], .dark svg.text-[#8CA394] {
+  color: #7E9C7E !important;
+}
+
+/* Elegant Soft Pink & Rose-Gold Animated Background Elements */
+@keyframes float-orb-one {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(40px, -60px) scale(1.15); }
+  66% { transform: translate(-30px, 30px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes float-orb-two {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-60px, 50px) scale(1.25); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes rise-particles {
+  0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.6; }
+  100% { transform: translateY(-10vh) scale(1.3); opacity: 0; }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}
+
+.animate-float-orb-one {
+  animation: float-orb-one 22s ease-in-out infinite;
+}
+
+.animate-float-orb-two {
+  animation: float-orb-two 28s ease-in-out infinite;
+}
+
+.animate-rise-particle-1 {
+  animation: rise-particles 14s linear infinite;
+}
+
+.animate-rise-particle-2 {
+  animation: rise-particles 19s linear infinite;
+  animation-delay: 3s;
+}
+
+.animate-rise-particle-3 {
+  animation: rise-particles 16s linear infinite;
+  animation-delay: 6s;
+}
+
+.animate-sparkle-pulse-fast {
+  animation: sparkle-pulse 3.5s ease-in-out infinite;
+}
+
+.animate-sparkle-pulse-slow {
+  animation: sparkle-pulse 6.5s ease-in-out infinite;
+}
+
 
 

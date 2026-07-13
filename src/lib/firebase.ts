@@ -690,6 +690,13 @@ export async function getFAQs(): Promise<any[]> {
       category: "Graduation",
       order: 6,
       createdAt: new Date().toISOString()
+    },
+    {
+      question: "How are the dynamic semester achievements generated?",
+      answer: "Our system utilizes the advanced Gemini 3.5 Flash model with live Google Search Grounding. This integration performs real-time research to construct a highly accurate, customized set of spiritual and academic milestones specific to each course's curriculum.",
+      category: "Schedule & Format",
+      order: 7,
+      createdAt: new Date().toISOString()
     }
   ];
 
@@ -722,6 +729,19 @@ export async function getFAQs(): Promise<any[]> {
           return defaultFAQs.map((faq, index) => ({ id: `default-${index}`, ...faq }));
         }
       }
+    }
+
+    // Ensure our new FAQ item is always present even if the DB was already seeded with old 6 FAQs
+    const hasNewFAQ = faqsList.some(f => f.question.includes("dynamic semester achievements") || f.question.includes("achievements generated"));
+    if (!hasNewFAQ) {
+      faqsList.push({
+        id: "default-new-ai-faq",
+        question: "How are the dynamic semester achievements generated?",
+        answer: "Our system utilizes the advanced Gemini 3.5 Flash model with live Google Search Grounding. This integration performs real-time research to construct a highly accurate, customized set of spiritual and academic milestones specific to each course's curriculum.",
+        category: "Schedule & Format",
+        order: 7,
+        createdAt: new Date().toISOString()
+      });
     }
 
     return faqsList.sort((a, b) => (a.order || 0) - (b.order || 0));

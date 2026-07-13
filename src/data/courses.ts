@@ -3,7 +3,7 @@ import { Course } from '../types';
 export const COURSES: Course[] = [
   {
     id: 'pre-diploma-deeniyat',
-    title: 'Pre-Diploma in Deeniyat',
+    title: 'Women Course Hub',
     category: 'women',
     flagship: true,
     duration: '1 Year',
@@ -109,7 +109,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 'juniors-deeniyat-mastercourse',
-    title: 'Juniors Deeniyat Mastercourse',
+    title: 'Kids Course Hub',
     category: 'kids',
     flagship: true,
     duration: '1 Year (Ages 7-12)',

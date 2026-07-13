@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { BookOpen, Award, CheckCircle2, AlertCircle, Volume2, Mic, Play, Square, RefreshCw, Sparkles, HelpCircle } from "lucide-react";
+import { BookOpen, Award, CheckCircle2, AlertCircle, Volume2, VolumeX, Mic, Play, Square, RefreshCw, RotateCcw, Sparkles, HelpCircle, Check } from "lucide-react";
 
 interface Question {
   id: number;
@@ -133,6 +133,49 @@ const TAJWEED_RULES = [
   }
 ];
 
+export const DHIKR_ITEMS = [
+  {
+    id: "subhanallah",
+    arabic: "سُبْحَانَ ٱللَّهِ",
+    transliteration: "Subhan'Allah",
+    translation: "Glory be to Allah",
+    meaning: "Declaring Allah's absolute perfection, free from any defects or deficiencies.",
+    reward: "Prophetic tradition tells us that saying Subhan'Allah 100 times yields 1,000 rewards or wipes away 1,000 sins."
+  },
+  {
+    id: "alhamdulillah",
+    arabic: "ٱلْحَمْدُ لِلَّهِ",
+    transliteration: "Alhamdulillah",
+    translation: "Praise be to Allah",
+    meaning: "Expressing deep gratitude, acknowledging that all blessings flow from His grace.",
+    reward: "Alhamdulillah fills the scale of good deeds, serving as a primary spiritual weight on the Day of Judgment."
+  },
+  {
+    id: "allahuakbar",
+    arabic: "ٱللَّهُ أَكْبَرُ",
+    transliteration: "Allahu Akbar",
+    translation: "Allah is the Greatest",
+    meaning: "Affirming that Allah transcends all worries, fears, and worldly structures.",
+    reward: "Reciting this alongside Subhan'Allah and Alhamdulillah is a recommended Sunnah after every obligatory prayer."
+  },
+  {
+    id: "astaghfirullah",
+    arabic: "أَسْتَغْفِرُ ٱللَّهَ",
+    transliteration: "Astaghfirullah",
+    translation: "I seek Allah's forgiveness",
+    meaning: "Humbling oneself before Allah, pleading for concealment and forgiveness of shortfalls.",
+    reward: "Sincere seeking of forgiveness opens the doors of mercy, provisions, and spiritual tranquility."
+  },
+  {
+    id: "lailahaillallah",
+    arabic: "لَا إِلَٰهَ إِلَّا ٱللَّهُ",
+    transliteration: "La ilaha illallah",
+    translation: "There is no god but Allah",
+    meaning: "The absolute statement of monotheism (Tawheed), the key to paradise.",
+    reward: "The Prophet ﷺ said: 'The best remembrance is La ilaha illallah.' It is the ultimate foundation of faith."
+  }
+];
+
 export function LearnResources({ showHeader = true }: { showHeader?: boolean } = {}) {
   // Quiz states
   const [quizCategory, setQuizCategory] = useState<string | null>(null);
@@ -151,6 +194,104 @@ export function LearnResources({ showHeader = true }: { showHeader?: boolean } =
   const [recordingSuccess, setRecordingSuccess] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
+
+  // Dhikr states
+  const [selectedDhikrIndex, setSelectedDhikrIndex] = useState(0);
+  const [dhikrCounts, setDhikrCounts] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem("qalbiya_dhikr_counts");
+      return saved ? JSON.parse(saved) : { subhanallah: 0, alhamdulillah: 0, allahuakbar: 0, astaghfirullah: 0, lailahaillallah: 0 };
+    } catch {
+      return { subhanallah: 0, alhamdulillah: 0, allahuakbar: 0, astaghfirullah: 0, lailahaillallah: 0 };
+    }
+  });
+  const [goalType, setGoalType] = useState<number>(33); // Goal: 33, 99, 100, 0
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Persist counts
+  useEffect(() => {
+    try {
+      localStorage.setItem("qalbiya_dhikr_counts", JSON.stringify(dhikrCounts));
+    } catch (e) {
+      console.warn("Could not save counts", e);
+    }
+  }, [dhikrCounts]);
+
+  const playClickSound = () => {
+    if (!soundEnabled) return;
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.05);
+      
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.055);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.06);
+    } catch (e) {
+      console.warn("AudioContext clicked error", e);
+    }
+  };
+
+  const playChimeSound = () => {
+    if (!soundEnabled) return;
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      const freqs = [523.25, 659.25, 783.99, 1046.50];
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+        
+        gain.gain.setValueAtTime(0.0, ctx.currentTime + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + idx * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.7);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(ctx.currentTime + idx * 0.08);
+        osc.stop(ctx.currentTime + idx * 0.08 + 0.8);
+      });
+    } catch (e) {
+      console.warn("Chime synthesising failed", e);
+    }
+  };
+
+  const handleIncrementDhikr = () => {
+    const currentDhikr = DHIKR_ITEMS[selectedDhikrIndex];
+    const prevCount = dhikrCounts[currentDhikr.id] || 0;
+    const newCount = prevCount + 1;
+    
+    setDhikrCounts(prev => ({
+      ...prev,
+      [currentDhikr.id]: newCount
+    }));
+
+    playClickSound();
+
+    if (goalType > 0 && newCount === goalType) {
+      setTimeout(() => {
+        playChimeSound();
+      }, 100);
+    }
+  };
 
   // Play synthesized tone to simulate beautiful tajweed recitation sound
   const playTajweedTone = (id: string, pitch: number, duration: number) => {
@@ -686,6 +827,233 @@ export function LearnResources({ showHeader = true }: { showHeader?: boolean } =
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Spiritual Tasbih & Dhikr Sanctuary */}
+            <div className="lg:col-span-12 border-t border-[#DDD5C3]/40 pt-10 mt-6 space-y-8 text-left">
+              <div className="space-y-2 text-center max-w-xl mx-auto">
+                <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+                  Continuous Remembrance
+                </span>
+                <h3 className="font-serif text-2xl font-bold text-[#22301F] tracking-tight">
+                  Spiritual Tasbih & Dhikr Sanctuary
+                </h3>
+                <p className="text-xs text-[#5B5648] font-light leading-relaxed">
+                  Establish consistency in your daily remembrance. Tap the counter bead to increment your selected Dhikr, select daily targets, and listen to tactile click feedback.
+                </p>
+                <div className="w-8 h-[1px] bg-[#B98072] mx-auto mt-2" />
+              </div>
+
+              {/* Main Interactive Tasbih Panel */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+                
+                {/* Left side: Dhikr Selection List (5 cols) */}
+                <div className="md:col-span-5 space-y-3.5">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#5B5648] font-bold block">
+                    Remembrances (Dhikr)
+                  </span>
+                  
+                  <div className="space-y-2.5">
+                    {DHIKR_ITEMS.map((item, idx) => {
+                      const isSelected = selectedDhikrIndex === idx;
+                      const count = dhikrCounts[item.id] || 0;
+                      
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => { setSelectedDhikrIndex(idx); playClickSound(); }}
+                          className={`w-full p-4 rounded-2xl border text-left transition-all duration-300 flex items-center justify-between cursor-pointer ${
+                            isSelected 
+                              ? "bg-white border-[#B98072] shadow-sm ring-1 ring-[#B98072]/20" 
+                              : "bg-[#FAF9F6]/60 border-[#DDD5C3]/60 hover:bg-white hover:border-[#DDD5C3]"
+                          }`}
+                        >
+                          <div className="space-y-1 pr-3 flex-grow">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-serif text-sm font-bold text-[#22301F]">{item.transliteration}</span>
+                              <span className="text-[10px] text-gray-400 font-light">• {item.translation}</span>
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-light leading-relaxed line-clamp-1">
+                              {item.meaning}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-right font-serif text-[10px] text-[#8CA394] block font-semibold dir-rtl">
+                              {item.arabic}
+                            </span>
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
+                              isSelected ? "bg-[#B98072] text-white" : "bg-[#DDD5C3]/30 text-[#5B5648]"
+                            }`}>
+                              {count}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right side: Tactile Counter Bead (7 cols) */}
+                <div className="md:col-span-7 bg-white border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between space-y-6 relative overflow-hidden">
+                  
+                  {/* Status row */}
+                  <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold uppercase tracking-wider text-gray-500">
+                        Active: {DHIKR_ITEMS[selectedDhikrIndex].transliteration}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {/* Audio toggle */}
+                      <button
+                        type="button"
+                        onClick={() => setSoundEnabled(!soundEnabled)}
+                        className="flex items-center gap-1.5 hover:text-[#B98072] transition-colors cursor-pointer font-bold"
+                        title={soundEnabled ? "Mute audio feedback" : "Enable audio feedback"}
+                      >
+                        {soundEnabled ? (
+                          <>
+                            <Volume2 className="w-3.5 h-3.5" />
+                            <span>SOUND ON</span>
+                          </>
+                        ) : (
+                          <>
+                            <VolumeX className="w-3.5 h-3.5 text-gray-300" />
+                            <span>MUTED</span>
+                          </>
+                        )}
+                      </button>
+
+                      <span className="text-gray-300">|</span>
+
+                      {/* Goal selection */}
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <span className="text-gray-400">GOAL:</span>
+                        {[33, 99, 100].map((preset) => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => { setGoalType(preset); playClickSound(); }}
+                            className={`px-1.5 py-0.5 rounded transition-colors font-bold ${
+                              goalType === preset 
+                                ? "bg-[#B98072] text-white" 
+                                : "hover:text-[#B98072] text-gray-400"
+                            }`}
+                          >
+                            {preset}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => { setGoalType(0); playClickSound(); }}
+                          className={`px-1.5 py-0.5 rounded transition-colors font-bold ${
+                            goalType === 0 
+                              ? "bg-[#B98072] text-white" 
+                              : "hover:text-[#B98072] text-gray-400"
+                          }`}
+                        >
+                          FREE
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Big Counter Core */}
+                  <div className="flex flex-col items-center justify-center space-y-4 py-4">
+                    {/* Digital screen */}
+                    <div className="relative group">
+                      {/* Glow when goal reached */}
+                      {goalType > 0 && (dhikrCounts[DHIKR_ITEMS[selectedDhikrIndex].id] || 0) >= goalType && (
+                        <div className="absolute inset-0 bg-[#8CA394]/20 blur-xl rounded-full scale-110 animate-pulse" />
+                      )}
+                      
+                      <div className="w-48 h-20 bg-[#22301F] border-2 border-[#DDD5C3] rounded-3xl flex items-center justify-center relative overflow-hidden shadow-inner">
+                        <div className="absolute top-1 left-2 text-[8px] font-mono text-[#8CA394]/60 uppercase tracking-widest font-bold">
+                          Digital Counter
+                        </div>
+                        {goalType > 0 && (
+                          <div className="absolute top-1 right-2 text-[8px] font-mono text-amber-500/80 uppercase tracking-widest font-bold">
+                            Goal: {goalType}
+                          </div>
+                        )}
+                        <span className="font-mono text-4xl font-semibold text-[#F1E7D3] tracking-widest animate-fade-in">
+                          {String(dhikrCounts[DHIKR_ITEMS[selectedDhikrIndex].id] || 0).padStart(4, "0")}
+                        </span>
+                        
+                        {/* Perfect match indicator */}
+                        {goalType > 0 && (dhikrCounts[DHIKR_ITEMS[selectedDhikrIndex].id] || 0) >= goalType && (
+                          <div className="absolute inset-x-0 bottom-0 bg-[#8CA394]/30 text-[8px] font-mono text-center text-white font-bold py-0.5 uppercase tracking-wider">
+                            ✨ Target Achieved! ✨
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Central Tap Button */}
+                    <button
+                      type="button"
+                      onClick={handleIncrementDhikr}
+                      className="w-28 h-28 rounded-full bg-gradient-to-br from-[#FAF4F2] to-[#DDD5C3] border-4 border-[#22301F]/80 hover:border-[#B98072] text-[#22301F] hover:text-[#B98072] shadow-md flex flex-col items-center justify-center gap-1 cursor-pointer transition-all active:scale-95 group focus:outline-none focus:ring-2 focus:ring-[#B98072]/40 relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="font-mono text-[9px] uppercase tracking-widest font-bold text-gray-500 group-hover:text-[#B98072] transition-colors mt-1">
+                        TAP BEAD
+                      </span>
+                      <span className="font-serif text-2xl font-bold transition-transform group-active:scale-90">
+                        +1
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Description & Action row */}
+                  <div className="border-t border-[#DDD5C3]/40 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
+                    <div className="space-y-0.5 pr-2">
+                      <p className="text-[11px] text-[#22301F] font-serif font-bold italic leading-relaxed">
+                        &ldquo;{DHIKR_ITEMS[selectedDhikrIndex].reward}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="flex gap-2 shrink-0 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Reset count for ${DHIKR_ITEMS[selectedDhikrIndex].transliteration}?`)) {
+                            setDhikrCounts(prev => ({
+                              ...prev,
+                              [DHIKR_ITEMS[selectedDhikrIndex].id]: 0
+                            }));
+                            playClickSound();
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#DDD5C3]/80 hover:border-red-300 text-gray-400 hover:text-red-600 rounded-xl text-[10px] font-mono font-semibold transition-colors cursor-pointer"
+                        title="Reset current count"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>RESET</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm("Are you sure you want to reset ALL your Dhikr counters?")) {
+                            setDhikrCounts({ subhanallah: 0, alhamdulillah: 0, allahuakbar: 0, astaghfirullah: 0, lailahaillallah: 0 });
+                            playClickSound();
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#DDD5C3]/80 hover:border-red-400 text-gray-400 hover:text-red-700 rounded-xl text-[10px] font-mono font-semibold transition-colors cursor-pointer"
+                        title="Reset all counters"
+                      >
+                        <span>RESET ALL</span>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
             </div>
 
             <div className="pt-6 border-t border-[#DDD5C3]/40 flex items-center justify-center gap-2 text-center text-[10px] text-gray-400">

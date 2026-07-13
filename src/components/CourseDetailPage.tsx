@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Course } from "../types";
 import { User } from "firebase/auth";
-import { ArrowLeft, Clock, Calendar, User as UserIcon, BookOpen, CheckCircle, ShieldAlert, FileCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, User as UserIcon, BookOpen, CheckCircle, ShieldAlert, FileCheck, Sparkles, RefreshCw, Award, Globe } from "lucide-react";
+import { motion } from "motion/react";
 
 interface CourseDetailPageProps {
   course: Course;
@@ -27,6 +28,72 @@ export function CourseDetailPage({
   const [enrollError, setEnrollError] = useState("");
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
+  // Dynamic Key Learnings States
+  const [learnings, setLearnings] = useState<string[]>([]);
+  const [spiritualOutcome, setSpiritualOutcome] = useState<string>("");
+  const [sources, setSources] = useState<{ title: string; uri: string }[]>([]);
+  const [isLoadingLearnings, setIsLoadingLearnings] = useState(false);
+  const [learningsError, setLearningsError] = useState("");
+
+  const fetchKeyLearnings = async (forceRefresh = false) => {
+    const cacheKey = `qalbiya-key-learnings-${course.id}`;
+    if (!forceRefresh) {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed.learnings && parsed.learnings.length > 0) {
+            setLearnings(parsed.learnings);
+            setSpiritualOutcome(parsed.spiritualOutcome || "");
+            setSources(parsed.sources || []);
+            return;
+          }
+        } catch (e) {
+          console.error("Failed to parse cached learnings", e);
+        }
+      }
+    }
+
+    setIsLoadingLearnings(true);
+    setLearningsError("");
+    try {
+      const res = await fetch("/api/key-learnings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseId: course.id,
+          courseTitle: course.title,
+          description: course.description,
+          instructor: course.instructor
+        })
+      });
+
+      if (!res.ok) throw new Error("Failed to load Dynamic Key Learnings");
+      const data = await res.json();
+      if (data.success) {
+        setLearnings(data.learnings);
+        setSpiritualOutcome(data.spiritualOutcome);
+        setSources(data.sources || []);
+        localStorage.setItem(cacheKey, JSON.stringify({
+          learnings: data.learnings,
+          spiritualOutcome: data.spiritualOutcome,
+          sources: data.sources || []
+        }));
+      } else {
+        throw new Error(data.error || "Failed to load summary");
+      }
+    } catch (err: any) {
+      console.error("Error fetching key learnings:", err);
+      setLearningsError("Unable to dynamically load semester achievements.");
+    } finally {
+      setIsLoadingLearnings(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchKeyLearnings();
+  }, [course.id]);
+
   const handleEnroll = async () => {
     if (!user) {
       handleLogin();
@@ -42,6 +109,26 @@ export function CourseDetailPage({
     try {
       const acceptedAt = new Date().toISOString();
       await onEnrollSuccess(course.id, acceptedAt);
+      
+      const studentName = user?.displayName || user?.email?.split('@')[0] || "Sincere Student";
+      const studentEmail = user?.email || "";
+      
+      const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ustadha Syed Mustara.
+
+I would like to enroll in the following course at Qalbiya Islamic Institute:
+📚 *Course:* ${course.title}
+⏳ *Duration:* ${course.duration}
+🗓️ *Schedule:* ${course.schedule}
+
+*My Details:*
+• *Name:* ${studentName}
+• *Email:* ${studentEmail}
+
+Please guide me with the next steps for cohort registration and onboarding. JazakAllahu Khairan!`;
+
+      const waUrl = `https://wa.me/918145363290?text=${encodeURIComponent(waMessage)}`;
+      window.open(waUrl, "_blank");
+
       setShowSuccessToast(true);
       setTimeout(() => {
         setShowSuccessToast(false);
@@ -133,6 +220,123 @@ export function CourseDetailPage({
             <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
               {course.longDescription}
             </p>
+          </div>
+
+          {/* Dynamic AI-Generated Key Learnings */}
+          <div className="bg-[#FCF6F2] border border-[#EADAC2] rounded-[24px] p-6 space-y-4 shadow-xs relative overflow-hidden">
+            {/* Elegant Background Stitching */}
+            <div className="absolute inset-0 border border-[#EADAC2]/30 m-1 rounded-[20px] pointer-events-none border-dashed"></div>
+
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-[#B0863A]/10 text-[#B0863A] rounded-lg">
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-xs sm:text-sm font-bold text-[#22301F] tracking-tight">
+                    Dynamic Semester Achievements
+                  </h3>
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#8A5A4D]">
+                    AI-Powered Key Learnings
+                  </p>
+                </div>
+              </div>
+              <button
+                id="btn-refresh-learnings"
+                onClick={() => fetchKeyLearnings(true)}
+                disabled={isLoadingLearnings}
+                title="Regenerate dynamic achievements"
+                className="p-1.5 rounded-lg border border-[#DDD5C3] hover:border-[#8A5A4D] text-[#5B5648] hover:text-[#8A5A4D] bg-white transition-all duration-200 cursor-pointer disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingLearnings ? "animate-spin text-[#B0863A]" : ""}`} />
+              </button>
+            </div>
+
+            {isLoadingLearnings ? (
+              <div className="space-y-3 py-2">
+                <div className="h-4 bg-[#22301F]/5 rounded-lg w-11/12 animate-pulse"></div>
+                <div className="h-4 bg-[#22301F]/5 rounded-lg w-full animate-pulse"></div>
+                <div className="h-4 bg-[#22301F]/5 rounded-lg w-10/12 animate-pulse"></div>
+                <div className="pt-2 border-t border-[#DDD5C3]/30">
+                  <div className="h-3 bg-[#22301F]/5 rounded-lg w-3/4 animate-pulse"></div>
+                </div>
+              </div>
+            ) : learningsError ? (
+              <div className="py-4 text-center space-y-2 relative z-10">
+                <p className="text-xs text-red-600 font-medium">{learningsError}</p>
+                <button
+                  id="btn-retry-learnings"
+                  onClick={() => fetchKeyLearnings(true)}
+                  className="px-3 py-1 bg-[#22301F] hover:bg-[#8A5A4D] text-white text-[10px] font-mono uppercase tracking-wider rounded-lg font-bold transition-colors cursor-pointer"
+                >
+                  Retry Generation
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4 relative z-10">
+                <ul className="space-y-3">
+                  {learnings.map((learning, idx) => (
+                    <motion.li
+                      key={idx}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.1 }}
+                      className="flex gap-3 items-start text-xs sm:text-sm text-[#33453A] font-light leading-relaxed"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-[#B0863A]/10 text-[#B0863A] border border-[#B0863A]/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <Award className="w-3 h-3" />
+                      </div>
+                      <span>{learning}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+
+                {spiritualOutcome && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3 }}
+                    className="pt-3 border-t border-[#EADAC2]/60 mt-3 text-center"
+                  >
+                    <p className="font-serif italic text-xs text-[#8A5A4D] leading-relaxed relative px-4 text-center">
+                      <span className="absolute -top-1 left-0 text-lg font-serif text-[#B0863A]/30">“</span>
+                      {spiritualOutcome}
+                      <span className="absolute -bottom-3 right-0 text-lg font-serif text-[#B0863A]/30">”</span>
+                    </p>
+                  </motion.div>
+                )}
+
+                {sources && sources.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
+                    className="pt-3 border-t border-[#EADAC2]/60 mt-3 relative z-20"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Globe className="w-3 h-3 text-[#B0863A]" />
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-[#8A5A4D] font-bold">
+                        Verified Grounded Research References
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {sources.map((src, sIdx) => (
+                        <a
+                          key={sIdx}
+                          href={src.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[10px] bg-white hover:bg-[#B0863A]/5 text-[#22301F] hover:text-[#B0863A] border border-[#DDD5C3] hover:border-[#B0863A] px-2.5 py-1 rounded-xl transition-all duration-200 shadow-3xs"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                          <span className="max-w-[180px] truncate font-medium">{src.title}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Academic Outline */}

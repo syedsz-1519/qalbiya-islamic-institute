@@ -2,6 +2,16 @@ import React from "react";
 import { Course } from "../types";
 import { X, Check, ArrowUpRight, Clipboard, Calendar, Clock, BookOpen, Share2, Copy } from "lucide-react";
 
+/**
+ * Generates a themed QR Code image URL for a specific course page.
+ * Uses the secure, reliable qrserver API with Qalbiya brand colors.
+ */
+export function generateCourseQRCodeUrl(courseId: string): string {
+  const courseUrl = `https://qalbiya-islamic-institute.vercel.app/?course=${courseId}`;
+  // Deep forest green: #22301F (color=22301f), Cream: #FAF4F2 (bgcolor=faf4f2)
+  return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=22301f&bgcolor=faf4f2&qzone=2&data=${encodeURIComponent(courseUrl)}`;
+}
+
 interface CourseDetailsModalProps {
   course: Course;
   formDetails: { formId: string; formUrl: string } | null;
@@ -38,9 +48,31 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
     if (!termsAccepted) return;
     const nowStr = new Date().toISOString();
     setShowTerms(false);
-    if (pendingActionType === "form" && formDetails) {
+    
+    const studentName = user?.displayName || user?.email?.split('@')[0] || "Sincere Student";
+    const studentEmail = user?.email || "";
+    
+    const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ustadha Syed Mustara.
+
+I would like to enroll in the following course at Qalbiya Islamic Institute:
+📚 *Course:* ${course.title}
+⏳ *Duration:* ${course.duration}
+🗓️ *Schedule:* ${course.schedule}
+
+*My Details:*
+• *Name:* ${studentName}
+• *Email:* ${studentEmail}
+
+Please guide me with the next steps for cohort registration and onboarding. JazakAllahu Khairan!`;
+
+    const waUrl = `https://wa.me/918145363290?text=${encodeURIComponent(waMessage)}`;
+    
+    if (pendingActionType === "direct") {
+      window.open(waUrl, "_blank");
+    } else if (pendingActionType === "form" && formDetails) {
       window.open(formDetails.formUrl, "_blank");
     }
+    
     onEnrollSuccess(course.id, nowStr);
     setPendingActionType(null);
     setTermsAccepted(false);
@@ -157,13 +189,6 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
                 <Check className="w-4 h-4 text-[#8CA394]" />
                 <span>Enrolled & Progress Active</span>
               </div>
-            ) : !user ? (
-              <button
-                onClick={handleLogin}
-                className="bg-[#22301F] hover:bg-[#33453A] text-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest btn-shadow transition-all cursor-pointer hover:scale-[1.02] shrink-0"
-              >
-                Sign In to Enroll
-              </button>
             ) : (
               <div className="flex gap-2 shrink-0">
                 {formDetails && (
@@ -189,66 +214,100 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
             )}
           </div>
 
-          {/* Share Section */}
-          <div className="border-t border-[#DDD5C3]/30 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="space-y-1 text-left">
-              <h5 className="font-serif font-bold text-[#22301F] text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <Share2 className="w-3.5 h-3.5 text-[#B98072]" />
-                <span>Spread the Word</span>
-              </h5>
-              <p className="text-[11px] text-[#5B5648] font-light max-w-md">
-                Encourage sisters, family, and friends to study with you. Shared learning builds community and beautiful memory logs.
-              </p>
+          {/* Share & Invite Center */}
+          <div className="border-t border-[#DDD5C3]/30 pt-6 space-y-5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="space-y-1 text-left">
+                <h5 className="font-serif font-bold text-[#22301F] text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <Share2 className="w-3.5 h-3.5 text-[#B98072]" />
+                  <span>Spread the Word</span>
+                </h5>
+                <p className="text-[11px] text-[#5B5648] font-light max-w-md">
+                  Encourage sisters, family, and friends to study with you. Shared learning builds community and beautiful memory logs.
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 w-full md:w-auto relative">
+                <button
+                  onClick={() => {
+                    const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
+                    setShareStatus("Shared via WhatsApp!");
+                    setTimeout(() => setShareStatus(null), 3000);
+                  }}
+                  className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                  title="Forward on WhatsApp"
+                >
+                  <span className="w-2 h-2 bg-[#25D366] rounded-full" />
+                  <span>WhatsApp</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at Qalbiya Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
+                    navigator.clipboard.writeText(shareText);
+                    setShareStatus("Instagram text copied!");
+                    setTimeout(() => setShareStatus(null), 3000);
+                  }}
+                  className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                  title="Instagram Caption Template"
+                >
+                  <span className="w-2 h-2 bg-[#E1306C] rounded-full" />
+                  <span>Instagram</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const link = `https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                    navigator.clipboard.writeText(link);
+                    setShareStatus("Course link copied!");
+                    setTimeout(() => setShareStatus(null), 3000);
+                  }}
+                  className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                  title="Copy Invite Link"
+                >
+                  <Copy className="w-3.5 h-3.5 text-[#8CA394]" />
+                  <span>Copy Link</span>
+                </button>
+
+                {shareStatus && (
+                  <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-[#22301F] text-white text-[10px] rounded-lg shadow-md z-30 font-semibold animate-bounce">
+                    {shareStatus}
+                  </div>
+                )}
+              </div>
             </div>
-            
-            <div className="flex flex-wrap gap-2 w-full md:w-auto relative">
-              <button
-                onClick={() => {
-                  const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
-                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
-                  setShareStatus("Shared via WhatsApp!");
-                  setTimeout(() => setShareStatus(null), 3000);
-                }}
-                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
-                title="Forward on WhatsApp"
-              >
-                <span className="w-2 h-2 bg-[#25D366] rounded-full" />
-                <span>WhatsApp</span>
-              </button>
 
-              <button
-                onClick={() => {
-                  const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at Qalbiya Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
-                  navigator.clipboard.writeText(shareText);
-                  setShareStatus("Instagram text copied!");
-                  setTimeout(() => setShareStatus(null), 3000);
-                }}
-                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
-                title="Instagram Caption Template"
-              >
-                <span className="w-2 h-2 bg-[#E1306C] rounded-full" />
-                <span>Instagram</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  const link = `https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
-                  navigator.clipboard.writeText(link);
-                  setShareStatus("Course link copied!");
-                  setTimeout(() => setShareStatus(null), 3000);
-                }}
-                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
-                title="Copy Invite Link"
-              >
-                <Copy className="w-3.5 h-3.5 text-[#8CA394]" />
-                <span>Copy Link</span>
-              </button>
-
-              {shareStatus && (
-                <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-[#22301F] text-white text-[10px] rounded-lg shadow-md z-30 font-semibold animate-bounce">
-                  {shareStatus}
+            {/* QR Code Scan Block */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-[#EDE3CE]/20 rounded-2xl border border-[#DDD5C3]/40">
+              <div className="bg-[#FAF4F2] p-2.5 rounded-xl border border-[#DDD5C3]/60 shadow-sm shrink-0">
+                <img
+                  src={generateCourseQRCodeUrl(course.id)}
+                  alt={`QR Code for ${course.title}`}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
+                  referrerPolicy="no-referrer"
+                  id={`course-qr-${course.id}`}
+                />
+              </div>
+              <div className="text-center sm:text-left space-y-1">
+                <h6 className="font-serif font-bold text-[#22301F] text-xs uppercase tracking-wider">
+                  Scan to Share Course
+                </h6>
+                <p className="text-[11px] text-[#5B5648] font-light max-w-md leading-relaxed">
+                  Hold up your mobile camera to instantly scan the QR code and view this course outline, or right-click to save and print this QR code for sisters circles.
+                </p>
+                <div className="pt-1">
+                  <a
+                    href={generateCourseQRCodeUrl(course.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-[#B98072] hover:text-[#8A5A4D] uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    <span>Open High-Res Printable QR</span>
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 

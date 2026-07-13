@@ -1,28 +1,21 @@
 import React, { useState } from "react";
-import { User } from "firebase/auth";
-import { LogOut, BookOpen, Compass, ClipboardList, ShieldAlert, Sparkles, Loader2, Menu, X, ChevronRight, User as UserIcon, MapPin, Mail, Phone, Instagram, MessageCircle } from "lucide-react";
+import { ClipboardList, Menu, X, ChevronRight, MapPin, Mail, Phone } from "lucide-react";
+import logo from "@/logo.png";
 
 interface HeaderProps {
   currentTab: string;
   setCurrentTab: (tab: string) => void;
-  user: User | null;
-  userRole: "admin" | "student";
-  handleLogin: () => void;
-  handleLogout: () => void;
-  isLoggingIn: boolean;
+  userRole?: "admin" | "student";
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentTab,
   setCurrentTab,
-  user,
-  userRole,
-  handleLogin,
-  handleLogout,
-  isLoggingIn,
+  userRole = "student",
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Removed "My Portal" from the navigation items
   const navItems = [
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
@@ -30,7 +23,6 @@ export const Header: React.FC<HeaderProps> = ({
     { id: "kids", label: "Kids" },
     { id: "resources", label: "Resources" },
     { id: "scholarship", label: "Scholarship" },
-    { id: "portal", label: "My Portal" },
   ];
 
   const handleTabClick = (tabId: string) => {
@@ -38,22 +30,42 @@ export const Header: React.FC<HeaderProps> = ({
     setIsMobileMenuOpen(false);
   };
 
+  const handleEnrollNow = () => {
+    setCurrentTab("home");
+    setIsMobileMenuOpen(false);
+    setTimeout(() => {
+      const el = document.getElementById("flagship-section");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 120);
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-[#FAF4F2]/95 backdrop-blur-md border-b border-[#DDD5C3] shadow-sm">
+    <header className="sticky top-0 z-50 backdrop-blur-md border-b shadow-sm transition-all duration-300 bg-[#FAF4F2]/95 border-[#DDD5C3]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
           {/* Logo / Editorial Brand */}
           <div 
             onClick={() => handleTabClick("home")}
-            className="flex flex-col cursor-pointer group shrink-0"
+            className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
-            <h1 className="font-serif text-2xl tracking-[0.18em] font-bold text-[#22301F] group-hover:text-[#33453A] transition-colors uppercase">
-              Qalbiya
-            </h1>
-            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#8CA394] group-hover:text-[#B0863A] transition-colors -mt-0.5">
-              Islamic Institute
-            </p>
+            <div className="relative w-12 h-12 bg-[#FAF4F2] rounded-full overflow-hidden border border-[#DDD5C3]/40 flex items-center justify-center shadow-sm">
+              <img 
+                src={logo} 
+                alt="Qalbiya Logo" 
+                className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="font-serif text-xl tracking-[0.15em] font-bold transition-colors uppercase text-[#22301F] group-hover:text-[#33453A]">
+                Qalbiya
+              </h1>
+              <p className="font-mono text-[8px] uppercase tracking-[0.25em] transition-colors -mt-0.5 text-[#8CA394] group-hover:text-[#B0863A]">
+                Islamic Institute
+              </p>
+            </div>
           </div>
 
           {/* Desktop Navigation links */}
@@ -78,8 +90,8 @@ export const Header: React.FC<HeaderProps> = ({
               );
             })}
 
-            {/* Display Organizers' Desk optionally if user is logged in and is an admin */}
-            {user && userRole === "admin" && (
+            {/* Display Organizers' Desk optionally if user is an admin */}
+            {userRole === "admin" && (
               <button
                 onClick={() => handleTabClick("analytics")}
                 className={`flex items-center gap-1.5 py-2 text-xs uppercase tracking-widest font-bold transition-colors duration-300 ${
@@ -90,54 +102,34 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <ClipboardList className="w-3.5 h-3.5" />
                 <span>Organizers' Desk</span>
-                <span className="px-1.5 py-0.5 bg-[#F1E2DC] text-[#8A5A4D] border border-[#DDD5C3]/40 rounded text-[8px] font-bold uppercase tracking-wider">
+                <span className="px-1.5 py-0.5 border rounded text-[8px] font-bold uppercase tracking-wider bg-[#F1E2DC] text-[#8A5A4D] border-[#DDD5C3]/40">
                   Admin
                 </span>
               </button>
             )}
           </nav>
 
-          {/* Desktop Action block */}
+          {/* Desktop Action block - Prominent "Enroll Now" Button */}
           <div className="hidden md:flex items-center gap-4">
-            {user && (
-              <div className="flex items-center gap-3">
-                <div className="hidden lg:flex flex-col items-end">
-                  <span className="text-xs font-bold text-[#22301F] leading-tight">
-                    {user.displayName}
-                  </span>
-                  <span className="text-[10px] font-mono text-[#8CA394] capitalize">
-                    {userRole} Member
-                  </span>
-                </div>
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt={user.displayName || "User"}
-                    referrerPolicy="no-referrer"
-                    className="w-9 h-9 rounded-full border border-[#DDD5C3] shadow-sm"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-sm text-[#22301F] border border-[#DDD5C3]">
-                    {user.displayName?.[0] || "U"}
-                  </div>
-                )}
-              </div>
-            )}
+            <button
+              onClick={handleEnrollNow}
+              className="px-5 py-2.5 bg-[#B98072] hover:bg-[#8A5A4D] text-white font-serif text-[11px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:scale-105 shadow-md active:scale-95 cursor-pointer"
+            >
+              Enroll Now
+            </button>
           </div>
 
-          {/* Hamburger Menu Toggle (Mobile) */}
+          {/* Hamburger Menu Toggle (Mobile) with miniature Enroll CTA */}
           <div className="flex md:hidden items-center gap-3">
-            {user && (
-              <div 
-                onClick={() => handleTabClick("portal")}
-                className="w-8 h-8 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-xs text-[#22301F] border border-[#DDD5C3] cursor-pointer"
-              >
-                {user.displayName?.[0] || "U"}
-              </div>
-            )}
+            <button
+              onClick={handleEnrollNow}
+              className="px-3.5 py-1.5 bg-[#B98072] hover:bg-[#8A5A4D] text-white font-serif text-[10px] font-bold uppercase tracking-wider rounded-full transition-all duration-300 shadow-sm cursor-pointer"
+            >
+              Enroll
+            </button>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-[#22301F] hover:bg-[#EDE3CE]/40 rounded-xl transition-all cursor-pointer"
+              className="p-2 rounded-xl transition-all cursor-pointer text-[#22301F] hover:bg-[#EDE3CE]/40"
               aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -159,33 +151,33 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile Slide-out Navigation Drawer Container */}
       {isMobileMenuOpen && (
         <div 
-          className="md:hidden fixed inset-0 w-full h-full bg-[#FAF4F2] shadow-2xl z-50 flex flex-col justify-between overflow-y-auto animate-slide-in-right"
+          className="md:hidden fixed inset-0 w-full h-full shadow-2xl z-50 flex flex-col justify-between overflow-y-auto animate-slide-in-right transition-colors duration-350 bg-[#FAF4F2]"
           id="mobile-nav-drawer"
         >
           {/* Drawer Header */}
-          <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FAF4F2]">
+          <div className="p-6 border-b flex justify-between items-center transition-colors border-[#DDD5C3]/60 bg-[#FAF4F2]">
             <div className="flex-grow text-center pl-8">
-              <h2 className="font-serif text-xl tracking-widest font-bold text-[#22301F] uppercase">
+              <h2 className="font-serif text-xl tracking-widest font-bold uppercase text-[#22301F]">
                 Qalbiya
               </h2>
-              <p className="text-[10px] font-mono tracking-widest uppercase text-[#8CA394] font-bold">
+              <p className="text-[10px] font-mono tracking-widest uppercase font-bold text-[#8CA394]">
                 Islamic Institute
               </p>
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 text-[#22301F] hover:bg-[#EDE3CE]/50 rounded-full transition-all cursor-pointer shrink-0"
+              className="p-2.5 rounded-full transition-all cursor-pointer shrink-0 text-[#22301F] hover:bg-[#EDE3CE]/50"
               aria-label="Close menu"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          {/* Drawer Main Navigation & Portal */}
+          {/* Drawer Main Navigation & CTA */}
           <div className="flex-grow flex flex-col justify-center px-6 py-8 space-y-8 max-w-md mx-auto w-full">
             
             <div className="text-center">
-              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] pb-2 border-b border-[#DDD5C3]/30 inline-block px-4 font-bold">
+              <p className="text-[10px] font-mono uppercase tracking-[0.2em] pb-2 border-b inline-block px-4 font-bold text-[#8CA394] border-[#DDD5C3]/30">
                 Menu Sections
               </p>
             </div>
@@ -200,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`w-full flex items-center justify-center py-4 px-6 rounded-2xl text-center text-sm uppercase tracking-wider font-extrabold transition-all border-2 ${
                       isActive 
                         ? "bg-[#22301F] text-white border-[#22301F] shadow-md" 
-                        : "text-[#22301F] hover:bg-[#EDE3CE]/45 border-transparent font-bold"
+                        : "text-[#22301F] hover:bg-[#EDE3CE]/45 border-transparent"
                     }`}
                   >
                     <span>{item.label}</span>
@@ -209,13 +201,13 @@ export const Header: React.FC<HeaderProps> = ({
               })}
 
               {/* Mobile Organizer Desk Link if Admin */}
-              {user && userRole === "admin" && (
+              {userRole === "admin" && (
                 <button
                   onClick={() => handleTabClick("analytics")}
                   className={`w-full flex items-center justify-center py-4 px-6 rounded-2xl text-center text-sm uppercase tracking-wider font-extrabold transition-all border-2 ${
                     currentTab === "analytics"
                       ? "bg-[#8A5A4D] text-white border-[#8A5A4D] shadow-md"
-                      : "text-[#8A5A4D] hover:bg-[#8A5A4D]/10 border-transparent font-bold"
+                      : "text-[#8A5A4D] hover:bg-[#8A5A4D]/10 border-transparent"
                   }`}
                 >
                   <ClipboardList className="w-4 h-4 mr-2 shrink-0" />
@@ -224,54 +216,25 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/* Account Block */}
-            <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4 w-full text-center">
-              {user && (
-                <div className="p-5 bg-[#EDE3CE]/30 rounded-3xl border border-[#DDD5C3]/40 space-y-4 shadow-sm flex flex-col items-center">
-                  <div className="flex flex-col items-center gap-2">
-                    {user.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt={user.displayName || "User"}
-                        referrerPolicy="no-referrer"
-                        className="w-12 h-12 rounded-full border border-[#DDD5C3] shadow-sm"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-base text-[#22301F] border border-[#DDD5C3] font-bold">
-                        {user.displayName?.[0] || "U"}
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <h4 className="text-sm font-bold text-[#22301F] leading-tight">
-                        {user.displayName}
-                      </h4>
-                      <p className="text-[10px] font-mono text-[#8CA394] capitalize">
-                        {userRole} Member Profile
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2 w-full">
-                    <button
-                      onClick={() => handleTabClick("portal")}
-                      className="w-full inline-flex justify-center items-center gap-2 py-3 px-4 bg-[#22301F] text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow-sm hover:bg-[#33453A] transition-colors"
-                    >
-                      <UserIcon className="w-4 h-4" />
-                      <span>Student Portal</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+            {/* Enroll CTA Block in Mobile Drawer */}
+            <div className="pt-6 border-t space-y-4 w-full text-center border-[#DDD5C3]/40">
+              <button
+                onClick={handleEnrollNow}
+                className="w-full inline-flex justify-center items-center gap-2 py-4 px-6 rounded-2xl text-sm uppercase tracking-wider font-extrabold transition-all bg-[#B98072] text-white hover:bg-[#8A5A4D] shadow-md cursor-pointer"
+              >
+                <span>Enroll in a Course</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
           </div>
 
           {/* Drawer Footer Links */}
-          <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FAF4F2]/40 space-y-4 text-xs w-full">
-            <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] text-center font-bold">
+          <div className="p-6 border-t space-y-4 text-xs w-full transition-colors border-[#DDD5C3]/60 bg-[#FAF4F2]/40">
+            <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-center font-bold text-[#8CA394]">
               Contact & Support
             </p>
-            <div className="flex flex-col items-center space-y-3 text-[#22301F] font-serif font-semibold text-center">
+            <div className="flex flex-col items-center space-y-3 font-serif font-semibold text-center text-[#22301F]">
               <div className="flex flex-col items-center gap-1">
                 <MapPin className="w-4 h-4 text-[#8CA394]" />
                 <span className="leading-tight text-[11px]">Kolkata, West Bengal, India</span>
@@ -289,7 +252,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
               </div>
             </div>
-            <div className="pt-2 border-t border-[#DDD5C3]/30 text-center text-[10px] font-mono text-[#8CA394] font-bold">
+            <div className="pt-2 border-t text-center text-[10px] font-mono font-bold border-[#DDD5C3]/30 text-[#8CA394]">
               © 2026 Qalbiya Islamic Institute
             </div>
           </div>

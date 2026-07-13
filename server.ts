@@ -365,6 +365,142 @@ Do not output any markdown code blocks (like \`\`\`json) outside the JSON. Retur
     }
   });
 
+  // 3.6. GENERATE KEY LEARNINGS DYNAMICALLY
+  app.post("/api/key-learnings", async (req, res) => {
+    try {
+      const { courseId, courseTitle, description, instructor } = req.body;
+      
+      if (!courseId || !courseTitle) {
+        res.status(400).json({ error: "Missing required fields (courseId, courseTitle)" });
+        return;
+      }
+
+      console.log(`[Gemini API] Generating Key Learnings for course: ${courseTitle}`);
+      
+      let ai;
+      try {
+        ai = getAI();
+      } catch (keyErr: any) {
+        console.warn("Gemini Client Init Warning (Using fallback mock learnings):", keyErr.message);
+        throw new Error("API_KEY_UNAVAILABLE");
+      }
+
+      const prompt = `
+You are the Academic Director of Qalbiya Islamic Institute. Based on the course details below, generate a beautiful, inspiring, and concise "Key Learnings Summary" containing exactly 3 active bullet points. Each bullet point should explain exactly what practical skills, spiritual insights, or academic milestones the student will achieve by the end of the semester.
+
+Please use your Google Search grounding tool to find accurate and up-to-date context, references, or general curriculum details related to this course if needed.
+
+Course Details:
+- Title: ${courseTitle}
+- Description: ${description || "No description provided."}
+- Instructor: ${instructor || "Qualified Certified Instructor"}
+
+Please structure the response as a JSON object with:
+{
+  "learnings": [
+    "First concrete, inspiring semester achievement starting with an active verb.",
+    "Second concrete, inspiring semester achievement starting with an active verb.",
+    "Third concrete, inspiring semester achievement starting with an active verb."
+  ],
+  "spiritualOutcome": "An inspiring 1-2 sentence closing statement about the deep heart-centric spiritual transformation or lasting benefit this course aims to instill by the end of the semester."
+}
+
+Do not output any markdown code blocks (like \`\`\`json) outside the JSON. Return strictly a raw valid JSON object.
+`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          tools: [{ googleSearch: {} }]
+        }
+      });
+
+      const responseText = response.text || "";
+      let parsed;
+      try {
+        parsed = JSON.parse(responseText.trim());
+      } catch (jsonErr) {
+        console.warn("Failed to parse direct JSON response from Gemini, cleaning markdown wrapper...", jsonErr);
+        const cleaned = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+        parsed = JSON.parse(cleaned);
+      }
+
+      // Extract Grounding Search Sources
+      const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const sources = chunks
+        .map((c: any) => ({
+          title: c.web?.title || c.web?.uri || "Google Search Verification Source",
+          uri: c.web?.uri || ""
+        }))
+        .filter((s: any) => s.uri !== "");
+
+      res.json({
+        success: true,
+        learnings: parsed.learnings || [],
+        spiritualOutcome: parsed.spiritualOutcome || "",
+        sources: sources
+      });
+    } catch (error: any) {
+      console.warn("Key learnings generation caught error:", error.message || error);
+      
+      // Beautiful fallback data so the client always gets a high-quality, professional experience
+      const fallbackLearnings: Record<string, { learnings: string[], spiritualOutcome: string }> = {
+        "tajweed-basics": {
+          learnings: [
+            "Master the correct pronunciation (Makharij) and characteristics of Arabic letters.",
+            "Apply fundamental Tajweed rules such as Noon Sakinah, Meem Sakinah, and Madd.",
+            "Recite selected Surahs of Juz 'Amma with beautiful flow and enhanced confidence."
+          ],
+          spiritualOutcome: "Reconnect with the Divine words on a deeper level, finding internal tranquility through systematic and soulful recitation."
+        },
+        "arabic-basics": {
+          learnings: [
+            "Acquire standard vocabulary of over 150 daily Quranic Arabic words.",
+            "Understand the basic syntax, noun declensions, and simple verb conjugations.",
+            "Translate simple Quranic verses independently to connect directly during prayer."
+          ],
+          spiritualOutcome: "Unlock a key portal to the Divine text, beginning a lifelong journey of direct understanding and elevated concentration."
+        },
+        "islamic-history": {
+          learnings: [
+            "Analyze key moments in early Islamic history and the lives of the noble Companions.",
+            "Extract timeless lessons of character, perseverance, and wisdom from classical events.",
+            "Understand the historical preservation and cultural expansion of our rich heritage."
+          ],
+          spiritualOutcome: "Situate your personal identity within a grand legacy of courage, knowledge, and spiritual devotion."
+        }
+      };
+
+      const titleKey = (req.body.courseTitle || "").toLowerCase();
+      let matched = fallbackLearnings["tajweed-basics"];
+      if (titleKey.includes("arabic")) {
+        matched = fallbackLearnings["arabic-basics"];
+      } else if (titleKey.includes("history") || titleKey.includes("seerah") || titleKey.includes("companion")) {
+        matched = fallbackLearnings["islamic-history"];
+      } else {
+        // Dynamic generic fallback based on course title
+        matched = {
+          learnings: [
+            `Develop a robust, structured foundation in ${req.body.courseTitle || 'your studies'} under expert guidance.`,
+            "Translate academic, textual knowledge into practical, everyday spiritual habits.",
+            "Participate in a supportive, cohort-based student environment designed for lifelong success."
+          ],
+          spiritualOutcome: `Attain closeness to Divine wisdom, aligning your mind and heart through sincere study and community connection.`
+        };
+      }
+
+      res.json({
+        success: true,
+        isFallback: true,
+        learnings: matched.learnings,
+        spiritualOutcome: matched.spiritualOutcome,
+        sources: []
+      });
+    }
+  });
+
   // 4. VITE MIDDLEWARE SETUP FOR DEV/PRODUCTION
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

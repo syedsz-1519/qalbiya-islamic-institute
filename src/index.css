@@ -10,7 +10,7 @@
 
 @layer base {
   body {
-    background-color: #FFDFE4; /* Richer Shaded Pink background */
+    background-color: #FAF4F2; /* Premium Warm Rose-Cream background */
     color: #111B11; /* Maximum contrast Ultra-Deep Forest Green */
     font-family: var(--font-serif);
     text-rendering: optimizeLegibility;
@@ -37,7 +37,7 @@
 }
 
 .motif-glow {
-  background: radial-gradient(circle at center, #DDD5C3 0%, rgba(255,223,228,0) 70%);
+  background: radial-gradient(circle at center, #DDD5C3 0%, rgba(250,244,242,0) 70%);
 }
 
 .btn-shadow {

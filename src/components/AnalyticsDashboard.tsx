@@ -1097,8 +1097,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               {/* Form Binding Controls */}
               {!formDetails ? (
                 /* No Form: Initializer Card */
-                <div className="border border-dashed border-[#DDD5C3] rounded-2xl p-8 text-center space-y-6 bg-[#FCF1F3]/50">
-                  <div className="w-12 h-12 bg-[#FCF1F3] border border-[#DDD5C3] rounded-full flex items-center justify-center mx-auto text-[#5B5648]">
+                <div className="border border-dashed border-[#DDD5C3] rounded-2xl p-8 text-center space-y-6 bg-[#FAF4F2]/50">
+                  <div className="w-12 h-12 bg-[#FAF4F2] border border-[#DDD5C3] rounded-full flex items-center justify-center mx-auto text-[#5B5648]">
                     <PlusCircle className="w-6 h-6 text-[#8CA394]" />
                   </div>
                   <div className="space-y-1 max-w-md mx-auto">
@@ -1132,7 +1132,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <div className="space-y-8">
                   
                   {/* Google Form Link Block */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FCF1F3] border border-[#DDD5C3] p-4 rounded-xl text-xs font-mono text-[#5B5648]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FAF4F2] border border-[#DDD5C3] p-4 rounded-xl text-xs font-mono text-[#5B5648]">
                     <div className="space-y-1 pr-4 border-b sm:border-b-0 sm:border-r border-[#DDD5C3] pb-2.5 sm:pb-0">
                       <span className="text-[10px] text-[#8CA394] uppercase tracking-widest font-bold block">
                         Google Form ID
@@ -1159,7 +1159,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
                   {/* Summary Metric Widgets */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-[#FCF1F3] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
+                    <div className="bg-[#FAF4F2] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
                       <div className="w-10 h-10 bg-[#F1E7D3] text-[#87652A] border border-[#DDD5C3] rounded-xl flex items-center justify-center shrink-0">
                         <Users className="w-5 h-5" />
                       </div>
@@ -1169,7 +1169,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#FCF1F3] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
+                    <div className="bg-[#FAF4F2] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
                       <div className="w-10 h-10 bg-[#8CA394]/15 text-[#33453A] border border-[#8CA394]/30 rounded-xl flex items-center justify-center shrink-0">
                         <CheckCircle2 className="w-5 h-5 text-[#8CA394]" />
                       </div>
@@ -1179,7 +1179,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#FCF1F3] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
+                    <div className="bg-[#FAF4F2] border border-[#DDD5C3]/70 p-5 rounded-2xl flex items-center gap-4">
                       <div className="w-10 h-10 bg-[#F1E2DC] text-[#8A5A4D] border border-[#DDD5C3] rounded-xl flex items-center justify-center shrink-0">
                         <Calendar className="w-5 h-5" />
                       </div>
@@ -1198,7 +1198,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                     </h4>
 
                     {responses.length === 0 ? (
-                      <div className="border border-[#DDD5C3] rounded-2xl p-8 text-center text-[#5B5648]/60 space-y-2 bg-[#FCF1F3]/50">
+                      <div className="border border-[#DDD5C3] rounded-2xl p-8 text-center text-[#5B5648]/60 space-y-2 bg-[#FAF4F2]/50">
                         <HelpCircle className="w-8 h-8 text-[#DDD5C3] mx-auto" />
                         <p className="text-xs font-light">No responses submitted to the Google Form yet.</p>
                         <p className="text-[10px] font-mono">Click "Sync Responses" above once students fill it out.</p>
@@ -1208,7 +1208,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                         {responses.map((resp, idx) => (
                           <div 
                             key={resp.responseId} 
-                            className="bg-[#FCF1F3] border border-[#DDD5C3]/60 rounded-2xl p-5 space-y-4 text-xs"
+                            className="bg-[#FAF4F2] border border-[#DDD5C3]/60 rounded-2xl p-5 space-y-4 text-xs"
                           >
                             <div className="flex justify-between items-center border-b border-[#DDD5C3]/40 pb-2">
                               <div className="flex items-center gap-2 text-[#22301F] font-bold">
@@ -1292,7 +1292,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <p className="text-xs text-[#5B5648]/60 font-mono">Retrieving review database...</p>
             </div>
           ) : testimonials.length === 0 ? (
-            <div className="border border-[#DDD5C3] border-dashed rounded-2xl p-12 text-center text-[#5B5648]/60 space-y-3 bg-[#FCF1F3]/50">
+            <div className="border border-[#DDD5C3] border-dashed rounded-2xl p-12 text-center text-[#5B5648]/60 space-y-3 bg-[#FAF4F2]/50">
               <MessageSquare className="w-10 h-10 text-[#DDD5C3] mx-auto" />
               <h4 className="font-serif font-bold text-sm text-[#22301F]">No Testimonials Yet</h4>
               <p className="text-xs font-light max-w-sm mx-auto">
@@ -1455,7 +1455,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               </div>
 
               {/* Advanced Search & Filtering Controls */}
-              <div className="flex flex-col md:flex-row gap-4 bg-[#FCF1F3]/40 border border-[#DDD5C3]/60 p-4 rounded-2xl text-xs">
+              <div className="flex flex-col md:flex-row gap-4 bg-[#FAF4F2]/40 border border-[#DDD5C3]/60 p-4 rounded-2xl text-xs">
                 
                 {/* Search input */}
                 <div className="relative flex-grow">
@@ -2108,7 +2108,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#FCF1F3', 
+                      backgroundColor: '#FAF4F2', 
                       borderColor: '#DDD5C3', 
                       borderRadius: '12px',
                       fontFamily: 'serif',
@@ -2453,10 +2453,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div 
             onClick={(e) => e.stopPropagation()} 
-            className="bg-[#FFDFE4] border border-[#DDD5C3] shadow-2xl rounded-3xl w-full max-w-xl overflow-hidden animate-fade-in flex flex-col justify-between"
+            className="bg-[#FAF4F2] border border-[#DDD5C3] shadow-2xl rounded-3xl w-full max-w-xl overflow-hidden animate-fade-in flex flex-col justify-between"
           >
             {/* Header */}
-            <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FFDFE4]">
+            <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FAF4F2]">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[#22301F]/10 text-[#22301F] rounded-lg">
                   <User className="w-5 h-5" />
@@ -2580,7 +2580,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </div>
 
             {/* Footer actions */}
-            <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FFDFE4]/40 flex flex-wrap gap-2 justify-end">
+            <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FAF4F2]/40 flex flex-wrap gap-2 justify-end">
               <a
                 href={`mailto:${selectedStudentForModal.email}?subject=Qalbiya%20Islamic%20Institute%20-%20Update%20regarding%20your%20enrollment%20in%20${encodeURIComponent(selectedStudentForModal.courseTitle)}`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 border border-[#DDD5C3] hover:border-[#22301F] text-[#22301F] hover:bg-[#EDE3CE]/30 font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"

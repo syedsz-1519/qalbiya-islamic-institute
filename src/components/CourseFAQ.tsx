@@ -190,11 +190,11 @@ export function CourseFAQ({ userRole, onGoToAnalytics }: CourseFAQProps) {
       {userRole === "admin" && onGoToAnalytics && (
         <div className="mt-10 bg-[#22301F] rounded-3xl p-5 border border-[#8CA394]/30 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
           <div className="space-y-1 text-center sm:text-left">
-            <h5 className="font-serif font-bold text-sm text-[#FCF1F3]/90 flex items-center gap-1.5 justify-center sm:justify-start">
+            <h5 className="font-serif font-bold text-sm text-[#FAF4F2]/90 flex items-center gap-1.5 justify-center sm:justify-start">
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span>Registrar's FAQ Control Desk</span>
             </h5>
-            <p className="text-[11px] text-[#FCF1F3]/70 font-light">
+            <p className="text-[11px] text-[#FAF4F2]/70 font-light">
               You are logged in as an Administrator. You can add new questions, modify categories, or delete items.
             </p>
           </div>

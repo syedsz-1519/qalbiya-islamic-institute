@@ -25,10 +25,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { id: "home", label: "Home" },
-    { id: "women", label: "Women Courses" },
-    { id: "kids", label: "Kids Courses" },
-    { id: "faqs", label: "Course FAQs" },
     { id: "about", label: "About" },
+    { id: "women", label: "Women" },
+    { id: "kids", label: "Kids" },
+    { id: "resources", label: "Resources" },
+    { id: "scholarship", label: "Scholarship" },
     { id: "portal", label: "My Portal" },
   ];
 
@@ -38,14 +39,14 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFDFE4]/95 backdrop-blur-md border-b border-[#DDD5C3] shadow-sm">
+    <header className="sticky top-0 z-50 bg-[#FAF4F2]/95 backdrop-blur-md border-b border-[#DDD5C3] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
           {/* Logo / Editorial Brand */}
           <div 
             onClick={() => handleTabClick("home")}
-            className="flex flex-col cursor-pointer group"
+            className="flex flex-col cursor-pointer group shrink-0"
           >
             <h1 className="font-serif text-2xl tracking-[0.18em] font-bold text-[#22301F] group-hover:text-[#33453A] transition-colors uppercase">
               Qalbiya
@@ -56,14 +57,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Desktop Navigation links */}
-          <nav className="hidden md:flex space-x-6 lg:space-x-8">
+          <nav className="hidden md:flex items-center space-x-1.5 lg:space-x-2 xl:space-x-5">
             {navItems.map((item) => {
-              const isActive = currentTab === item.id;
+              const isActive = currentTab === item.id || (item.id === "faqs" && currentTab === "faqs");
               return (
                 <button
                   key={item.id}
                   onClick={() => handleTabClick(item.id)}
-                  className={`relative py-2 text-xs uppercase tracking-widest font-semibold transition-colors duration-300 ${
+                  className={`relative py-1 px-1 lg:px-1.5 xl:px-2 text-[9px] lg:text-[10px] xl:text-[11px] uppercase tracking-wider xl:tracking-widest font-bold transition-colors duration-300 ${
                     isActive 
                       ? "text-[#22301F]" 
                       : "text-[#5B5648] hover:text-[#22301F]"
@@ -71,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   {item.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B98072]" />
+                    <span className="absolute bottom-[-10px] left-0 right-0 h-[2px] bg-[#B98072]" />
                   )}
                 </button>
               );
@@ -98,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Action block */}
           <div className="hidden md:flex items-center gap-4">
-            {user ? (
+            {user && (
               <div className="flex items-center gap-3">
                 <div className="hidden lg:flex flex-col items-end">
                   <span className="text-xs font-bold text-[#22301F] leading-tight">
@@ -120,58 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {user.displayName?.[0] || "U"}
                   </div>
                 )}
-                
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-[#5B5648] hover:text-[#22301F] hover:bg-[#EDE3CE]/40 rounded-full transition-all cursor-pointer"
-                  title="Sign Out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
               </div>
-            ) : isLoggingIn ? (
-              <button disabled className="flex items-center gap-2 px-4 py-2 border border-[#DDD5C3] rounded-full text-xs font-medium text-[#5B5648] bg-[#FCF1F3]">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8CA394]" />
-                <span>Signing in...</span>
-              </button>
-            ) : (
-              <button 
-                onClick={handleLogin}
-                className="gsi-material-button group cursor-pointer"
-                style={{
-                  WebkitUserSelect: "none",
-                  userSelect: "none",
-                  appearance: "none",
-                  backgroundColor: "#FBF8F1",
-                  borderColor: "#DDD5C3",
-                  borderStyle: "solid",
-                  borderWidth: "1px",
-                  borderRadius: "20px",
-                  boxSizing: "border-box",
-                  color: "#2B2A25",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "36px",
-                  padding: "0 16px",
-                  position: "relative",
-                  width: "auto",
-                  transition: "background-color .218s, border-color .218s, box-shadow .218s"
-                }}
-              >
-                <div className="gsi-material-button-icon flex items-center justify-center mr-2">
-                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: "block", width: "16px", height: "16px" }}>
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                    <path fill="none" d="M0 0h48v48H0z"></path>
-                  </svg>
-                </div>
-                <span className="gsi-material-button-contents font-sans text-xs font-semibold tracking-wide">
-                  Sign in with Google
-                </span>
-              </button>
             )}
           </div>
 
@@ -209,11 +159,11 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile Slide-out Navigation Drawer Container */}
       {isMobileMenuOpen && (
         <div 
-          className="md:hidden fixed inset-0 w-full h-full bg-[#FFDFE4] shadow-2xl z-50 flex flex-col justify-between overflow-y-auto animate-slide-in-right"
+          className="md:hidden fixed inset-0 w-full h-full bg-[#FAF4F2] shadow-2xl z-50 flex flex-col justify-between overflow-y-auto animate-slide-in-right"
           id="mobile-nav-drawer"
         >
           {/* Drawer Header */}
-          <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FFDFE4]">
+          <div className="p-6 border-b border-[#DDD5C3]/60 flex justify-between items-center bg-[#FAF4F2]">
             <div className="flex-grow text-center pl-8">
               <h2 className="font-serif text-xl tracking-widest font-bold text-[#22301F] uppercase">
                 Qalbiya
@@ -276,11 +226,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Account Block */}
             <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4 w-full text-center">
-              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold">
-                Portal Account Access
-              </p>
-              
-              {user ? (
+              {user && (
                 <div className="p-5 bg-[#EDE3CE]/30 rounded-3xl border border-[#DDD5C3]/40 space-y-4 shadow-sm flex flex-col items-center">
                   <div className="flex flex-col items-center gap-2">
                     {user.photoURL ? (
@@ -313,36 +259,15 @@ export const Header: React.FC<HeaderProps> = ({
                       <UserIcon className="w-4 h-4" />
                       <span>Student Portal</span>
                     </button>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full inline-flex justify-center items-center py-3 px-4 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors"
-                    >
-                      <LogOut className="w-4 h-4 mr-1.5" />
-                      <span>Sign Out</span>
-                    </button>
                   </div>
                 </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    handleLogin();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full inline-flex items-center justify-center gap-2.5 px-5 py-4 bg-[#22301F] hover:bg-[#33453A] text-white font-sans text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer font-bold"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-                  <span>Sign In or Register</span>
-                </button>
               )}
             </div>
 
           </div>
 
           {/* Drawer Footer Links */}
-          <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FFDFE4]/40 space-y-4 text-xs w-full">
+          <div className="p-6 border-t border-[#DDD5C3]/60 bg-[#FAF4F2]/40 space-y-4 text-xs w-full">
             <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] text-center font-bold">
               Contact & Support
             </p>

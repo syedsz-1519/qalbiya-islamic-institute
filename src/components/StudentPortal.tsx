@@ -91,6 +91,123 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     }
   }, [user, activeSubTab]);
 
+  // Daily Study Streak states
+  const [streakCount, setStreakCount] = useState<number>(0);
+  const [streakHistory, setStreakHistory] = useState<string[]>([]);
+
+  const updateDailyStreak = () => {
+    if (!user) return;
+    const storageKey = `qalbiya_streak_${user.uid}`;
+    const stored = localStorage.getItem(storageKey);
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yyyyYest = yesterday.getFullYear();
+    const mmYest = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const ddYest = String(yesterday.getDate()).padStart(2, "0");
+    const yesterdayStr = `${yyyyYest}-${mmYest}-${ddYest}`;
+
+    let count = 1;
+    let lastDate = todayStr;
+    let history: string[] = [todayStr];
+
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        count = parsed.streakCount || 1;
+        lastDate = parsed.lastActivityDate || "";
+        history = parsed.streakHistory || [];
+
+        if (lastDate === todayStr) {
+          // Already logged/active today, keep current count
+        } else if (lastDate === yesterdayStr) {
+          // Consecutive check-in!
+          count = count + 1;
+          lastDate = todayStr;
+          if (!history.includes(todayStr)) {
+            history = [...history, todayStr];
+          }
+        } else {
+          // Gap in active days, reset to 1
+          count = 1;
+          lastDate = todayStr;
+          if (!history.includes(todayStr)) {
+            history = [...history, todayStr];
+          }
+        }
+      } catch (e) {
+        console.error("Streak parse error, resetting", e);
+      }
+    }
+
+    setStreakCount(count);
+    setStreakHistory(history);
+
+    localStorage.setItem(storageKey, JSON.stringify({
+      streakCount: count,
+      lastActivityDate: lastDate,
+      streakHistory: history
+    }));
+  };
+
+  useEffect(() => {
+    if (user) {
+      updateDailyStreak();
+    }
+  }, [user, userProgress]);
+
+  const handleSimulateConsecutiveDay = () => {
+    if (!user) return;
+    const storageKey = `qalbiya_streak_${user.uid}`;
+    const newStreak = streakCount + 1;
+    setStreakCount(newStreak);
+
+    const fakeHistory = [...streakHistory];
+    const today = new Date();
+    today.setDate(today.getDate() + (newStreak - 1));
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const fakeDateStr = `${yyyy}-${mm}-${dd}`;
+
+    if (!fakeHistory.includes(fakeDateStr)) {
+      fakeHistory.push(fakeDateStr);
+    }
+    setStreakHistory(fakeHistory);
+
+    localStorage.setItem(storageKey, JSON.stringify({
+      streakCount: newStreak,
+      lastActivityDate: fakeDateStr,
+      streakHistory: fakeHistory
+    }));
+  };
+
+  const handleResetStreak = () => {
+    if (!user) return;
+    const storageKey = `qalbiya_streak_${user.uid}`;
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    setStreakCount(1);
+    setStreakHistory([todayStr]);
+
+    localStorage.setItem(storageKey, JSON.stringify({
+      streakCount: 1,
+      lastActivityDate: todayStr,
+      streakHistory: [todayStr]
+    }));
+  };
+
   // For showing printable certificate overlay
   const [certificateCourse, setCertificateCourse] = useState<Course | null>(null);
 
@@ -319,7 +436,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
       {/* Profile Strength & Rewards Banner */}
       <div 
         id="profile-strength-banner"
-        className="bg-[#FCF1F3]/60 border border-[#DDD5C3]/80 rounded-[24px] p-5 sm:p-6 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-xs"
+        className="bg-[#FAF4F2]/60 border border-[#DDD5C3]/80 rounded-[24px] p-5 sm:p-6 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-xs"
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
           <div className={`p-3 rounded-2xl shrink-0 transition-all duration-500 ${
@@ -489,6 +606,455 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               className="space-y-8"
               id="portal-progress-view"
             >
+              {/* Milestone Achievement Sanctuary */}
+              {(() => {
+                const totalTopics = enrolledCourses.reduce((sum, c) => sum + c.outline.length, 0);
+                const completedTopics = enrolledCourses.reduce((sum, c) => sum + (userProgress[c.id] || []).length, 0);
+                const overallPercent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+
+                const badges = [
+                  {
+                    id: "talib",
+                    title: "Aspirant of Knowledge (Tālib)",
+                    arabic: "طالب العلم",
+                    description: "Embark upon your academic sanctuary journey. Enrolled and started tracking syllabus milestones.",
+                    requirement: "Start any course (Progress > 0%)",
+                    isUnlocked: overallPercent > 0 || completedTopics > 0,
+                    progressNeeded: 1,
+                    currentProgress: overallPercent,
+                    color: "from-amber-600/10 via-orange-500/5 to-amber-900/10",
+                    border: "border-amber-600/30",
+                    textColor: "text-amber-800",
+                    accentColor: "#D97706",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        {/* 8-pointed Rub el Hizb Star backdrops */}
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-1000 group-hover:rotate-45" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <rect x="-26" y="-26" width="52" height="52" fill="currentColor" className="opacity-15" />
+                            <rect x="-26" y="-26" width="52" height="52" fill="currentColor" className="opacity-15" transform="rotate(45)" />
+                            <rect x="-24" y="-24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            <rect x="-24" y="-24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" transform="rotate(45)" />
+                            <circle cx="0" cy="0" r="14" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" />
+                          </g>
+                        </svg>
+                        <BookOpen className="w-5 h-5 absolute text-amber-700" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "tarbiyah",
+                    title: "Refinement of Character (Tarbiyah)",
+                    arabic: "تربية النفوس",
+                    description: "Nourish the soul and polish character. Completed at least 30% of overall course topics.",
+                    requirement: "Reach 30% Overall Progress",
+                    isUnlocked: overallPercent >= 30,
+                    progressNeeded: 30,
+                    currentProgress: overallPercent,
+                    color: "from-rose-700/10 via-orange-600/5 to-stone-900/10",
+                    border: "border-rose-600/30",
+                    textColor: "text-rose-800",
+                    accentColor: "#E11D48",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        {/* Archway mihrab design */}
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-500 group-hover:scale-105" style={{ color }}>
+                          <path d="M50,15 C25,15 25,50 25,85 L75,85 C75,50 75,15 50,15 Z" fill="currentColor" className="opacity-15" />
+                          <path d="M50,15 C25,15 25,50 25,85 L75,85 C75,50 75,15 50,15 Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          <path d="M50,22 C30,22 30,52 30,80 L70,80 C70,52 70,22 50,22 Z" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,2" />
+                        </svg>
+                        <Award className="w-5 h-5 absolute text-rose-700" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "suluk",
+                    title: "Path of Devotion (Suluk)",
+                    arabic: "سلوك السالك",
+                    description: "Walk the path of knowledge and devotion. Completed at least 60% of overall course topics.",
+                    requirement: "Reach 60% Overall Progress",
+                    isUnlocked: overallPercent >= 60,
+                    progressNeeded: 60,
+                    currentProgress: overallPercent,
+                    color: "from-emerald-700/10 via-teal-600/5 to-emerald-950/10",
+                    border: "border-emerald-600/30",
+                    textColor: "text-emerald-800",
+                    accentColor: "#059669",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        {/* Moroccan arabesque tile */}
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-1000 group-hover:rotate-90" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <circle cx="0" cy="0" r="30" fill="currentColor" className="opacity-15" />
+                            {[0, 30, 60, 90, 120, 150].map((deg) => (
+                              <rect key={deg} x="-20" y="-20" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1" transform={`rotate(${deg})`} />
+                            ))}
+                            <circle cx="0" cy="0" r="12" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          </g>
+                        </svg>
+                        <Sparkles className="w-5 h-5 absolute text-emerald-700" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "scholar",
+                    title: "Scholar of the Sanctuary (Alim)",
+                    arabic: "عالم رباني",
+                    description: "Complete an entire course syllabus or reach 90% overall academic progress.",
+                    requirement: "100% On Any Course or 90% Overall",
+                    isUnlocked: enrolledCourses.some(c => (userProgress[c.id] || []).length === c.outline.length) || (overallPercent >= 90 && totalTopics > 0),
+                    progressNeeded: 90,
+                    currentProgress: overallPercent,
+                    color: "from-[#B0863A]/10 via-[#D4AF37]/5 to-[#87652A]/10",
+                    border: "border-[#B0863A]/40",
+                    textColor: "text-[#87652A]",
+                    accentColor: "#B0863A",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        {/* Radial celestial dome dome vaults */}
+                        <svg viewBox="0 0 100 100" className="w-18 h-18 transition-all duration-700 group-hover:rotate-180" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <circle cx="0" cy="0" r="38" fill="currentColor" className="opacity-15" />
+                            <circle cx="0" cy="0" r="34" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            {[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165].map((deg) => (
+                              <line key={deg} x1="0" y1="-34" x2="0" y2="34" stroke="currentColor" strokeWidth="0.5" className="opacity-45" transform={`rotate(${deg})`} />
+                            ))}
+                            <circle cx="0" cy="0" r="22" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            <circle cx="0" cy="0" r="16" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" />
+                          </g>
+                        </svg>
+                        <Star className="w-5 h-5 absolute text-[#B0863A] fill-[#B0863A]" />
+                      </div>
+                    )
+                  }
+                ];
+
+                return (
+                  <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-sm text-left">
+                    {/* Background overlay */}
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                      <Sparkles className="w-32 h-32 text-[#B0863A]" />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">
+                          Academic Path & Rewards
+                        </span>
+                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#22301F]">
+                          Milestone Achievement Sanctuary
+                        </h3>
+                        <p className="text-[#5B5648] text-xs font-light max-w-xl">
+                          As you trace and complete your syllabus chapters, you will unlock certified digital Islamic art medallions representing your milestones.
+                        </p>
+                      </div>
+
+                      {/* Cumulative Progress Card */}
+                      <div className="bg-[#FAF4F2] border border-[#DDD5C3]/60 rounded-2xl p-4 min-w-[200px] flex items-center justify-between gap-4 text-left">
+                        <div className="space-y-1">
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-[#8CA394]">
+                            Devotion Index
+                          </span>
+                          <p className="font-serif text-2xl font-bold text-[#22301F]">
+                            {overallPercent}%
+                          </p>
+                          <p className="text-[10px] text-[#5B5648]/80 font-light">
+                            {completedTopics} of {totalTopics} topics done
+                          </p>
+                        </div>
+                        <div className="w-12 h-12 rounded-full border-4 border-[#B98072] border-t-[#DDD5C3] flex items-center justify-center animate-pulse shrink-0">
+                          <Award className="w-5 h-5 text-[#B98072]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* overall wide bar */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-[10px] font-mono text-[#8CA394]">
+                        <span>PATHWAY PROGRESSION</span>
+                        <span>{overallPercent}% COMPLETE</span>
+                      </div>
+                      <div className="w-full bg-[#EDE3CE]/40 h-3 rounded-full overflow-hidden border border-[#DDD5C3]/40 p-0.5">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${overallPercent}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="bg-gradient-to-r from-[#8CA394] via-[#B98072] to-[#B0863A] h-full rounded-full"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Grid of Badges */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+                      {badges.map((badge) => {
+                        const isUnlocked = badge.isUnlocked;
+                        return (
+                          <div
+                            key={badge.id}
+                            className={`group relative border rounded-2xl p-4 flex flex-col justify-between items-center text-center transition-all duration-300 overflow-hidden ${
+                              isUnlocked
+                                ? `bg-gradient-to-b ${badge.color} ${badge.border} shadow-xs hover:shadow-sm cursor-default`
+                                : "bg-white/40 border-[#DDD5C3]/40 opacity-60 filter grayscale-[30%] select-none"
+                            }`}
+                          >
+                            {/* Decorative Corner Stars */}
+                            <span className="absolute top-1.5 left-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute top-1.5 right-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute bottom-1.5 left-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute bottom-1.5 right-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+
+                            {/* Unlocked / Locked Visual */}
+                            <div className="space-y-3 flex flex-col items-center w-full">
+                              {badge.icon(isUnlocked ? badge.accentColor : "#9CA3AF")}
+
+                              <div className="space-y-1 w-full">
+                                <span className={`font-serif text-[10px] font-bold block ${isUnlocked ? badge.textColor : "text-gray-400"}`}>
+                                  {badge.arabic}
+                                </span>
+                                <h4 className={`font-serif text-xs font-bold ${isUnlocked ? "text-[#22301F]" : "text-gray-500"}`}>
+                                  {badge.title}
+                                </h4>
+                                <p className="text-[10px] text-[#5B5648] font-light leading-relaxed px-1">
+                                  {badge.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Status and info bottom bar */}
+                            <div className="w-full mt-4 pt-2 border-t border-[#DDD5C3]/40 flex items-center justify-center gap-1.5">
+                              {isUnlocked ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold font-mono text-[#22301F] uppercase tracking-wider">
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <span>UNLOCKED</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold font-mono text-gray-400 uppercase tracking-wider">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3 text-gray-400 shrink-0">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                  </svg>
+                                  <span>{badge.requirement}</span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Daily Study Streak & Dedication Sanctuary */}
+              {user && (() => {
+                const streakBadges = [
+                  {
+                    id: "streak-3",
+                    title: "Pious Spark (3 Days)",
+                    arabic: "نور الإيمان",
+                    description: "Sustained daily learning. Devoted consecutive focus to sacred studies for 3 days.",
+                    requirement: "3-Day Study Streak",
+                    isUnlocked: streakCount >= 3,
+                    accentColor: "#B98072",
+                    bgColor: "from-[#B98072]/10 via-[#B98072]/5 to-stone-900/10",
+                    borderColor: "border-[#B98072]/30",
+                    textColor: "text-[#8A5A4D]",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-700 group-hover:scale-110" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <polygon points="0,-35 10,-10 35,0 10,10 0,35 -10,10 -35,0 -10,-10" fill="currentColor" className="opacity-15" />
+                            <polygon points="0,-35 10,-10 35,0 10,10 0,35 -10,10 -35,0 -10,-10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            <circle cx="0" cy="0" r="8" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" />
+                          </g>
+                        </svg>
+                        <Sparkles className="w-5 h-5 absolute text-[#B98072]" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "streak-7",
+                    title: "Steadfast Devotion (7 Days)",
+                    arabic: "ثبات العزم",
+                    description: "An inspiring habit. Completed a full week of consistent and reflective study of Deen.",
+                    requirement: "7-Day Study Streak",
+                    isUnlocked: streakCount >= 7,
+                    accentColor: "#059669",
+                    bgColor: "from-emerald-700/10 via-emerald-600/5 to-emerald-950/10",
+                    borderColor: "border-emerald-600/30",
+                    textColor: "text-emerald-800",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-1000 group-hover:rotate-45" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <path d="M0,-32 L27,-16 L27,16 L0,32 L-27,16 L-27,-16 Z" fill="currentColor" className="opacity-15" />
+                            <path d="M0,-32 L27,-16 L27,16 L0,32 L-27,16 L-27,-16 Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            <circle cx="0" cy="0" r="14" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,1" />
+                          </g>
+                        </svg>
+                        <Calendar className="w-5 h-5 absolute text-emerald-700" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "streak-15",
+                    title: "Sacred Perseverance (15 Days)",
+                    arabic: "بركة الاستمرار",
+                    description: "Sublime dedication. Engaged mind and soul in consecutive wisdom search for 15 days.",
+                    requirement: "15-Day Study Streak",
+                    isUnlocked: streakCount >= 15,
+                    accentColor: "#B0863A",
+                    bgColor: "from-[#B0863A]/10 via-[#D4AF37]/5 to-[#87652A]/10",
+                    borderColor: "border-[#B0863A]/40",
+                    textColor: "text-[#87652A]",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-16 h-16 transition-transform duration-700 group-hover:rotate-90" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <rect x="-24" y="-24" width="48" height="48" fill="currentColor" className="opacity-15" />
+                            <rect x="-24" y="-24" width="48" height="48" fill="currentColor" className="opacity-15" transform="rotate(45)" />
+                            <rect x="-22" y="-22" width="44" height="44" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            <rect x="-22" y="-22" width="44" height="44" fill="none" stroke="currentColor" strokeWidth="1.5" transform="rotate(45)" />
+                            <circle cx="0" cy="0" r="10" fill="none" stroke="currentColor" strokeWidth="1" />
+                          </g>
+                        </svg>
+                        <Award className="w-5 h-5 absolute text-[#B0863A]" />
+                      </div>
+                    )
+                  },
+                  {
+                    id: "streak-30",
+                    title: "Sanctuary Lamp (30 Days)",
+                    arabic: "مصباح المحراب",
+                    description: "A beacon of continuous devotion. A solid month of uninterrupted academic study.",
+                    requirement: "30-Day Study Streak",
+                    isUnlocked: streakCount >= 30,
+                    accentColor: "#92400E",
+                    bgColor: "from-amber-700/10 via-amber-600/5 to-amber-950/10",
+                    borderColor: "border-amber-600/30",
+                    textColor: "text-amber-800",
+                    icon: (color: string) => (
+                      <div className="relative flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-18 h-18 transition-all duration-700 group-hover:scale-105" style={{ color }}>
+                          <g transform="translate(50,50)">
+                            <circle cx="0" cy="0" r="36" fill="currentColor" className="opacity-15" />
+                            <circle cx="0" cy="0" r="32" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                            {[0, 45, 90, 135].map((deg) => (
+                              <rect key={deg} x="-22" y="-22" width="44" height="44" fill="none" stroke="currentColor" strokeWidth="0.75" transform={`rotate(${deg})`} />
+                            ))}
+                            <circle cx="0" cy="0" r="12" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          </g>
+                        </svg>
+                        <Star className="w-5 h-5 absolute text-amber-700 fill-amber-700" />
+                      </div>
+                    )
+                  }
+                ];
+
+                return (
+                  <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-sm text-left">
+                    {/* Background overlay */}
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                      <Calendar className="w-32 h-32 text-[#B98072]" />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">
+                          Daily Study Streak
+                        </span>
+                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#22301F]">
+                          Continuous Devotion Hall
+                        </h3>
+                        <p className="text-[#5B5648] text-xs font-light max-w-xl">
+                          Nourish your consistency of learning. Visit the sanctuary or track weekly milestones daily to build your streak and unlock exclusive 'Dedication' badges.
+                        </p>
+                      </div>
+
+                      {/* Streak Counters */}
+                      <div className="flex items-center gap-3">
+                        <div className="bg-[#FAF4F2] border border-[#DDD5C3]/60 rounded-2xl p-4 min-w-[180px] flex items-center justify-between gap-4 text-left">
+                          <div className="space-y-1">
+                            <span className="font-mono text-[9px] uppercase tracking-wider text-[#8CA394]">
+                              Current Streak
+                            </span>
+                            <div className="flex items-baseline gap-1">
+                              <p className="font-serif text-2xl font-bold text-[#22301F]">
+                                {streakCount}
+                              </p>
+                              <span className="text-xs text-[#5B5648] font-light">Days</span>
+                            </div>
+                            <p className="text-[10px] text-[#5B5648]/80 font-light">
+                              Last check-in: today
+                            </p>
+                          </div>
+                          <div className="w-12 h-12 rounded-full bg-[#B98072]/10 border-2 border-[#B98072] flex flex-col items-center justify-center shrink-0">
+                            <span className="text-sm">🔥</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Grid of Dedication Badges */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                      {streakBadges.map((badge) => {
+                        const isUnlocked = badge.isUnlocked;
+                        return (
+                          <div
+                            key={badge.id}
+                            className={`group relative border rounded-2xl p-4 flex flex-col justify-between items-center text-center transition-all duration-300 overflow-hidden ${
+                              isUnlocked
+                                ? `bg-gradient-to-b ${badge.bgColor} ${badge.borderColor} shadow-xs hover:shadow-sm cursor-default`
+                                : "bg-white/40 border-[#DDD5C3]/40 opacity-60 filter grayscale-[30%] select-none"
+                            }`}
+                          >
+                            {/* Decorative Star Ornaments */}
+                            <span className="absolute top-1.5 left-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute top-1.5 right-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute bottom-1.5 left-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+                            <span className="absolute bottom-1.5 right-1.5 text-[8px] text-[#DDD5C3]/80 select-none">✦</span>
+
+                            <div className="space-y-3 flex flex-col items-center w-full">
+                              {badge.icon(isUnlocked ? badge.accentColor : "#9CA3AF")}
+
+                              <div className="space-y-1 w-full">
+                                <span className={`font-serif text-[10px] font-bold block ${isUnlocked ? badge.textColor : "text-gray-400"}`}>
+                                  {badge.arabic}
+                                </span>
+                                <h4 className={`font-serif text-xs font-bold ${isUnlocked ? "text-[#22301F]" : "text-gray-500"}`}>
+                                  {badge.title}
+                                </h4>
+                                <p className="text-[10px] text-[#5B5648] font-light leading-relaxed px-1">
+                                  {badge.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Status Bottom indicator */}
+                            <div className="w-full mt-4 pt-2 border-t border-[#DDD5C3]/40 flex items-center justify-center gap-1.5">
+                              {isUnlocked ? (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold font-mono text-[#22301F] uppercase tracking-wider">
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <span>UNLOCKED</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold font-mono text-gray-400 uppercase tracking-wider">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3 text-gray-400 shrink-0">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                  </svg>
+                                  <span>{badge.requirement}</span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {enrolledCourses.length === 0 ? (
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[24px] p-10 text-center space-y-5 max-w-2xl mx-auto">
                   <BookOpen className="w-12 h-12 text-[#8CA394] mx-auto opacity-60" />
@@ -621,7 +1187,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                                       type="checkbox"
                                       checked={isTopicDone}
                                       onChange={() => handleToggleTopic(course.id, topicIdx)}
-                                      className="mt-0.5 w-4 h-4 text-[#8CA394] bg-[#FCF1F3] border-[#DDD5C3] rounded focus:ring-offset-0 focus:ring-0 cursor-pointer"
+                                      className="mt-0.5 w-4 h-4 text-[#8CA394] bg-[#FAF4F2] border-[#DDD5C3] rounded focus:ring-offset-0 focus:ring-0 cursor-pointer"
                                     />
                                     <span>{topic}</span>
                                   </label>
@@ -682,7 +1248,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       <button
                         id={`btn-bookmark-remove-${course.id}`}
                         onClick={() => onToggleBookmark(course.id)}
-                        className="absolute top-4 right-4 p-1 bg-white hover:bg-[#FCF1F3] border border-[#DDD5C3] rounded-full transition-colors cursor-pointer text-[#B98072]"
+                        className="absolute top-4 right-4 p-1 bg-white hover:bg-[#FAF4F2] border border-[#DDD5C3] rounded-full transition-colors cursor-pointer text-[#B98072]"
                         title="Remove Bookmark"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -737,7 +1303,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                   </div>
 
                   {/* Profile Strength & Badge Indicator */}
-                  <div className="mb-8 p-6 bg-[#FCF1F3]/60 border border-[#DDD5C3]/60 rounded-2xl space-y-4 shadow-inner">
+                  <div className="mb-8 p-6 bg-[#FAF4F2]/60 border border-[#DDD5C3]/60 rounded-2xl space-y-4 shadow-inner">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="space-y-1">
                         <h4 className="text-xs uppercase tracking-wider font-bold text-[#22301F] flex items-center gap-2">
@@ -816,7 +1382,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         required
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
-                        className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-2.5 text-xs text-[#2B2A25] focus:outline-none"
+                        className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-2.5 text-xs text-[#2B2A25] focus:outline-none"
                         placeholder="e.g. Maryam Farooq"
                       />
                     </div>
@@ -829,7 +1395,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         id="profile-ageGroup"
                         value={ageGroup}
                         onChange={(e) => setAgeGroup(e.target.value)}
-                        className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-2.5 text-xs text-[#2B2A25] focus:outline-none cursor-pointer"
+                        className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-2.5 text-xs text-[#2B2A25] focus:outline-none cursor-pointer"
                       >
                         <option value="">Select Age Group</option>
                         <option value="Kids (5-10)">Kids (5-10)</option>
@@ -849,7 +1415,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       rows={3}
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
-                      className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
+                      className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
                       placeholder="Share a brief introduction about yourself..."
                     />
                   </div>
@@ -863,7 +1429,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       rows={3}
                       value={studyBackground}
                       onChange={(e) => setStudyBackground(e.target.value)}
-                      className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
+                      className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
                       placeholder="e.g. Completed school Maktab, studied basic tajweed rules, or absolute beginner wishing to rebuild..."
                     />
                   </div>
@@ -877,7 +1443,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       rows={3}
                       value={goals}
                       onChange={(e) => setGoals(e.target.value)}
-                      className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
+                      className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
                       placeholder="What are you hoping to achieve or master during this semester cohort?"
                     />
                   </div>
@@ -973,7 +1539,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                     {emails.map((email) => (
                       <div 
                         key={email.id} 
-                        className="p-5 sm:p-6 bg-[#FCF1F3]/45 hover:bg-[#FCF1F3]/80 border border-[#DDD5C3]/70 hover:border-[#DDD5C3] rounded-2xl transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm"
+                        className="p-5 sm:p-6 bg-[#FAF4F2]/45 hover:bg-[#FAF4F2]/80 border border-[#DDD5C3]/70 hover:border-[#DDD5C3] rounded-2xl transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm"
                       >
                         <div className="space-y-1.5 max-w-xl">
                           <div className="flex flex-wrap items-center gap-2">
@@ -1017,7 +1583,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#FCF1F3] border border-[#DDD5C3] rounded-[32px] shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col overflow-hidden"
+              className="bg-[#FAF4F2] border border-[#DDD5C3] rounded-[32px] shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col overflow-hidden"
               id="email-viewer-modal"
             >
               {/* Modal Header */}
@@ -1225,7 +1791,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               </button>
 
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-[#FCF1F3] rounded-full flex items-center justify-center mx-auto text-[#B98072]">
+                <div className="w-12 h-12 bg-[#FAF4F2] rounded-full flex items-center justify-center mx-auto text-[#B98072]">
                   <MessageSquare className="w-6 h-6" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-[#22301F]">
@@ -1253,7 +1819,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               ) : (
                 <form onSubmit={handleTestimonialSubmit} className="space-y-5">
                   {/* Selected Course Display */}
-                  <div className="p-3.5 bg-[#FCF1F3]/80 border border-[#DDD5C3]/40 rounded-xl">
+                  <div className="p-3.5 bg-[#FAF4F2]/80 border border-[#DDD5C3]/40 rounded-xl">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-[#8A5A4D] block mb-1">
                       Enrolled Syllabus
                     </span>
@@ -1299,7 +1865,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       required
                       value={testimonialContent}
                       onChange={(e) => setTestimonialContent(e.target.value)}
-                      className="w-full bg-[#FCF1F3] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
+                      className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
                       placeholder="Share your spiritual transformation, study experience with the female scholars, and how this cohort outline impacted you..."
                     />
                   </div>

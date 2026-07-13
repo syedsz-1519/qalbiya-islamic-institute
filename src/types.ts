@@ -14,6 +14,7 @@ export interface Course {
   bgGradient: string;
   formId?: string; // Optional Google Form ID if initialized
   formUrl?: string; // Google Form publish/responder link
+  isNew?: boolean;
 }
 
 export interface UserEnrollment {

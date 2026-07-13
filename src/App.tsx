@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { User } from "firebase/auth";
 import { 
-  initAuth, 
-  googleSignIn, 
-  googleLogout, 
-  getUserRole, 
   db, 
-  enrollInCourse,
-  getUserProfile,
-  toggleBookmarkInDb,
-  updateCourseProgressInDb,
-  updateUserProfileInDb,
-  saveTriggeredEmail,
-  enforceAdminAccess,
   submitContactForm,
   logWhatsAppInquiry
 } from "./lib/firebase";
@@ -26,12 +15,24 @@ import { CourseDetailsModal } from "./components/CourseDetailsModal";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { StudentPortal } from "./components/StudentPortal";
 import { CourseFAQ } from "./components/CourseFAQ";
-import { AuthModal } from "./components/AuthModal";
+import { LearnResources } from "./components/LearnResources";
+import { FreeCourses } from "./components/FreeCourses";
+import { ResourcesHub } from "./components/ResourcesHub";
+import { ScholarshipPage } from "./components/ScholarshipPage";
+import { ContactPage } from "./components/ContactPage";
+import { LegalPages } from "./components/LegalPages";
+import { CourseDetailPage } from "./components/CourseDetailPage";
 import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp } from "lucide-react";
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>("home");
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    uid: "guest_student_id",
+    displayName: "Respected Student",
+    email: "student@qalbiya.org",
+    photoURL: null,
+    emailVerified: true
+  } as any);
   const [userRole, setUserRole] = useState<"admin" | "student">("student");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -72,68 +73,59 @@ export default function App() {
   const [isLoggingWA, setIsLoggingWA] = useState(false);
   const [waSuccess, setWaSuccess] = useState(false);
 
-  // 1. Listen to Firebase Auth on mount
+  // 1. Load local mock student data from localStorage on mount
   useEffect(() => {
-    const unsubscribe = initAuth(
-      async (loggedInUser, token) => {
-        setUser(loggedInUser);
-        (window as any).__googleAccessToken = token;
-        
-        // Fetch role
-        const role = await getUserRole(loggedInUser.uid);
-        setUserRole(role);
-
-        // Fetch user enrollments and bookmarks from profile
-        const profile = await getUserProfile(loggedInUser.uid);
-        if (profile) {
-          if (profile.enrollments) {
-            const courseIds = profile.enrollments.map((e: any) => e.courseId);
-            setUserEnrollments(courseIds);
-          } else {
-            setUserEnrollments([]);
-          }
-          setUserBookmarks(profile.bookmarks || []);
-          setUserProgress(profile.progress || {});
-          setProfileDetails({
-            bio: profile.bio || "",
-            studyBackground: profile.studyBackground || "",
-            ageGroup: profile.ageGroup || "",
-            goals: profile.goals || ""
-          });
-        }
-        setLoading(false);
-      },
-      () => {
-        setUser(null);
-        setUserRole("student");
-        (window as any).__googleAccessToken = null;
-        setUserEnrollments([]);
-        setUserBookmarks([]);
-        setUserProgress({});
-        setProfileDetails({
-          bio: "",
-          studyBackground: "",
-          ageGroup: "",
-          goals: ""
-        });
-        setLoading(false);
-      }
-    );
-
     // Fetch initial course forms from Firestore
     fetchCourseForms();
 
-    return () => unsubscribe();
+    try {
+      const localEnrollments = localStorage.getItem("qalbiya_enrollments");
+      if (localEnrollments) {
+        setUserEnrollments(JSON.parse(localEnrollments));
+      } else {
+        setUserEnrollments([]);
+      }
+
+      const localBookmarks = localStorage.getItem("qalbiya_bookmarks");
+      if (localBookmarks) {
+        setUserBookmarks(JSON.parse(localBookmarks));
+      } else {
+        setUserBookmarks([]);
+      }
+
+      const localProgress = localStorage.getItem("qalbiya_progress");
+      if (localProgress) {
+        setUserProgress(JSON.parse(localProgress));
+      } else {
+        setUserProgress({});
+      }
+
+      const localProfile = localStorage.getItem("qalbiya_profile");
+      if (localProfile) {
+        const parsed = JSON.parse(localProfile);
+        setProfileDetails(parsed);
+        if (parsed.displayName) {
+          setUser(prev => prev ? { ...prev, displayName: parsed.displayName } : null);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load persistent local student details", err);
+    }
+
+    setLoading(false);
   }, []);
 
   // 2. Enforce strict isolation for Admin tab and redirect unauthorized students to Student Portal
   useEffect(() => {
-    if (currentTab === "analytics") {
-      enforceAdminAccess(user ? user.uid : null, (targetTab) => {
-        setCurrentTab(targetTab);
-      });
+    if (currentTab === "analytics" && userRole !== "admin") {
+      setCurrentTab("portal");
     }
-  }, [currentTab, user, userRole]);
+  }, [currentTab, userRole]);
+
+  // Scroll to top on active tab transitions
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentTab]);
 
   // Fetch course-to-form bindings from Firestore
   const fetchCourseForms = async () => {
@@ -156,187 +148,109 @@ export default function App() {
   };
 
   const handleLogin = () => {
-    setIsAuthModalOpen(true);
+    // Auth modal is deprecated, but keep a no-op handler for compatibility
   };
 
   const handleAuthSuccess = async (loggedInUser: User, role: "admin" | "student", profile: any) => {
-    setUser(loggedInUser);
-    setUserRole(role);
-    (window as any).__googleAccessToken = (loggedInUser as any).accessToken || "email-auth";
-
-    if (profile) {
-      if (profile.enrollments) {
-        setUserEnrollments(profile.enrollments.map((e: any) => e.courseId));
-      } else {
-        setUserEnrollments([]);
-      }
-      setUserBookmarks(profile.bookmarks || []);
-      setUserProgress(profile.progress || {});
-      setProfileDetails({
-        bio: profile.bio || "",
-        studyBackground: profile.studyBackground || "",
-        ageGroup: profile.ageGroup || "",
-        goals: profile.goals || ""
-      });
-    } else {
-      setUserEnrollments([]);
-      setUserBookmarks([]);
-      setUserProgress({});
-      setProfileDetails({
-        bio: "",
-        studyBackground: "",
-        ageGroup: "",
-        goals: ""
-      });
-    }
-
-    // Keep them on current view or dashboard
-    if (role === "admin") {
-      setCurrentTab("analytics");
-    } else {
-      setCurrentTab("portal");
-    }
+    // Mock success handler if needed
   };
 
   const handleBookmarkToggle = async (courseId: string) => {
-    if (!user) {
-      handleLogin();
-      return;
-    }
     const isBookmarkedNow = userBookmarks.includes(courseId);
-    try {
-      const updated = await toggleBookmarkInDb(user.uid, courseId, !isBookmarkedNow);
-      setUserBookmarks(updated);
-    } catch (err) {
-      console.error("Failed to toggle bookmark", err);
+    let updated: string[];
+    if (isBookmarkedNow) {
+      updated = userBookmarks.filter(id => id !== courseId);
+    } else {
+      updated = [...userBookmarks, courseId];
     }
+    setUserBookmarks(updated);
+    localStorage.setItem("qalbiya_bookmarks", JSON.stringify(updated));
   };
 
   const handleLogout = async () => {
-    try {
-      await googleLogout();
-      setUser(null);
-      setUserRole("student");
-      (window as any).__googleAccessToken = null;
-      setUserEnrollments([]);
-      setUserBookmarks([]);
-      setUserProgress({});
-      setProfileDetails({
-        bio: "",
-        studyBackground: "",
-        ageGroup: "",
-        goals: ""
-      });
-      setCurrentTab("home");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
+    // Auth is fully removed, so this is a no-op
   };
 
   const handleEnrollSuccess = async (courseId: string, acceptedTermsAt: string) => {
-    if (!user) return;
-    try {
-      const course = COURSES.find(c => c.id === courseId);
-      const courseTitle = course ? course.title : "Unknown Course";
-      
-      await enrollInCourse(
-        user.uid, 
-        courseId, 
-        user.displayName || "Respected Student", 
-        user.email || "", 
-        courseTitle, 
-        acceptedTermsAt
-      );
-      
-      setUserEnrollments(prev => {
-        if (!prev.includes(courseId)) {
-          return [...prev, courseId];
-        }
-        return prev;
-      });
+    const updatedEnrollments = userEnrollments.includes(courseId)
+      ? userEnrollments
+      : [...userEnrollments, courseId];
+    setUserEnrollments(updatedEnrollments);
+    localStorage.setItem("qalbiya_enrollments", JSON.stringify(updatedEnrollments));
 
-      if (course) {
-        // Trigger automated "Welcome to the Course" email via custom Cloud Function emulation
-        console.log("Triggering Welcome Email Cloud Function emulation...");
-        try {
-          const response = await fetch("/api/trigger-welcome-email", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              uid: user.uid,
-              courseId: course.id,
-              studentName: user.displayName || "Respected Student",
-              studentEmail: user.email || "",
-              courseTitle: course.title,
-              instructor: course.instructor,
-              duration: course.duration,
-              schedule: course.schedule,
-              description: course.description
-            })
-          });
+    const course = COURSES.find(c => c.id === courseId);
+    if (course && user) {
+      // Trigger automated "Welcome to the Course" email via custom Cloud Function emulation
+      console.log("Triggering Welcome Email Cloud Function emulation...");
+      try {
+        const response = await fetch("/api/trigger-welcome-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            uid: user.uid,
+            courseId: course.id,
+            studentName: user.displayName || "Respected Student",
+            studentEmail: user.email || "",
+            courseTitle: course.title,
+            instructor: course.instructor,
+            duration: course.duration,
+            schedule: course.schedule,
+            description: course.description
+          })
+        });
 
-          if (response.ok) {
-            const result = await response.json();
-            if (result.success) {
-              // Save generated welcome email to triggered_emails collection in Firestore
-              await saveTriggeredEmail({
-                studentUid: user.uid,
-                studentName: user.displayName || "Respected Student",
-                studentEmail: user.email || "",
-                courseId: course.id,
-                courseTitle: course.title,
-                subject: result.subject,
-                emailBody: result.emailBody
-              });
-              
-              // Trigger visual notification toast
-              setNotification({
-                show: true,
-                title: "Cloud Function Triggered",
-                message: `Automated "Welcome to the Course" email successfully generated and sent to ${user.email}!`,
-                type: "success"
-              });
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            // Trigger visual notification toast
+            setNotification({
+              show: true,
+              title: "Welcome Email Sent",
+              message: `Automated "Welcome to the Course" email successfully generated and sent to ${user.email}!`,
+              type: "success"
+            });
 
-              // Self-dismiss after 6 seconds
-              setTimeout(() => {
-                setNotification(prev => ({ ...prev, show: false }));
-              }, 6000);
-            }
+            // Self-dismiss after 6 seconds
+            setTimeout(() => {
+              setNotification(prev => ({ ...prev, show: false }));
+            }, 6000);
           }
-        } catch (emailErr) {
-          console.error("Failed to execute automated welcome email trigger", emailErr);
         }
+      } catch (emailErr) {
+        console.error("Failed to execute automated welcome email trigger", emailErr);
       }
-    } catch (err) {
-      console.error("Failed to persist enrollment", err);
     }
   };
 
   const handleUpdateProgress = async (courseId: string, completedIndices: number[]) => {
-    if (!user) return;
-    try {
-      const updatedProgress = await updateCourseProgressInDb(user.uid, courseId, completedIndices);
-      setUserProgress(updatedProgress);
-    } catch (err) {
-      console.error("Failed to update progress in db", err);
-    }
+    const updated = {
+      ...userProgress,
+      [courseId]: completedIndices
+    };
+    setUserProgress(updated);
+    localStorage.setItem("qalbiya_progress", JSON.stringify(updated));
   };
 
   const handleUpdateProfile = async (details: { displayName: string; bio: string; studyBackground: string; ageGroup: string; goals: string }) => {
-    if (!user) return;
-    try {
-      await updateUserProfileInDb(user.uid, details);
-      setProfileDetails({
-        bio: details.bio,
-        studyBackground: details.studyBackground,
-        ageGroup: details.ageGroup,
-        goals: details.goals
+    if (user) {
+      setUser({
+        ...user,
+        displayName: details.displayName
       });
-    } catch (err) {
-      console.error("Failed to update profile details", err);
     }
+    const updatedProfile = {
+      bio: details.bio,
+      studyBackground: details.studyBackground,
+      ageGroup: details.ageGroup,
+      goals: details.goals
+    };
+    setProfileDetails(updatedProfile);
+    localStorage.setItem("qalbiya_profile", JSON.stringify({
+      displayName: details.displayName,
+      ...updatedProfile
+    }));
   };
 
   const handleFormCreated = (courseId: string, formId: string, formUrl: string) => {
@@ -411,7 +325,7 @@ export default function App() {
   const kidsCourses = COURSES.filter(c => c.category === "kids");
 
   return (
-    <div className="min-h-screen bg-[#FFDFE4] text-[#22301F] flex flex-col justify-between relative overflow-hidden">
+    <div className="min-h-screen bg-[#FAF4F2] text-[#22301F] flex flex-col justify-between relative overflow-hidden">
       
       {/* Background Animated Islamic Motifs */}
       <div className="absolute top-24 left-4 w-28 h-28 pointer-events-none opacity-20 hidden xl:block animate-float-rehal" title="Rehal Motif">
@@ -482,7 +396,7 @@ export default function App() {
                       key={course.id}
                       course={course}
                       formDetails={activeFormDetails[course.id] || null}
-                      onExplore={(c) => setSelectedCourse(c)}
+                      onExplore={(c) => setCurrentTab("course-" + c.id)}
                       user={user}
                       isBookmarked={userBookmarks.includes(course.id)}
                       onBookmarkToggle={handleBookmarkToggle}
@@ -491,6 +405,14 @@ export default function App() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* FAQs on Home Page */}
+            <div className="max-w-7xl mx-auto border-t border-[#DDD5C3] pt-12">
+              <CourseFAQ
+                userRole={userRole}
+                onGoToAnalytics={() => setCurrentTab("analytics")}
+              />
             </div>
 
             {/* Admissions Inquiry & WhatsApp Desk Section */}
@@ -754,7 +676,7 @@ export default function App() {
                   key={course.id}
                   course={course}
                   formDetails={activeFormDetails[course.id] || null}
-                  onExplore={(c) => setSelectedCourse(c)}
+                  onExplore={(c) => setCurrentTab("course-" + c.id)}
                   user={user}
                   isBookmarked={userBookmarks.includes(course.id)}
                   onBookmarkToggle={handleBookmarkToggle}
@@ -789,7 +711,7 @@ export default function App() {
                   key={course.id}
                   course={course}
                   formDetails={activeFormDetails[course.id] || null}
-                  onExplore={(c) => setSelectedCourse(c)}
+                  onExplore={(c) => setCurrentTab("course-" + c.id)}
                   user={user}
                   isBookmarked={userBookmarks.includes(course.id)}
                   onBookmarkToggle={handleBookmarkToggle}
@@ -894,6 +816,48 @@ export default function App() {
           />
         )}
 
+        {(currentTab === "resources" || currentTab === "learn" || currentTab === "free-courses") && (
+          <ResourcesHub />
+        )}
+
+        {currentTab === "scholarship" && (
+          <ScholarshipPage />
+        )}
+
+        {currentTab === "contact" && (
+          <ContactPage />
+        )}
+
+        {(currentTab === "refund-policy" || currentTab === "terms-conditions" || currentTab === "privacy-policy") && (
+          <LegalPages 
+            policyType={currentTab === "refund-policy" ? "refund" : currentTab === "terms-conditions" ? "terms" : "privacy"}
+            onBackToHome={() => setCurrentTab("home")}
+          />
+        )}
+
+        {currentTab.startsWith("course-") && (() => {
+          const courseId = currentTab.replace("course-", "");
+          const course = COURSES.find(c => c.id === courseId);
+          if (!course) return <div className="py-20 text-center font-serif text-[#22301F]">Course not found.</div>;
+          return (
+            <CourseDetailPage
+              course={course}
+              formDetails={activeFormDetails[course.id] || null}
+              onClose={() => {
+                if (course.category === "women") {
+                  setCurrentTab("women");
+                } else {
+                  setCurrentTab("kids");
+                }
+              }}
+              user={user}
+              handleLogin={handleLogin}
+              onEnrollSuccess={handleEnrollSuccess}
+              isEnrolled={userEnrollments.includes(course.id)}
+            />
+          );
+        })()}
+
         {currentTab === "portal" && (
           <StudentPortal
             user={user}
@@ -907,7 +871,7 @@ export default function App() {
             onToggleBookmark={handleBookmarkToggle}
             onUpdateProgress={handleUpdateProgress}
             onUpdateProfile={handleUpdateProfile}
-            onExploreCourse={(course) => setSelectedCourse(course)}
+            onExploreCourse={(course) => setCurrentTab("course-" + course.id)}
           />
         )}
 
@@ -941,54 +905,70 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#22301F] text-[#FCF1F3]/85 py-16 border-t border-[#DDD5C3] relative">
+      <footer className="bg-[#22301F] text-[#FAF4F2]/85 py-16 border-t border-[#DDD5C3] relative">
         <div className="absolute top-0 left-0 right-0 h-[2px] stitched-line opacity-40"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12 text-left">
           
           {/* Logo Brand column */}
           <div className="space-y-4">
             <h4 className="font-serif text-xl tracking-[0.2em] font-bold text-white uppercase">
               Qalbiya
             </h4>
-            <p className="font-sans text-xs text-[#FCF1F3]/70 font-light leading-relaxed max-w-xs">
+            <p className="font-sans text-xs text-[#FAF4F2]/70 font-light leading-relaxed max-w-xs">
               A premium, traditional cohort learning institute for modern families. Restoring true 
               intellectual focus and faith foundations.
             </p>
+            <div className="pt-2 border-t border-[#FAF9F6]/10 text-xs">
+              <span className="font-serif font-bold text-[#B0863A]">Founder: </span>
+              <span className="font-sans text-white font-medium">USTAZA MUSTARA</span>
+            </div>
           </div>
 
           {/* Quick links Column */}
           <div className="space-y-4 font-sans text-xs">
             <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Admissions</h5>
             <div className="flex flex-col space-y-2">
-              <button onClick={() => setCurrentTab("women")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Women Cources Hub</button>
-              <button onClick={() => setCurrentTab("kids")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Kids Cources Hub</button>
+              <button onClick={() => setCurrentTab("women")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Women Courses Hub</button>
+              <button onClick={() => setCurrentTab("kids")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Kids Courses Hub</button>
               <button onClick={() => setCurrentTab("about")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Founders & Vision</button>
+              <button onClick={() => setCurrentTab("scholarship")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer text-[#B98072] font-semibold">Scholarships & Fund</button>
+            </div>
+          </div>
+
+          {/* Legal Pages Column */}
+          <div className="space-y-4 font-sans text-xs">
+            <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Legal & Policies</h5>
+            <div className="flex flex-col space-y-2">
+              <button onClick={() => setCurrentTab("refund-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Refund Policy</button>
+              <button onClick={() => setCurrentTab("terms-conditions")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Terms & Conditions</button>
+              <button onClick={() => setCurrentTab("privacy-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Privacy Policy</button>
             </div>
           </div>
 
           {/* Contact Column */}
           <div className="space-y-4 font-sans text-xs">
             <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Admissions Office</h5>
-            <div className="space-y-2 font-light text-[#FCF1F3]/80">
+            <div className="space-y-2 font-light text-[#FAF4F2]/80">
               <p className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#8CA394]" />
                 <span>Virtual Cohorts Worldwide</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#8CA394]" />
-                <span>qalbiyaislamicinstitute@gmail.com</span>
+                <span className="break-all">qalbiyaislamicinstitute@gmail.com</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#8CA394]" />
-                <span>+1 (800) 555-DEEN</span>
+                <span>+91 8145363290</span>
               </p>
+              <p className="text-[10px] text-gray-400 font-mono">Alternative: +1 (800) 555-DEEN</p>
             </div>
           </div>
 
         </div>
 
         {/* Legal copyrights */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-[#FAF9F6]/10 flex flex-col sm:flex-row justify-between text-[11px] font-mono text-[#FCF1F3]/60 gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-[#FAF9F6]/10 flex flex-col sm:flex-row justify-between text-[11px] font-mono text-[#FAF4F2]/60 gap-4">
           <p>© {new Date().getFullYear()} Qalbiya Islamic Institute. All Rights Reserved.</p>
           <p className="flex items-center gap-1.5 hover:text-[#B0863A] transition-colors cursor-help" title="Traditional structured study in a loud world">
             <Heart className="w-3 h-3 text-[#B98072] fill-[#B98072]" />
@@ -1010,25 +990,18 @@ export default function App() {
         />
       )}
 
-      {/* Authentication Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
-      />
-
       {/* Floating Vertical Contact & Social Bubble Row on Right Side */}
       {/* Desktop view: persistent list */}
       <div className="hidden md:flex fixed right-5 top-1/2 -translate-y-1/2 flex-col gap-4.5 z-40" id="social-bubble-dock-desktop">
         {/* Email Bubble */}
         <a 
           href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
-          className="w-12 h-12 bg-[#22301F] hover:bg-[#33453A] text-[#FCF1F3] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
+          className="w-12 h-12 bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 transition-all duration-300 hover:scale-110 hover:-translate-x-1 group relative cursor-pointer"
           id="bubble-email-desktop"
           title="Email Admissions Office"
         >
           <Mail className="w-5 h-5" />
-          <span className="absolute right-14 bg-[#22301F] text-[#FCF1F3] text-[10px] uppercase tracking-wider font-mono font-medium px-2.5 py-1 rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 whitespace-nowrap shadow-md border border-[#DDD5C3]/30">
+          <span className="absolute right-14 bg-[#22301F] text-[#FAF4F2] text-[10px] uppercase tracking-wider font-mono font-medium px-2.5 py-1 rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 whitespace-nowrap shadow-md border border-[#DDD5C3]/30">
             Email Admissions
           </span>
         </a>
@@ -1095,7 +1068,7 @@ export default function App() {
             {/* Email option */}
             <a 
               href="mailto:qalbiyaislamicinstitute@gmail.com?subject=Qalbiya%20Admissions%20Inquiry"
-              className="w-10 h-10 bg-[#22301F] text-[#FCF1F3] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 cursor-pointer"
+              className="w-10 h-10 bg-[#22301F] text-[#FAF4F2] rounded-full flex items-center justify-center shadow-xl border border-[#DDD5C3]/40 cursor-pointer"
               title="Email Admissions Office"
               onClick={() => setIsMobileContactOpen(false)}
             >

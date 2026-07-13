@@ -51,7 +51,8 @@ export const COURSES: Course[] = [
       'Conducted entirely online in secure, private video classrooms'
     ],
     imagePrompt: 'An elegant composition showing beautiful Arabic script on fine parchment paper with a warm focus, ivory and soft gold tones',
-    bgGradient: 'from-emerald-50 to-teal-100/50 text-emerald-900 border-emerald-200'
+    bgGradient: 'from-emerald-50 to-teal-100/50 text-emerald-900 border-emerald-200',
+    isNew: true
   },
   {
     id: 'noorani-qaida-women',
@@ -103,7 +104,8 @@ export const COURSES: Course[] = [
       'Interactive cohort discussions on contemporary lessons'
     ],
     imagePrompt: 'An atmospheric watercolor painting of a starry night sky over desert sand dunes under a silver crescent moon, in deep slate and gold accents',
-    bgGradient: 'from-purple-50 to-fuchsia-100/50 text-purple-900 border-purple-200'
+    bgGradient: 'from-purple-50 to-fuchsia-100/50 text-purple-900 border-purple-200',
+    isNew: true
   },
   {
     id: 'juniors-deeniyat-mastercourse',

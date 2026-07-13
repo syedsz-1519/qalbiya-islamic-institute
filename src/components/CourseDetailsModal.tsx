@@ -1,6 +1,6 @@
 import React from "react";
 import { Course } from "../types";
-import { X, Check, ArrowUpRight, Clipboard, Calendar, Clock, BookOpen } from "lucide-react";
+import { X, Check, ArrowUpRight, Clipboard, Calendar, Clock, BookOpen, Share2, Copy } from "lucide-react";
 
 interface CourseDetailsModalProps {
   course: Course;
@@ -24,6 +24,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   const [showTerms, setShowTerms] = React.useState(false);
   const [termsAccepted, setTermsAccepted] = React.useState(false);
   const [pendingActionType, setPendingActionType] = React.useState<"direct" | "form" | null>(null);
+  const [shareStatus, setShareStatus] = React.useState<string | null>(null);
 
   // Combine all detailed syllabus description for read-aloud TTS
   const fullSyllabusTTS = `Course: ${course.title}. ${course.longDescription} What you will learn: ${course.outline.join(". ")}. Key features of the course include: ${course.benefits.join(". ")}`;
@@ -47,7 +48,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2B2A25]/75 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#FCF1F3] border border-[#DDD5C3] rounded-[32px] w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
+      <div className="bg-[#FAF4F2] border border-[#DDD5C3] rounded-[32px] w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
         
         {/* Close Button */}
         <button
@@ -63,13 +64,21 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
           
           {/* Header Block */}
           <div className="space-y-4 max-w-2xl">
-            <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md border ${
-              course.category === "women" 
-                ? "text-[#8A5A4D] bg-[#F1E2DC] border-[#DDD5C3]" 
-                : "text-[#87652A] bg-[#F1E7D3] border-[#DDD5C3]"
-            }`}>
-              {course.category === "women" ? "Women Cources" : "Kids Cources"}
-            </span>
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md border ${
+                course.category === "women" 
+                  ? "text-[#8A5A4D] bg-[#F1E2DC] border-[#DDD5C3]" 
+                  : "text-[#87652A] bg-[#F1E7D3] border-[#DDD5C3]"
+              }`}>
+                {course.category === "women" ? "Women Cources" : "Kids Cources"}
+              </span>
+              {course.isNew && (
+                <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md border text-white bg-[#B98072] border-[#8A5A4D] flex items-center gap-1" id={`modal-new-badge-${course.id}`}>
+                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                  <span>New Release</span>
+                </span>
+              )}
+            </div>
             <h2 className="font-serif text-3xl font-bold text-[#22301F] leading-tight">
               {course.title}
             </h2>
@@ -180,11 +189,74 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
             )}
           </div>
 
+          {/* Share Section */}
+          <div className="border-t border-[#DDD5C3]/30 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="space-y-1 text-left">
+              <h5 className="font-serif font-bold text-[#22301F] text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <Share2 className="w-3.5 h-3.5 text-[#B98072]" />
+                <span>Spread the Word</span>
+              </h5>
+              <p className="text-[11px] text-[#5B5648] font-light max-w-md">
+                Encourage sisters, family, and friends to study with you. Shared learning builds community and beautiful memory logs.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 w-full md:w-auto relative">
+              <button
+                onClick={() => {
+                  const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
+                  setShareStatus("Shared via WhatsApp!");
+                  setTimeout(() => setShareStatus(null), 3000);
+                }}
+                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                title="Forward on WhatsApp"
+              >
+                <span className="w-2 h-2 bg-[#25D366] rounded-full" />
+                <span>WhatsApp</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at Qalbiya Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
+                  navigator.clipboard.writeText(shareText);
+                  setShareStatus("Instagram text copied!");
+                  setTimeout(() => setShareStatus(null), 3000);
+                }}
+                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                title="Instagram Caption Template"
+              >
+                <span className="w-2 h-2 bg-[#E1306C] rounded-full" />
+                <span>Instagram</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const link = `https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                  navigator.clipboard.writeText(link);
+                  setShareStatus("Course link copied!");
+                  setTimeout(() => setShareStatus(null), 3000);
+                }}
+                className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#FAF4F2] hover:bg-[#EDE3CE]/40 border border-[#DDD5C3] text-xs font-bold text-[#22301F] rounded-full transition-all cursor-pointer"
+                title="Copy Invite Link"
+              >
+                <Copy className="w-3.5 h-3.5 text-[#8CA394]" />
+                <span>Copy Link</span>
+              </button>
+
+              {shareStatus && (
+                <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-[#22301F] text-white text-[10px] rounded-lg shadow-md z-30 font-semibold animate-bounce">
+                  {shareStatus}
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
 
         {/* Terms & Conditions Overlay Modal */}
         {showTerms && (
-          <div className="absolute inset-0 z-50 bg-[#FCF1F3] rounded-[32px] p-8 sm:p-10 flex flex-col justify-between animate-fade-in" id="terms-conditions-container">
+          <div className="absolute inset-0 z-50 bg-[#FAF4F2] rounded-[32px] p-8 sm:p-10 flex flex-col justify-between animate-fade-in" id="terms-conditions-container">
             <div className="space-y-5 overflow-y-auto max-h-[75%] pr-2">
               <div className="border-b border-[#DDD5C3] pb-4">
                 <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#22301F]" id="terms-title">
@@ -226,13 +298,13 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
               </div>
             </div>
 
-            <div className="border-t border-[#DDD5C3]/50 pt-4 space-y-3.5 bg-[#FCF1F3]">
+            <div className="border-t border-[#DDD5C3]/50 pt-4 space-y-3.5 bg-[#FAF4F2]">
               <label className="flex items-start gap-2.5 cursor-pointer p-3 rounded-xl bg-[#FBF8F1] border border-[#DDD5C3]/50 shadow-sm">
                 <input
                   type="checkbox"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 text-[#8CA394] bg-[#FCF1F3] border-[#DDD5C3] rounded focus:ring-0 cursor-pointer"
+                  className="mt-0.5 w-4 h-4 text-[#8CA394] bg-[#FAF4F2] border-[#DDD5C3] rounded focus:ring-0 cursor-pointer"
                   id="checkbox-accept-terms"
                 />
                 <span className="text-[11px] text-[#22301F] font-semibold leading-relaxed">

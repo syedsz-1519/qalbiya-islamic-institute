@@ -1,6 +1,6 @@
 import React from "react";
 import { Course } from "../types";
-import { X, Check, ArrowUpRight, Clipboard, Calendar, Clock, BookOpen, Share2, Copy } from "lucide-react";
+import { X, Check, ArrowUpRight, Clipboard, Calendar, Clock, BookOpen, Share2, Copy, Sparkles } from "lucide-react";
 
 /**
  * Generates a themed QR Code image URL for a specific course page.
@@ -109,6 +109,12 @@ Please guide me with the next steps for course registration and onboarding. Jaza
                   <span>New Release</span>
                 </span>
               )}
+              {course.isFree && (
+                <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md border text-white bg-emerald-700 border-emerald-800 flex items-center gap-1" id={`modal-free-badge-${course.id}`}>
+                  <Sparkles className="w-3 h-3 text-white animate-pulse" />
+                  <span>Free Access &bull; Sustainability Program</span>
+                </span>
+              )}
             </div>
             <h2 className="font-serif text-3xl font-bold text-[#22301F] leading-tight">
               {course.title}
@@ -179,9 +185,13 @@ Please guide me with the next steps for course registration and onboarding. Jaza
             <div className="space-y-1">
               <h5 className="font-serif font-bold text-[#22301F] text-sm">Enrollment Intake & Forms</h5>
               <p className="text-xs text-[#5B5648]/80 font-light">
-                {formDetails 
-                  ? "Enrollment is processed securely through an integrated Google Registration Form."
-                  : "Syllabus details have been compiled. Registration is currently scheduled to open soon."}
+                {isEnrolled
+                  ? "You are actively studying this self-paced complementary course."
+                  : course.isFree
+                    ? "This is a complementary self-paced course! No tuition fee or strict intake schedules required."
+                    : formDetails 
+                      ? "Enrollment is processed securely through an integrated Google Registration Form."
+                      : "Syllabus details have been compiled. Registration is currently scheduled to open soon."}
               </p>
             </div>
 
@@ -204,12 +214,14 @@ Please guide me with the next steps for course registration and onboarding. Jaza
                 <button
                   onClick={() => triggerEnrollmentFlow("direct")}
                   className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all btn-shadow hover:scale-[1.02] active:scale-95 text-white cursor-pointer ${
-                    course.category === "women"
-                      ? "bg-[#B98072] hover:bg-[#8A5A4D]"
-                      : "bg-[#B0863A] hover:bg-[#87652A]"
+                    course.isFree
+                      ? "bg-emerald-700 hover:bg-emerald-800"
+                      : course.category === "women"
+                        ? "bg-[#B98072] hover:bg-[#8A5A4D]"
+                        : "bg-[#B0863A] hover:bg-[#87652A]"
                   }`}
                 >
-                  <span>Enroll Directly</span>
+                  <span>{course.isFree ? "Enroll for Free" : "Enroll Directly"}</span>
                 </button>
               </div>
             )}

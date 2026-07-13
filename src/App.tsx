@@ -534,7 +534,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                  {COURSES.filter(c => c.flagship).map((course) => (
+                  {COURSES.filter(c => c.flagship || c.isFree).map((course) => (
                     <CourseCard
                       key={course.id}
                       course={course}
@@ -843,185 +843,50 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
             </div>
 
+            {/* Search & Sort controls bar */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#FAF4F2]/50 border border-[#DDD5C3]/60 rounded-3xl p-4 max-w-5xl mx-auto w-full">
+              <div className="relative w-full sm:max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B5648]/60" />
+                <input
+                  type="text"
+                  placeholder="Search women's courses (e.g. Tajweed, Seerah)..."
+                  value={womenSearch}
+                  onChange={(e) => setWomenSearch(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#DDD5C3] rounded-2xl text-xs font-sans placeholder-[#5B5648]/50 focus:outline-none focus:border-[#B98072] focus:ring-1 focus:ring-[#B98072]/30 transition-all"
+                />
+              </div>
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                <ArrowUpDown className="w-4 h-4 text-[#8CA394]" />
+                <select
+                  value={womenSort}
+                  onChange={(e) => setWomenSort(e.target.value as any)}
+                  className="bg-white border border-[#DDD5C3] rounded-2xl px-4 py-2.5 text-xs font-mono text-[#5B5648]/80 focus:outline-none focus:border-[#B98072]"
+                >
+                  <option value="popular">Sort by Popularity</option>
+                  <option value="newest">Sort by Newest</option>
+                  <option value="title">Sort by Name</option>
+                </select>
+              </div>
+            </div>
+
             {/* Course Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10" id="women-courses-grid">
-              
-              {/* Card 1: Seerah of Prophet ﷺ Course */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B98072] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-seerah">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B98072]/10 text-[#B98072] border border-[#B98072]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      🔥 Popular — Joined by 50+ students
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#8A5A4D] font-bold">Seerah</span>
-                  </div>
-
-                  {/* Soft Editorial Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-[#FAF8F1] to-[#FAF4F2] rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <Heart className="w-10 h-10 text-[#B98072] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Aesthetic Living Sunnah</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B98072] transition-colors duration-300">
-                    Seerah of Prophet ﷺ Course
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#8A5A4D] font-light mb-4">
-                    "Let his character reshape yours."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    An immersive, heart-centered exploration of the Prophetic life. Study his beautiful dealings with family, his handling of trial and grief, and find profound peace for your modern challenges.
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto" id="women-courses-grid">
+              {womenCourses.length > 0 ? (
+                womenCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    formDetails={activeFormDetails[course.id] || null}
+                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    user={user}
+                    isEnrolled={userEnrollments.includes(course.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center text-[#5B5648]/60 font-mono text-xs">
+                  No courses found matching "{womenSearch}"
                 </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B98072]" />
-                      2 months
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 299/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-seerah-prophet")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2: Tajweed 1:1 Classes */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B98072] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-tajweed">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B98072]/10 text-[#B98072] border border-[#B98072]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      🔥 Popular
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#8A5A4D] font-bold">1:1 Mentorship</span>
-                  </div>
-
-                  {/* Soft Editorial Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-[#FAF8F1] to-[#EADAC2]/30 rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <BookOpen className="w-10 h-10 text-[#8A5A4D] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Divine Recitation Artistry</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B98072] transition-colors duration-300">
-                    Tajweed 1:1 Classes
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#8A5A4D] font-light mb-4">
-                    "Every ayah, focused solely on you."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    Personalized, one-on-one sessions with certified Reciters. Perfect for refining your articulation (Makharij) and reading fluency at your own pace with a dedicated female mentor.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B98072]" />
-                      5 months
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 800/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-tajweed-1on1")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 3: Noorani Qaida Course */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B98072] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-noorani-women">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B98072]/10 text-[#B98072] border border-[#B98072]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      🔥 Popular — Joined by 200+ students
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#8A5A4D] font-bold">Foundations</span>
-                  </div>
-
-                  {/* Soft Editorial Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-[#FAF8F1] to-[#8CA394]/10 rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <Globe className="w-10 h-10 text-[#8CA394] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Beginner Quranic Roots</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B98072] transition-colors duration-300">
-                    Noorani Qaida Course
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#8A5A4D] font-light mb-4">
-                    "Where your Qur'an journey begins."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    The foundational gate to reading the Quran. Designed specifically for absolute beginners or those wishing to rebuild their reading phonics from the roots up. Gentle, patient, and thorough.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B98072]" />
-                      2 months
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 299/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-noorani-qaida-women")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 4: Pre-Diploma in Deeniyat */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B98072] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-deeniyat-women">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B98072]/10 text-[#B98072] border border-[#B98072]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      🔥 Popular
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#8A5A4D] font-bold">Comprehensive Diploma</span>
-                  </div>
-
-                  {/* Soft Editorial Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-[#FAF8F1] to-[#22301F]/5 rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <Award className="w-10 h-10 text-[#22301F] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Complete Faith Foundation</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B98072] transition-colors duration-300">
-                    Pre-Diploma in Deeniyat
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#8A5A4D] font-light mb-4">
-                    "Your complete foundation in Deen."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    A structured, six-month journey covering everything from correcting recitation to understanding core beliefs. Built for the woman who wants to stop learning Islam in scattered pieces.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B98072]" />
-                      6 months
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 499/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-pre-diploma-deeniyat")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
+              )}
             </div>
 
             {/* Closing Section */}
@@ -1081,97 +946,50 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
             </div>
 
+            {/* Search & Sort controls bar */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#FAF4F2]/50 border border-[#DDD5C3]/60 rounded-3xl p-4 max-w-5xl mx-auto w-full">
+              <div className="relative w-full sm:max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B5648]/60" />
+                <input
+                  type="text"
+                  placeholder="Search kids' courses (e.g. Noorani, Deeniyat)..."
+                  value={kidsSearch}
+                  onChange={(e) => setKidsSearch(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#DDD5C3] rounded-2xl text-xs font-sans placeholder-[#5B5648]/50 focus:outline-none focus:border-[#B0863A] focus:ring-1 focus:ring-[#B0863A]/30 transition-all"
+                />
+              </div>
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                <ArrowUpDown className="w-4 h-4 text-[#8CA394]" />
+                <select
+                  value={kidsSort}
+                  onChange={(e) => setKidsSort(e.target.value as any)}
+                  className="bg-white border border-[#DDD5C3] rounded-2xl px-4 py-2.5 text-xs font-mono text-[#5B5648]/80 focus:outline-none focus:border-[#B0863A]"
+                >
+                  <option value="popular">Sort by Popularity</option>
+                  <option value="newest">Sort by Newest</option>
+                  <option value="title">Sort by Name</option>
+                </select>
+              </div>
+            </div>
+
             {/* Course Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10" id="kids-courses-grid">
-              
-              {/* Card 1: Juniors Deeniyat Mastercourse */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B0863A] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-juniors">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B0863A]/10 text-[#B0863A] border border-[#B0863A]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      ✨ Star Course
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#87652A] font-bold">Comprehensive Curriculum</span>
-                  </div>
-
-                  {/* Warm but Elegant Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-pink-50/40 to-[#FAF4F2] rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <Sparkles className="w-10 h-10 text-[#B98072] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Engaging Playful Faith</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B0863A] transition-colors duration-300">
-                    Juniors Deeniyat Mastercourse
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#87652A] font-light mb-4">
-                    "A complete Islamic foundation, built to last a lifetime."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    An engaging, fun, and highly interactive course designed to instil an enduring love for Allah, the Prophet ﷺ, and Islamic values in young hearts using visual slides and stories.
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto" id="kids-courses-grid">
+              {kidsCourses.length > 0 ? (
+                kidsCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    formDetails={activeFormDetails[course.id] || null}
+                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    user={user}
+                    isEnrolled={userEnrollments.includes(course.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center text-[#5B5648]/60 font-mono text-xs">
+                  No courses found matching "{kidsSearch}"
                 </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B0863A]" />
-                      1 Year (Ages 6-12)
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 600/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-juniors-deeniyat-mastercourse")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2: Noorani Qaida (Kids') */}
-              <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 flex flex-col justify-between hover:border-[#B0863A] hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden" id="card-hub-noorani-kids">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="bg-[#B0863A]/10 text-[#B0863A] border border-[#B0863A]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      🚀 Interactive
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#87652A] font-bold">Phonics</span>
-                  </div>
-
-                  {/* Warm but Elegant Aesthetic Image Area */}
-                  <div className="h-44 bg-gradient-to-tr from-[#FAF8F1] to-[#EADAC2]/30 rounded-2xl border border-[#DDD5C3]/40 flex flex-col items-center justify-center overflow-hidden mb-6 group-hover:scale-[1.01] transition-transform duration-300 relative">
-                    <BookOpen className="w-10 h-10 text-[#B0863A] mb-2 stroke-[1.2] group-hover:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/60">Rhythmic Alphabet Phonics</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] mb-2 group-hover:text-[#B0863A] transition-colors duration-300">
-                    Noorani Qaida (Kids')
-                  </h3>
-                  <p className="font-sans italic text-sm text-[#87652A] font-light mb-4">
-                    "The first step to reading Qur'an."
-                  </p>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    A rhythmic, engaging, and guided path to help children master Arabic letter recognition and build a lifelong love for reading the Quran with proper pronunciation.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-[#DDD5C3]/40 space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono text-[#5B5648]/80">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B0863A]" />
-                      4–5 months
-                    </span>
-                    <span className="text-sm font-bold text-[#22301F]">From Rs. 500/month</span>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentTab("course-noorani-qaida-kids")}
-                    className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
-                  >
-                    View Course
-                  </button>
-                </div>
-              </div>
-
+              )}
             </div>
 
             {/* Closing Section */}

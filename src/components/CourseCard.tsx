@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Course } from "../types";
-import { Clock, Calendar, User, ArrowRight, Star, ExternalLink, Bookmark, Check, Share2, Copy } from "lucide-react";
+import { Clock, Calendar, User, ArrowRight, Star, ExternalLink, Bookmark, Check, Share2, Copy, Sparkles } from "lucide-react";
 
 interface CourseCardProps {
   course: Course;
@@ -24,7 +24,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   const ttsText = `${course.title}. Instructed by ${course.instructor}. Duration: ${course.duration}. Schedule: ${course.schedule}. Course overview: ${course.description} The primary curriculum outline includes: ${course.outline.slice(0, 3).join(", ")}`;
 
   return (
-    <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl relative group" id={`course-card-${course.id}`}>
+    <div className={`bg-[#FBF8F1] border ${course.isFree ? 'border-emerald-600/40 shadow-sm hover:shadow-emerald-100/50 shadow-emerald-50' : 'border-[#DDD5C3]'} rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl relative group`} id={`course-card-${course.id}`}>
       
       {/* Flagship / Enrolled / New Indicator Accent */}
       <div className="absolute top-0 left-8 -translate-y-1/2 flex gap-2 z-10">
@@ -38,6 +38,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           <div className="bg-[#B98072] text-white border border-[#8A5A4D] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`new-badge-${course.id}`}>
             <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse mr-0.5" />
             <span>New</span>
+          </div>
+        )}
+        {course.isFree && (
+          <div className="bg-emerald-700 text-white border border-emerald-800 rounded-full px-3 py-0.5 flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`free-badge-${course.id}`}>
+            <Sparkles className="w-2.5 h-2.5 text-white animate-pulse" />
+            <span>Free Access &bull; Sustainability Program</span>
           </div>
         )}
         {isEnrolled && (
@@ -138,6 +144,14 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               <span>Google Form</span>
               <ExternalLink className="w-3 h-3" />
             </a>
+          </div>
+        ) : course.isFree ? (
+          <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 text-[11px] text-emerald-800 font-sans flex items-center justify-between shadow-sm">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shrink-0" />
+              <span className="font-bold text-emerald-950">Sustainability Program &bull; Free Access</span>
+            </span>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200">Self-Paced</span>
           </div>
         ) : (
           <div className="bg-[#FAF4F2] border border-[#DDD5C3]/50 rounded-xl p-3 text-[11px] text-[#5B5648]/60 font-sans">

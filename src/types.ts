@@ -15,6 +15,7 @@ export interface Course {
   formId?: string; // Optional Google Form ID if initialized
   formUrl?: string; // Google Form publish/responder link
   isNew?: boolean;
+  isFree?: boolean;
 }
 
 export interface UserEnrollment {

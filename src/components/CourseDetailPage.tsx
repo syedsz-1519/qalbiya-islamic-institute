@@ -237,7 +237,7 @@ export function CourseDetailPage({
       const acceptedAt = new Date().toISOString();
       await onEnrollSuccess(course.id, acceptedAt);
       
-      const formatSelection = course.id === "pre-diploma" ? ` (${pricingMode === "group" ? "Sisters Group - Rs. 499/mo" : "Dedicated 1-on-1 - Rs. 699/mo"})` : "";
+      const formatSelection = course.id === "pre-diploma-deeniyat" ? ` (${pricingMode === "group" ? "Sisters Group - Rs. 499/mo" : "Dedicated 1-on-1 - Rs. 699/mo"})` : "";
       
       const waMessage = `Assalamu'alaikum wa rahmatullahi wa barakatuhu, QALBIYA Admissions Desk.
 
@@ -1619,6 +1619,16 @@ Please guide me with the enrollment verification process. JazakAllahu Khairan!`;
                       <span>Fill Google Form</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </a>
+                  </div>
+                ) : course.isFree ? (
+                  <div className="bg-emerald-50 border border-emerald-200/60 rounded-2xl p-4 space-y-3 text-xs text-emerald-900 shadow-sm">
+                    <div className="flex gap-2 items-center text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold">
+                      <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
+                      <span>Sustainability Program &bull; Free Access</span>
+                    </div>
+                    <p className="text-[#5B5648] font-light leading-relaxed">
+                      This is a complementary self-paced course! You can enroll immediately below to join the self-guided tracking panel, or start studying immediately in the Resources sanctuary.
+                    </p>
                   </div>
                 ) : (
                   <div className="bg-gray-100/50 border border-dashed border-gray-200 rounded-2xl p-4 text-center">

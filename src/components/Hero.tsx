@@ -19,6 +19,23 @@ export const Hero: React.FC<HeroProps> = ({ onChoosePath }) => {
       {/* Main Hero Header */}
       <div className="text-center max-w-4xl mx-auto space-y-6 relative z-10">
         
+        {/* Elegant Opening Hadith (Above the Fold) */}
+        <div className="max-w-xl mx-auto bg-[#FBF8F1]/80 backdrop-blur-sm border border-[#DDD5C3]/40 rounded-2xl p-4 md:p-5 space-y-2.5 shadow-sm hover:border-[#B98072]/30 transition-all duration-300">
+          <div className="flex justify-center items-center gap-1.5 text-[10px] uppercase font-mono tracking-widest text-[#B98072] font-bold">
+            <BookOpen className="w-3.5 h-3.5 text-[#B98072]" />
+            <span>Prophetic Legacy</span>
+          </div>
+          <p className="font-arabic text-2xl text-[#22301F]/95 tracking-wide text-center leading-normal" dir="rtl">
+            خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ
+          </p>
+          <p className="font-serif italic text-[#5B5648] text-xs leading-relaxed max-w-md mx-auto">
+            "The best among you are those who learn the Qur'an and teach it."
+          </p>
+          <div className="text-[9px] font-mono uppercase tracking-[0.15em] text-[#8A5A4D]">
+            — Sahih al-Bukhari
+          </div>
+        </div>
+
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#B98072]/10 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold text-[#8A5A4D] border border-[#B98072]/20">
           <Sparkles className="w-3.5 h-3.5 text-[#B98072] fill-[#F1E7D3] animate-pulse" />
           <span>A Sanctuary for Spiritual Learning</span>

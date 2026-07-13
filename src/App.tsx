@@ -22,6 +22,7 @@ import { ResourcesHub } from "./components/ResourcesHub";
 import { ScholarshipPage } from "./components/ScholarshipPage";
 import { ContactPage } from "./components/ContactPage";
 import { LegalPages } from "./components/LegalPages";
+import { GeneralFAQ } from "./components/GeneralFAQ";
 import { CourseDetailPage } from "./components/CourseDetailPage";
 import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
 
@@ -1274,10 +1275,18 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
           <ContactPage />
         )}
 
+        {currentTab === "faq" && (
+          <GeneralFAQ 
+            onTabChange={setCurrentTab}
+            onBackToHome={() => setCurrentTab("home")}
+          />
+        )}
+
         {(currentTab === "refund-policy" || currentTab === "terms-conditions" || currentTab === "privacy-policy") && (
           <LegalPages 
             policyType={currentTab === "refund-policy" ? "refund" : currentTab === "terms-conditions" ? "terms" : "privacy"}
             onBackToHome={() => setCurrentTab("home")}
+            onTabChange={setCurrentTab}
           />
         )}
 
@@ -1375,13 +1384,15 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             </div>
           </div>
 
-          {/* Legal Pages Column */}
+          {/* Legal & Policies Column */}
           <div className="space-y-4 font-sans text-xs">
             <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Legal & Policies</h5>
             <div className="flex flex-col space-y-2">
               <button onClick={() => setCurrentTab("refund-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Refund Policy</button>
               <button onClick={() => setCurrentTab("terms-conditions")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Terms & Conditions</button>
               <button onClick={() => setCurrentTab("privacy-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Privacy Policy</button>
+              <button onClick={() => setCurrentTab("faq")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">General FAQ</button>
+              <button onClick={() => setCurrentTab("contact")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Contact Us</button>
             </div>
           </div>
 

@@ -4,9 +4,10 @@ import { ShieldCheck, Scale, FileText, Landmark, Clock, ArrowLeft } from "lucide
 interface LegalPageProps {
   policyType: "refund" | "terms" | "privacy";
   onBackToHome: () => void;
+  onTabChange?: (tab: string) => void;
 }
 
-export function LegalPages({ policyType, onBackToHome }: LegalPageProps) {
+export function LegalPages({ policyType, onBackToHome, onTabChange }: LegalPageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 space-y-12 animate-fade-in text-left font-sans" id="legal-policies-page">
       
@@ -26,43 +27,23 @@ export function LegalPages({ policyType, onBackToHome }: LegalPageProps) {
             <div className="w-12 h-12 bg-[#B98072]/15 text-[#8A5A4D] border border-[#B98072]/20 rounded-full flex items-center justify-center">
               <Landmark className="w-6 h-6" />
             </div>
-            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Tuition & Refund Policy</h1>
-            <p className="text-xs text-gray-400 font-mono">Last updated: June 2026</p>
+            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Refund Policy</h1>
+            <p className="text-xs text-gray-400 font-mono">Last updated: July 2026</p>
           </div>
 
           <div className="space-y-6 text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-            <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">1. Sincerity of Commitment</h3>
-              <p>
-                At Qalbiya Islamic Institute, class cohorts are highly structured and seat availability is strictly restricted to ensure qualified student-to-teacher ratios. When you enroll, you are securing a position that could have been allocated to another eager student of knowledge. We ask students to consider their commitment with sincere intent.
-              </p>
-            </section>
-
-            <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">2. Refund Timeline Parameters</h3>
-              <p>
-                Tuition payments for semester-based flagship programs are refundable according to the following strict timeline constraints:
-              </p>
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Full Refund (100%):</strong> Requested 14 days or more prior to the scheduled first live lecture of the semester.</li>
-                <li><strong>Partial Refund (50%):</strong> Requested within the first week (7 days) after the semester classes commence.</li>
-                <li><strong>No Refunds (0%):</strong> Any refund requests logged after 7 days of the active semester start date are not eligible for processing, as seats cannot be reallocated or filled mid-semester.</li>
-              </ul>
-            </section>
-
-            <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">3. 1-on-1 Mentorship Sessions</h3>
-              <p>
-                For our highly custom Tajweed 1:1 Mentorship tracks, hours are scheduled directly with designated instructors. Cancellations or rescheduling requests must be submitted at least 24 hours in advance. No-shows or cancellations within 24 hours are non-refundable and will be counted as completed toward your monthly subscription cycle.
-              </p>
-            </section>
-
-            <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">4. Processing Charges</h3>
-              <p>
-                A standard processing administrative surcharge of 5% applies to all processed refund transactions to cover card clearing gateways and registration ledger adjustments. All approved refunds are processed and returned to the source payment channel within 7 to 10 bank clearing days.
-              </p>
-            </section>
+            <p>
+              At Qalbiya Islamic Institute, we ask every student to review course details — syllabus, duration, format, and fees — carefully before enrolling.
+            </p>
+            <p className="font-medium text-[#22301F]">
+              All course fees, once paid, are non-refundable. This applies to monthly payments as well as full course payments, regardless of the reason for discontinuation.
+            </p>
+            <p>
+              We encourage students (or parents, for children's courses) to reach out to us with any questions before enrolling, so you can make an informed decision. Our team is always happy to help you choose the right course.
+            </p>
+            <p className="pt-4 border-t border-[#DDD5C3]/30">
+              For any questions regarding this policy, please contact us via <a href="https://wa.me/918145363290" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">WhatsApp</a> or <a href="https://instagram.com/qalbiya_institute" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">Instagram</a>.
+            </p>
           </div>
         </div>
       )}
@@ -73,43 +54,89 @@ export function LegalPages({ policyType, onBackToHome }: LegalPageProps) {
             <div className="w-12 h-12 bg-[#B98072]/15 text-[#8A5A4D] border border-[#B98072]/20 rounded-full flex items-center justify-center">
               <Scale className="w-6 h-6" />
             </div>
-            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Terms & Conditions of Service</h1>
-            <p className="text-xs text-gray-400 font-mono">Last updated: June 2026</p>
+            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Terms & Conditions</h1>
+            <p className="text-xs text-gray-400 font-mono">Last updated: July 2026</p>
           </div>
 
           <div className="space-y-6 text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+            <p className="font-medium text-[#22301F]">
+              By enrolling in any course at Qalbiya Islamic Institute, you agree to the following terms:
+            </p>
+
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">1. Agreement to Terms</h3>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">1. Enrollment</h3>
               <p>
-                By accessing our online learning portal, registering for physical/virtual cohorts, or consuming any Deeniyat curriculum content published by Qalbiya Islamic Institute, you agree to comply with and be bound by these institutional Terms of Service.
+                Enrollment is confirmed only after payment is received. Course access, class links, and scheduling will be shared after confirmation.
               </p>
             </section>
 
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">2. Code of Conduct & Ethics (Adab)</h3>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">2. Fees & Payment</h3>
               <p>
-                Traditional learning requires exceptional ethics (Adab) and respect toward our instructors, administrative staff, and fellow students. Qalbiya reserves the absolute right to suspend or permanently expel any student from active cohorts, forum channels, or portals who engages in:
-              </p>
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li>Defamatory, aggressive, or disrespectful language in classroom chats or discussion boards.</li>
-                <li>Disruptive behavior that repeatedly interferes with the lecture sequence or student study environment.</li>
-                <li>Sharing of personal login keys, textbook materials, or recorded lectures with unregistered third-party users.</li>
-              </ul>
-            </section>
-
-            <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">3. Intellectual Property Safeguards</h3>
-              <p>
-                All slide decks, textbook summaries, custom audio recitation guides, question dossiers, and recorded visual lectures are the exclusive intellectual property of Qalbiya Islamic Institute. Students are granted a personal, non-exclusive, non-transferable license to study the resources for private personal enrichment. Downloading, duplicating, reuploading to public streaming sites, or commercializing these curricula is strictly prohibited.
+                Course fees must be paid according to the schedule listed on each course page (monthly or full course). Late or missed payments may result in a pause in class access until payment is completed.
               </p>
             </section>
 
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">4. Virtual Attendance Standards</h3>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">3. Attendance & Scheduling</h3>
               <p>
-                Flagship intakes feature live Zoom or Google Meet classes. While we publish recordings for makeup sessions, students are strongly advised to maintain a minimum 80% live attendance rate to remain eligible for graduation certificates, semester-end assessments, and teacher evaluations.
+                For 1-on-1 classes, timing is arranged directly with the student based on mutual availability. For group classes, students are expected to follow the scheduled class timing. Missed content in individual (1-on-1) classes will be covered in the next session; group class policies may vary by course.
               </p>
             </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">4. Conduct</h3>
+              <p>
+                Students are expected to attend classes with respect, sincerity, and a willingness to learn. Qalbiya Islamic Institute reserves the right to discontinue access for any student whose conduct is disrespectful or disruptive to teachers or fellow students.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">5. Course Content & Materials</h3>
+              <p>
+                All course materials, notes, and recordings (where applicable) are for the personal use of the enrolled student only. Sharing, reselling, or redistributing course content without permission is not allowed.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">6. Certificates</h3>
+              <p>
+                Certificates are issued only upon successful completion of course requirements, including any required exams or tests as outlined on the course page.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">7. Changes to Courses</h3>
+              <p>
+                Qalbiya Islamic Institute reserves the right to make reasonable changes to class schedules, teachers, or course structure when necessary, with advance notice to enrolled students wherever possible.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">8. Refunds</h3>
+              <p>
+                Please refer to our{" "}
+                <button
+                  type="button"
+                  onClick={() => onTabChange?.("refund-policy")}
+                  className="font-semibold text-[#8A5A4D] hover:underline cursor-pointer focus:outline-none"
+                >
+                  Refund Policy
+                </button>{" "}
+                — all payments are non-refundable.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">9. Governing Law</h3>
+              <p>
+                These terms are governed by the laws of India.
+              </p>
+            </section>
+
+            <p className="pt-4 border-t border-[#DDD5C3]/30">
+              For any questions about these terms, please contact us via <a href="https://wa.me/918145363290" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">WhatsApp</a> or <a href="https://instagram.com/qalbiya_institute" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">Instagram</a>.
+            </p>
           </div>
         </div>
       )}
@@ -120,46 +147,57 @@ export function LegalPages({ policyType, onBackToHome }: LegalPageProps) {
             <div className="w-12 h-12 bg-[#B98072]/15 text-[#8A5A4D] border border-[#B98072]/20 rounded-full flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Institutional Privacy Policy</h1>
-            <p className="text-xs text-gray-400 font-mono">Last updated: June 2026</p>
+            <h1 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">Privacy Policy</h1>
+            <p className="text-xs text-gray-400 font-mono">Last updated: July 2026</p>
           </div>
 
           <div className="space-y-6 text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+            <p className="font-medium text-[#22301F]">
+              Qalbiya Islamic Institute respects your privacy. This page explains what information we collect and how it's used.
+            </p>
+
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">1. Information We Collect</h3>
-              <p>
-                To provide a secure student portal and structured tracking, we collect the following limited data points:
-              </p>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">Information We Collect</h3>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Identity Parameters:</strong> Name, Email, Google photo reference (for portal custom headers), and WhatsApp contact phone (if submitted).</li>
-                <li><strong>Dossier Credentials:</strong> Homework progress indicators, course bookmark lists, and student study bio/study background inputs.</li>
-                <li><strong>Admissions Inquiries:</strong> Statements of financial background for scholarship applicants, and direct admissions contact form details.</li>
+                <li>
+                  <strong>Name and contact details</strong> (WhatsApp number, email, or Instagram handle) provided during enrollment.
+                </li>
+                <li>
+                  <strong>Payment information</strong>, processed securely through our payment method(s) — Qalbiya Islamic Institute does not store your card or banking details directly.
+                </li>
+                <li>
+                  <strong>Messages and communication</strong> shared with us via WhatsApp or Instagram for support and class coordination.
+                </li>
               </ul>
             </section>
 
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">2. Guarding Women & Kids Privacy</h3>
-              <p>
-                Our cohort learning tracks focus on Muslim women and children. We implement exceptionally strict security filters to maintain absolute privacy:
-              </p>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">How We Use Your Information</h3>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li>All student profile bios, photos, and progress states are restricted via Firestore security parameters, accessible ONLY to the individual owner or authenticated administrators.</li>
-                <li>No student contact details, emails, or phone numbers are ever displayed in public listings, catalogs, or search pages.</li>
-                <li>Live children's classrooms are moderated at all times by a minimum of two background-checked coordinators.</li>
+                <li>To confirm enrollment and provide class access.</li>
+                <li>To communicate class schedules, updates, and support.</li>
+                <li>To share homework, notes, and progress updates (for children's courses, with parents).</li>
               </ul>
             </section>
 
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">3. Zero Data Commercialization</h3>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">Information Sharing</h3>
               <p>
-                We do not sell, trade, rent, or lease our student email databases, WhatsApp phones, or registry logs to advertising agencies, corporate publishers, or analytics brokers. Your coordinates remain a complete institutional trust.
+                We do not sell, rent, or share your personal information with third parties, except where required to process payments or where legally required.
               </p>
             </section>
 
             <section className="space-y-2">
-              <h3 className="font-serif font-bold text-[#22301F] text-base">4. Right to Deletion (GDPR/CCPA compliant)</h3>
+              <h3 className="font-serif font-bold text-[#22301F] text-base">Testimonials</h3>
               <p>
-                You hold the absolute right to request the complete deletion of your student account, profile documents, enrollment history, and contact submissions. To request deletion, please contact our registrar desk at qalbiyaislamicinstitute@gmail.com. All records will be expunged from primary active databases within 72 hours.
+                With permission, student feedback (such as messages or shared testimonials) may be featured on our website or social media to help other students learn about our courses. If you do not wish your feedback to be used publicly, please let us know.
+              </p>
+            </section>
+
+            <section className="space-y-2 pt-4 border-t border-[#DDD5C3]/30">
+              <h3 className="font-serif font-bold text-[#22301F] text-base">Contact</h3>
+              <p>
+                For any questions about this policy or your personal data, please contact us via <a href="https://wa.me/918145363290" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">WhatsApp</a> or <a href="https://instagram.com/qalbiya_institute" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#8A5A4D] hover:underline">Instagram</a>.
               </p>
             </section>
           </div>

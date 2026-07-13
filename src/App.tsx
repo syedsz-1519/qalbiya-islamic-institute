@@ -24,6 +24,8 @@ import { ContactPage } from "./components/ContactPage";
 import { LegalPages } from "./components/LegalPages";
 import { GeneralFAQ } from "./components/GeneralFAQ";
 import { CourseDetailPage } from "./components/CourseDetailPage";
+import { Testimonials } from "./components/Testimonials";
+import { Newsletter } from "./components/Newsletter";
 import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
 
 function parseDurationToWeeks(durationStr: string): number {
@@ -68,10 +70,14 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.removeItem("qalbiya_theme");
-      document.documentElement.classList.remove("dark");
+      const savedTheme = localStorage.getItem("qalbiya_theme");
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     } catch (e) {
-      console.warn("Could not clean up theme setting", e);
+      console.warn("Could not load theme setting", e);
     }
   }, []);
 
@@ -610,6 +616,9 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </div>
             </div>
 
+            {/* Testimonials Section */}
+            <Testimonials />
+
             {/* FAQs on Home Page */}
             <div className="max-w-7xl mx-auto border-t border-[#DDD5C3] pt-12">
               <CourseFAQ
@@ -777,6 +786,9 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                 )}
               </div>
             </div>
+
+            {/* Newsletter Section */}
+            <Newsletter />
           </div>
         )}
 

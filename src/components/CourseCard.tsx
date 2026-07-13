@@ -28,12 +28,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   const ttsText = `${course.title}. Instructed by ${course.instructor}. Duration: ${course.duration}. Schedule: ${course.schedule}. Course overview: ${course.description} The primary curriculum outline includes: ${course.outline.slice(0, 3).join(", ")}`;
 
   return (
-    <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl relative group" id={`course-card-${course.id}`}>
+    <div className="bg-[#FBF8F1] dark:bg-[#111610] border border-[#DDD5C3] dark:border-[#243524] rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 dark:hover:border-[#7E9C7E]/80 transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-2xl relative group" id={`course-card-${course.id}`}>
       
       {/* Flagship / Enrolled / New Indicator Accent */}
       <div className="absolute top-0 left-8 -translate-y-1/2 flex gap-2 z-10">
         {course.flagship && (
-          <div className="bg-[#B0863A] text-white border border-[#87652A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
+          <div className="bg-[#B0863A] dark:bg-[#C5A059] text-white border border-[#87652A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
             <Star className="w-2.5 h-2.5 fill-white text-white" />
             <span>Flagship Course</span>
           </div>
@@ -60,10 +60,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             e.stopPropagation();
             onBookmarkToggle(course.id);
           }}
-          className="absolute top-4 right-4 p-1.5 bg-[#FAF4F2] hover:bg-white border border-[#DDD5C3] rounded-full text-[#8CA394] hover:text-[#B98072] transition-colors cursor-pointer z-10"
+          className="absolute top-4 right-4 p-1.5 bg-[#FAF4F2] dark:bg-[#0B0E0A] hover:bg-white dark:hover:bg-[#2E402D]/40 border border-[#DDD5C3] dark:border-[#243524] rounded-full text-[#8CA394] hover:text-[#B98072] transition-colors cursor-pointer z-10"
           title={isBookmarked ? "Remove Bookmark" : "Bookmark Program"}
         >
-          <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-[#B98072] text-[#B98072]" : ""}`} />
+          <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-[#B98072] text-[#B98072]" : "text-[#8CA394]"}`} />
         </button>
       )}
 
@@ -71,31 +71,31 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         
         {/* Category & Duration Row */}
         <div className="flex justify-between items-center text-xs font-mono">
-          <span className={`uppercase tracking-widest text-[10px] font-bold ${course.category === 'women' ? 'text-[#8A5A4D]' : 'text-[#87652A]'}`}>
-            {course.category === "women" ? "Women Cources" : "Kids Cources"}
+          <span className={`uppercase tracking-widest text-[10px] font-bold ${course.category === 'women' ? 'text-[#8A5A4D] dark:text-[#E0A395]' : 'text-[#87652A] dark:text-[#DFBA73]'}`}>
+            {course.category === "women" ? "Women Courses" : "Kids Courses"}
           </span>
-          <span className="flex items-center gap-1 text-[#5B5648]/80">
-            <Clock className="w-3.5 h-3.5 text-[#8CA394]" />
+          <span className="flex items-center gap-1 text-[#5B5648]/80 dark:text-[#ABB9AB]/80">
+            <Clock className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E]" />
             {course.duration}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className={`font-serif text-xl md:text-2xl font-bold text-[#22301F] leading-tight transition-colors duration-300 ${course.category === 'women' ? 'group-hover:text-[#B98072]' : 'group-hover:text-[#B0863A]'}`}>
+        <h3 className={`font-serif text-xl md:text-2xl font-bold text-[#22301F] dark:text-[#FAF4F2] leading-tight transition-colors duration-300 ${course.category === 'women' ? 'group-hover:text-[#B98072] dark:group-hover:text-[#E0A395]' : 'group-hover:text-[#B0863A] dark:group-hover:text-[#DFBA73]'}`}>
           {course.title}
         </h3>
 
         {/* Short Description */}
-        <p className="font-sans text-[#5B5648] text-xs md:text-sm leading-relaxed font-light line-clamp-3">
+        <p className="font-sans text-[#5B5648] dark:text-[#ABB9AB] text-xs md:text-sm leading-relaxed font-light line-clamp-3">
           {course.description}
         </p>
 
         {/* Highlights / Features list */}
-        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] font-sans border-t border-[#DDD5C3]/40 relative group/tooltip cursor-help" id={`highlights-${course.id}`}>
+        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] dark:text-[#ABB9AB] font-sans border-t border-[#DDD5C3]/40 dark:border-[#243524]/40 relative group/tooltip cursor-help" id={`highlights-${course.id}`}>
           {/* Hover Tooltip Container */}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 bg-[#22301F] text-[#FAF4F2] text-xs p-3.5 rounded-2xl shadow-2xl opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-all duration-300 ease-out z-30 font-sans border border-[#B0863A]/40 transform translate-y-1 group-hover/tooltip:translate-y-0 text-left">
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F]" />
-            <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] flex items-center gap-1.5">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 bg-[#22301F] dark:bg-[#121812] text-[#FAF4F2] text-xs p-3.5 rounded-2xl shadow-2xl opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-all duration-300 ease-out z-30 font-sans border border-[#B0863A]/40 transform translate-y-1 group-hover/tooltip:translate-y-0 text-left">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F] dark:border-t-[#121812]" />
+            <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] dark:text-[#DFBA73] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-[#B98072] rounded-full animate-pulse" />
               <span>{(course.instructor || course.schedule) ? "Schedule & Faculty Info" : "Program Information"}</span>
             </p>
@@ -111,7 +111,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] font-mono">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] dark:text-[#7E9C7E] font-mono">
               {(course.instructor || course.schedule) ? "Session Info" : "Program Info"}
             </span>
             <span className="text-[9px] font-medium text-[#B98072]/80 bg-[#B98072]/5 px-1.5 py-0.5 rounded border border-[#B98072]/15 flex items-center gap-1">
@@ -122,19 +122,19 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
           {course.schedule ? (
             <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <Calendar className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
               <span className="truncate">{course.schedule}</span>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <Clock className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
               <span className="truncate">Duration: {course.duration}</span>
             </div>
           )}
 
           {course.instructor && (
             <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
+              <User className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
               <span className="truncate">Instructed by {course.instructor}</span>
             </div>
           )}

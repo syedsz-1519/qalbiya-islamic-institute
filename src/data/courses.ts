@@ -34,26 +34,25 @@ export const COURSES: Course[] = [
   },
   {
     id: 'tajweed-1on1',
-    title: 'Tajweed 1:1 Mentorship',
+    title: 'Tajweed 1:1 Classes',
     category: 'women',
     flagship: false,
-    duration: 'Ongoing (Monthly)',
-    schedule: 'Flexible (Scheduled individually with your mentor)',
-    instructor: 'Ustadha Sarah Mansoor',
-    description: 'Personalized, one-on-one sessions with certified Reciters. Perfect for refining your articulation (Makharij) and reading fluency at your own pace.',
-    longDescription: 'Our Tajweed 1:1 Mentorship offers a completely custom learning path. Whether you are correcting basic letter sounds or preparing to read with perfect fluency, your dedicated female instructor will provide instant feedback, customized practice goals, and an encouraging environment to beautify your recitation of the Quran.',
+    duration: '5 Months',
+    schedule: '3 Classes per week (Flexible)',
+    instructor: 'Ms. Mustara, Founder of QALBIYA Islamic Institute',
+    description: 'One-on-one Tajweed classes designed around your pace, your pronunciation, and your journey to reciting the Qur\'an with confidence and correctness.',
+    longDescription: 'From Makharij to Sifaat — the complete rules of Tajweed, taught in depth. This isn\'t surface-level correction; it\'s a full, structured mastery of how the Qur\'an is meant to be recited.',
     outline: [
-      'Makharij al-Huroof (Articulation points of letters)',
-      'Sifaat al-Huroof (Characteristics of letters)',
-      'Rules of Nun Sakinah and Tanween',
-      'Rules of Mim Sakinah and Mudood (Lengthening)',
-      'Guided application of rules through selective chapters of the Quran'
+      'Correct Makharij – Points of articulation of letters',
+      'Sifaat – Characteristics of letters',
+      'Complete Tajweed rules – Basic to advanced rules of recitation',
+      'Ongoing correction – Addressing your personal recitation and recurring mistakes'
     ],
     benefits: [
-      '100% personalized attention and individual feedback',
-      'Flexible scheduling to fit work, study, or family commitments',
-      'Clear tracking of your progress from letter-by-letter to fluent reading',
-      'Conducted entirely online in secure, private video classrooms'
+      '📄 Notes/PDFs for every lesson',
+      '📝 Personal mistake-tracking list (so you can see your own progress clearly)',
+      '💬 WhatsApp support outside class hours — including daily practice via voice messages and homework',
+      '🎓 Certificate on completion'
     ],
     imagePrompt: 'An elegant composition showing beautiful Arabic script on fine parchment paper with a warm focus, ivory and soft gold tones',
     bgGradient: 'from-emerald-50 to-teal-100/50 text-emerald-900 border-emerald-200',
@@ -106,7 +105,7 @@ export const COURSES: Course[] = [
       'Focuses on modern practical applications of the Seerah',
       'Reflective journaling exercises to build a personal connection',
       'Exclusive reading list and companion study guides',
-      'Interactive cohort discussions on contemporary lessons'
+      'Interactive group discussions on contemporary lessons'
     ],
     imagePrompt: 'An atmospheric watercolor painting of a starry night sky over desert sand dunes under a silver crescent moon, in deep slate and gold accents',
     bgGradient: 'from-purple-50 to-fuchsia-100/50 text-purple-900 border-purple-200',
@@ -120,8 +119,8 @@ export const COURSES: Course[] = [
     duration: '1 Year (Ages 6-12)',
     schedule: '',
     instructor: '',
-    description: 'An engaging, fun, and highly interactive program designed to instil an enduring love for Allah, the Prophet ﷺ, and Islamic values in young hearts.',
-    longDescription: 'The Juniors Deeniyat Mastercourse is QALBIYA Islamic Institute’s flagship children’s program. Utilizing modern gamified learning, engaging stories, hands-on craft projects, and visual slides, we teach the essentials of Islamic faith, character, prayers, and history in a language kids love. We focus on building a positive Muslim identity and showing the beauty of faith.',
+    description: 'An engaging, fun, and highly interactive course designed to instil an enduring love for Allah, the Prophet ﷺ, and Islamic values in young hearts.',
+    longDescription: 'The Juniors Deeniyat Mastercourse is QALBIYA Islamic Institute’s flagship children’s course. Utilizing modern gamified learning, engaging stories, hands-on craft projects, and visual slides, we teach the essentials of Islamic faith, character, prayers, and history in a language kids love. We focus on building a positive Muslim identity and showing the beauty of faith.',
     outline: [
       'My Creator: Understanding Allah through His beautiful names',
       'The Heroes of Islam: Stories of the Prophets and Companions',
@@ -158,7 +157,7 @@ export const COURSES: Course[] = [
     benefits: [
       'Short 45-minute classes perfectly optimized for child attention spans',
       'Encouraging reward systems, digital stickers, and interactive badges',
-      'Extremely small cohorts (maximum 8 kids) to ensure active live reading',
+      'Extremely small groups (maximum 8 kids) to ensure active live reading',
       'Parent dashboard to track and listen to recitations'
     ],
     imagePrompt: 'A vibrant illustration of colorful geometric alphabet blocks in soft warm light, with playful hand-drawn elements on a warm cream canvas',

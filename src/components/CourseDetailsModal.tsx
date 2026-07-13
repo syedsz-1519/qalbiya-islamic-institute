@@ -62,7 +62,7 @@ I would like to enroll in the following course at QALBIYA Islamic Institute:
 • *Name:* ${studentName}
 • *Email:* ${studentEmail}
 
-Please guide me with the next steps for cohort registration and onboarding. JazakAllahu Khairan!`;
+Please guide me with the next steps for course registration and onboarding. JazakAllahu Khairan!`;
 
     const waUrl = `https://wa.me/918145363290?text=${encodeURIComponent(waMessage)}`;
     
@@ -156,7 +156,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               </ul>
             </div>
 
-            {/* Program Benefits */}
+            {/* Course Benefits */}
             <div className="space-y-4">
               <h4 className="font-serif font-bold text-[#22301F] text-base flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#8CA394]" />
@@ -231,7 +231,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               <div className="flex flex-wrap gap-2 w-full md:w-auto relative">
                 <button
                   onClick={() => {
-                    const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from QALBIYA Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                    const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from QALBIYA Islamic Institute with you. Let's study together! Here is the course overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
                     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
                     setShareStatus("Shared via WhatsApp!");
                     setTimeout(() => setShareStatus(null), 3000);
@@ -288,6 +288,10 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
                   referrerPolicy="no-referrer"
                   id={`course-qr-${course.id}`}
+                  loading="lazy"
+                  decoding="async"
+                  width={96}
+                  height={96}
                 />
               </div>
               <div className="text-center sm:text-left space-y-1">
@@ -338,14 +342,14 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3]/60 p-4 rounded-xl space-y-1.5">
                   <h4 className="font-serif font-bold text-[#22301F] text-xs">2. Attendance Commitment & Recitation Review</h4>
                   <p>
-                    Students strive to attend live weekly Zoom cohorts consistently. In the event of occasional absences, students commit to reviewing study guides, syllabi recordings, and completing homework milestones timely.
+                    Students strive to attend live weekly Zoom classes consistently. In the event of occasional absences, students commit to reviewing study guides, syllabi recordings, and completing homework milestones timely.
                   </p>
                 </div>
 
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3]/60 p-4 rounded-xl space-y-1.5">
                   <h4 className="font-serif font-bold text-[#22301F] text-xs">3. Material Security & Intellectual Respect</h4>
                   <p>
-                    All visual cohort slides, homework worksheets, private recitations, and proprietary syllabi outlines are carefully curated. Sharing, copying, or distributing QALBIYA Islamic Institute assets without official authorization is strictly forbidden.
+                    All visual course slides, homework worksheets, private recitations, and proprietary syllabi outlines are carefully curated. Sharing, copying, or distributing QALBIYA Islamic Institute assets without official authorization is strictly forbidden.
                   </p>
                 </div>
 

@@ -14,7 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   userRole = "student",
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobileProgramsOpen, setIsMobileProgramsOpen] = useState(currentTab === "women" || currentTab === "kids");
+  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(currentTab === "women" || currentTab === "kids");
 
   const navItems = [
     { id: "home", label: "Home" },
@@ -87,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
               );
             })}
 
-            {/* Programs Dropdown */}
+            {/* Courses Dropdown */}
             <div className="relative group py-1">
               <button
                 className={`flex items-center gap-1 py-1 px-1 lg:px-1.5 xl:px-2 text-[9px] lg:text-[10px] xl:text-[11px] uppercase tracking-wider xl:tracking-widest font-bold transition-colors duration-300 cursor-pointer ${
@@ -96,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
                     : "text-[#5B5648] hover:text-[#22301F]"
                 }`}
               >
-                <span>Programs</span>
+                <span>Courses</span>
                 <ChevronDown className="w-3 h-3 text-[#8CA394] group-hover:rotate-180 transition-transform" />
                 {(currentTab === "women" || currentTab === "kids") && (
                   <span className="absolute bottom-[-10px] left-0 right-0 h-[2px] bg-[#B98072]" />
@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
                       : "text-[#22301F] hover:bg-[#FAF8F1] hover:text-[#8A5A4D]"
                   }`}
                 >
-                  Women's Programs
+                  Women's Courses
                 </button>
                 <button
                   onClick={() => handleTabClick("kids")}
@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
                       : "text-[#22301F] hover:bg-[#FAF8F1] hover:text-[#8A5A4D]"
                   }`}
                 >
-                  Kids' Programs
+                  Kids' Courses
                 </button>
               </div>
             </div>
@@ -258,16 +258,16 @@ export const Header: React.FC<HeaderProps> = ({
                 );
               })}
 
-              {/* Programs Accordion for Mobile */}
+              {/* Courses Accordion for Mobile */}
               <div className="w-full border border-dashed border-[#DDD5C3] rounded-2xl overflow-hidden bg-[#FAF8F1]/40">
                 <button
-                  onClick={() => setIsMobileProgramsOpen(!isMobileProgramsOpen)}
+                  onClick={() => setIsMobileCoursesOpen(!isMobileCoursesOpen)}
                   className="w-full flex items-center justify-between py-3.5 px-6 text-sm uppercase tracking-wider font-extrabold text-[#22301F] cursor-pointer"
                 >
-                  <span>Programs</span>
-                  {isMobileProgramsOpen ? <ChevronUp className="w-4 h-4 text-[#8A5A4D]" /> : <ChevronDown className="w-4 h-4 text-[#8CA394]" />}
+                  <span>Courses</span>
+                  {isMobileCoursesOpen ? <ChevronUp className="w-4 h-4 text-[#8A5A4D]" /> : <ChevronDown className="w-4 h-4 text-[#8CA394]" />}
                 </button>
-                {isMobileProgramsOpen && (
+                {isMobileCoursesOpen && (
                   <div className="bg-white border-t border-[#DDD5C3]/40 p-2 space-y-1">
                     <button
                       onClick={() => handleTabClick("women")}
@@ -277,7 +277,7 @@ export const Header: React.FC<HeaderProps> = ({
                           : "text-[#22301F] hover:bg-[#FAF8F1]/50"
                       }`}
                     >
-                      Women's Programs
+                      Women's Courses
                     </button>
                     <button
                       onClick={() => handleTabClick("kids")}
@@ -287,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
                           : "text-[#22301F] hover:bg-[#FAF8F1]/50"
                       }`}
                     >
-                      Kids' Programs
+                      Kids' Courses
                     </button>
                   </div>
                 )}

@@ -35,10 +35,25 @@ export const Hero: React.FC<HeroProps> = ({ onChoosePath }) => {
           Deeniyat curricula designed to enrich the intellect, refine articulation, and nourish the souls 
           of modern Muslim women and young hearts.
         </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <button
+            onClick={() => onChoosePath("women")}
+            className="bg-[#B98072] text-[#FAF4F2] px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-[#8A5A4D] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+          >
+            Explore Women Courses
+          </button>
+          <button
+            onClick={() => onChoosePath("kids")}
+            className="bg-[#8CA394] text-white px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-[#33453A] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+          >
+            Kids Hub
+          </button>
+        </div>
       </div>
 
       {/* Scripture Reference Quote */}
-      <div className="mt-12 border-y border-[#DDD5C3] py-8 text-center max-w-4xl mx-auto relative z-10">
+      <div className="mt-16 border-y border-[#DDD5C3] py-8 text-center max-w-4xl mx-auto relative z-10">
         <p className="font-arabic text-3xl md:text-4xl text-[#22301F]/90 mb-3 tracking-wide text-center" dir="rtl">
           قُلْ هَلْ يَسْتَوِي الَّذِينَ يَعْلَمُونَ وَالَّذِينَ لَا يَعْلَمُونَ ۗ
         </p>

@@ -1,10 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FreeCourses } from "./FreeCourses";
 import { LearnResources } from "./LearnResources";
 import { BookOpen, Sparkles } from "lucide-react";
 
 export function ResourcesHub() {
-  const [activeSubTab, setActiveSubTab] = useState<"audit" | "tools">("audit");
+  const [activeSubTab, setActiveSubTab] = useState<"audit" | "tools">((() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.includes("sub=tools")) return "tools";
+    } catch (e) {
+      console.warn(e);
+    }
+    return "audit";
+  }));
+
+  // Sync state to URL and update canonical link/meta dynamically
+  useEffect(() => {
+    try {
+      const hash = window.location.hash || "";
+      const [path, search] = hash.split("?");
+      const params = new URLSearchParams(search || "");
+      params.set("sub", activeSubTab);
+      
+      const targetHash = `${path}?${params.toString()}`;
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
+
+      // Update head canonical link
+      const canonicalLink = document.getElementById("seo-canonical-link");
+      if (canonicalLink) {
+        canonicalLink.setAttribute("href", `https://qalbiya-islamic-institute.vercel.app/${path}?${params.toString()}`);
+      }
+
+      // Update head meta description
+      const metaDesc = document.getElementById("seo-meta-description");
+      if (metaDesc) {
+        const desc = activeSubTab === "audit"
+          ? "Access free audited academic Deeniyat course textbooks, Tazkiyah lectures, and classical Arabic calligraphy worksheets."
+          : "Utilize interactive Quranic Arabic vocabulary flashcards, live recitation feedback tools, and reference text search engines.";
+        metaDesc.setAttribute("content", desc);
+      }
+    } catch (e) {
+      console.warn("SEO tag sync failed", e);
+    }
+  }, [activeSubTab]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12 animate-fade-in text-left" id="resources-hub-page">

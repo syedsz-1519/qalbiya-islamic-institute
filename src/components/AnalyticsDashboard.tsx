@@ -60,7 +60,8 @@ import {
   BookOpen,
   Download,
   Mail,
-  Phone
+  Phone,
+  Globe
 } from "lucide-react";
 
 interface AnalyticsDashboardProps {
@@ -93,9 +94,72 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"forms" | "testimonials" | "messages" | "faqs" | "enrollments">("forms");
+  const [activeTab, setActiveTab] = useState<"forms" | "testimonials" | "messages" | "faqs" | "enrollments" | "domain">((() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.includes("sub=testimonials")) return "testimonials";
+      if (hash.includes("sub=messages")) return "messages";
+      if (hash.includes("sub=faqs")) return "faqs";
+      if (hash.includes("sub=enrollments")) return "enrollments";
+      if (hash.includes("sub=domain")) return "domain";
+    } catch (e) {
+      console.warn(e);
+    }
+    return "forms";
+  }));
+
+  // Sync state to URL and update canonical link/meta dynamically
+  useEffect(() => {
+    try {
+      const hash = window.location.hash || "";
+      const [path, search] = hash.split("?");
+      const params = new URLSearchParams(search || "");
+      params.set("sub", activeTab);
+
+      const targetHash = `${path}?${params.toString()}`;
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
+
+      // Update head canonical link
+      const canonicalLink = document.getElementById("seo-canonical-link");
+      if (canonicalLink) {
+        canonicalLink.setAttribute("href", `https://qalbiya-islamic-institute.vercel.app/${path}?${params.toString()}`);
+      }
+
+      // Update head meta description
+      const metaDesc = document.getElementById("seo-meta-description");
+      if (metaDesc) {
+        const descriptions = {
+          forms: "Review submitted student registration forms, intake feedback, and academic surveys on the Admin Console.",
+          testimonials: "Moderate student testimonials, success stories, and parent feedback for the QALBIYA public showcase.",
+          messages: "Read administrative contact desk messages, WhatsApp inquiry records, and general admissions inquiries.",
+          faqs: "Update public frequently asked questions, policy disclosures, and help desk entries for QALBIYA.",
+          enrollments: "Monitor live admissions registries, student academic fees ledgers, and batch allocations on the Registrar Dashboard.",
+          domain: "Verify registrar DNS SPF, DKIM, and DMARC record health to maintain reliable communication channels."
+        };
+        metaDesc.setAttribute("content", descriptions[activeTab]);
+      }
+    } catch (e) {
+      console.warn("SEO tag sync failed", e);
+    }
+  }, [activeTab]);
+
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(false);
+
+  // Domain Deliverability States
+  const [dnsDomain, setDnsDomain] = useState<string>(() => {
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+    return host && host !== "localhost" && !host.includes("127.0.0.1") ? host : "qalbiya-islamic-institute.vercel.app";
+  });
+  const [spfStatus, setSpfStatus] = useState<"idle" | "loading" | "valid" | "missing">("idle");
+  const [spfRecords, setSpfRecords] = useState<string[]>([]);
+  const [dmarcStatus, setDmarcStatus] = useState<"idle" | "loading" | "valid" | "missing">("idle");
+  const [dmarcRecords, setDmarcRecords] = useState<string[]>([]);
+  const [isCheckingDNS, setIsCheckingDNS] = useState(false);
+  const [dnsError, setDnsError] = useState<string | null>(null);
+  const [copiedText, setCopiedText] = useState<string | null>(null);
 
   // Enrollment Ledger States
   const [usersList, setUsersList] = useState<any[]>([]);
@@ -625,6 +689,83 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     }
   }, [activeToast]);
 
+  const checkLiveDNS = async (targetDomain: string) => {
+    setIsCheckingDNS(true);
+    setDnsError(null);
+    setSpfStatus("loading");
+    setDmarcStatus("loading");
+    setSpfRecords([]);
+    setDmarcRecords([]);
+
+    try {
+      // 1. Check SPF on target domain
+      const spfUrl = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(targetDomain)}&type=TXT`;
+      const spfRes = await fetch(spfUrl, { headers: { Accept: "application/dns-json" } });
+      const spfJson = await spfRes.json();
+      
+      let foundSpf: string[] = [];
+      if (spfJson.Answer && Array.isArray(spfJson.Answer)) {
+        foundSpf = spfJson.Answer
+          .map((ans: any) => {
+            let txt = ans.data || "";
+            if (txt.startsWith('"') && txt.endsWith('"')) {
+              txt = txt.substring(1, txt.length - 1);
+            }
+            return txt;
+          })
+          .filter((txt: string) => txt.toLowerCase().includes("v=spf1"));
+      }
+      setSpfRecords(foundSpf);
+      if (foundSpf.length > 0) {
+        setSpfStatus("valid");
+      } else {
+        setSpfStatus("missing");
+      }
+
+      // 2. Check DMARC on _dmarc.targetDomain
+      const dmarcUrl = `https://cloudflare-dns.com/dns-query?name=_dmarc.${encodeURIComponent(targetDomain)}&type=TXT`;
+      const dmarcRes = await fetch(dmarcUrl, { headers: { Accept: "application/dns-json" } });
+      const dmarcJson = await dmarcRes.json();
+
+      let foundDmarc: string[] = [];
+      if (dmarcJson.Answer && Array.isArray(dmarcJson.Answer)) {
+        foundDmarc = dmarcJson.Answer
+          .map((ans: any) => {
+            let txt = ans.data || "";
+            if (txt.startsWith('"') && txt.endsWith('"')) {
+              txt = txt.substring(1, txt.length - 1);
+            }
+            return txt;
+          })
+          .filter((txt: string) => txt.toLowerCase().includes("v=dmarc1"));
+      }
+      setDmarcRecords(foundDmarc);
+      if (foundDmarc.length > 0) {
+        setDmarcStatus("valid");
+      } else {
+        setDmarcStatus("missing");
+      }
+
+    } catch (err: any) {
+      console.error("DNS query failed:", err);
+      setDnsError("Failed to perform live DNS check. Check connection.");
+      setSpfStatus("idle");
+      setDmarcStatus("idle");
+    } finally {
+      setIsCheckingDNS(false);
+    }
+  };
+
+  const handleCopyText = (text: string, id: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+      setCopiedText(id);
+      setTimeout(() => setCopiedText(null), 2500);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "testimonials") {
       fetchAllTestimonials();
@@ -634,6 +775,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       fetchAllFaqs();
     } else if (activeTab === "enrollments") {
       fetchEnrollments();
+    } else if (activeTab === "domain") {
+      checkLiveDNS(dnsDomain);
     }
   }, [activeTab]);
 
@@ -1019,6 +1162,20 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             {enrollmentRecords.length} Enrolled
           </span>
         </button>
+        <button
+          id="btn-tab-domain-diagnostics"
+          onClick={() => setActiveTab("domain")}
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === "domain" 
+              ? "border-[#22301F] text-[#22301F]" 
+              : "border-transparent text-[#5B5648]/60 hover:text-[#22301F]"
+          }`}
+        >
+          <span>Domain & Email Deliverability</span>
+          <span className="font-mono text-[9px] bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-full font-bold">
+            DNS Check
+          </span>
+        </button>
       </div>
 
       {activeTab === "forms" && (
@@ -1026,7 +1183,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         
         {/* Left Column: Course Selector Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <h3 className="font-serif font-bold text-[#22301F] text-base">Select Program</h3>
+          <h3 className="font-serif font-bold text-[#22301F] text-base">Select Course</h3>
           <div className="space-y-2">
             {courses.map((course) => {
               const isSelected = course.id === selectedCourseId;
@@ -1973,7 +2130,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       <option value="Instructors">Instructors</option>
                       <option value="Schedule & Format">Schedule & Format</option>
                       <option value="Kids Hub">Kids Hub</option>
-                      <option value="Women Cohort">Women Cohort</option>
+                      <option value="Women Cohort">Women Courses</option>
                       <option value="Graduation">Graduation</option>
                     </select>
                   </div>
@@ -2054,7 +2211,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <BookOpen className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Active Programs</p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Active Courses</p>
                 <h4 className="text-2xl font-serif font-extrabold text-[#22301F] mt-0.5">
                   {sortedCourseStats.filter(c => c.count > 0).length} / {courses.length}
                 </h4>
@@ -2066,7 +2223,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <Sparkles className="w-6 h-6" />
               </div>
               <div className="overflow-hidden">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Popular Program</p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#8CA394] font-bold">Popular Course</p>
                 <h4 className="text-sm font-serif font-bold text-[#22301F] truncate mt-0.5" title={sortedCourseStats[0]?.title || "None yet"}>
                   {sortedCourseStats[0]?.count > 0 ? sortedCourseStats[0].title : "N/A"}
                 </h4>
@@ -2310,7 +2467,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       <thead>
                         <tr className="bg-[#FFF1F3]/50 border-b border-[#DDD5C3]/60 text-[10px] font-mono text-[#8CA394] uppercase tracking-wider font-extrabold">
                           <th className="p-4 pl-5">Student</th>
-                          <th className="p-4">Program Enrolled</th>
+                          <th className="p-4">Course Enrolled</th>
                           <th className="p-4">Enrollment Date</th>
                           <th className="p-4">Intake Status</th>
                           <th className="p-4 pr-5 text-right">Profile</th>
@@ -2335,6 +2492,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                       src={record.photoURL}
                                       alt={record.displayName}
                                       className="w-8 h-8 rounded-full border border-[#DDD5C3] shrink-0"
+                                      loading="lazy"
+                                      decoding="async"
+                                      width={32}
+                                      height={32}
                                     />
                                   ) : (
                                     <div className="w-8 h-8 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-xs font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
@@ -2398,6 +2559,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                     src={record.photoURL}
                                     alt={record.displayName}
                                     className="w-9 h-9 rounded-full border border-[#DDD5C3] shrink-0"
+                                    loading="lazy"
+                                    decoding="async"
+                                    width={36}
+                                    height={36}
                                   />
                                 ) : (
                                   <div className="w-9 h-9 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-sm font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
@@ -2415,7 +2580,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                             </div>
 
                             <div className="bg-[#FFF1F3]/20 rounded-xl p-3 border border-[#DDD5C3]/40 space-y-1">
-                              <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Program Enrolled</p>
+                              <p className="text-[9px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Course Enrolled</p>
                               <h5 className="font-serif font-extrabold text-[#22301F] text-xs leading-snug">{record.courseTitle}</h5>
                             </div>
 
@@ -2445,6 +2610,302 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </div>
           </div>
           
+        </div>
+      )}
+
+      {activeTab === "domain" && (
+        <div className="space-y-8 animate-fade-in">
+          
+          {/* Domain Header card */}
+          <div className="bg-[#FAF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6">
+            <div className="border-b border-[#DDD5C3]/40 pb-5">
+              <div className="flex items-center gap-2 text-[#5B5648] font-mono text-[10px] uppercase tracking-widest">
+                <Globe className="w-4 h-4 text-[#8A5A4D]" />
+                <span>Domain Verification & Security</span>
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-[#22301F] mt-1">
+                Email Deliverability & DNS Diagnostics Desk
+              </h3>
+              <p className="text-[#5B5648] text-xs md:text-sm font-light leading-relaxed mt-2">
+                Configure SPF, DKIM, and DMARC settings to secure your institute's official emails, protect against unauthorized spoofing, and ensure your communications reach parents and students' primary inboxes safely.
+              </p>
+            </div>
+
+            {/* Target Domain Input and Quick Scan */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end bg-[#F4EFE6]/55 p-5 rounded-2xl border border-[#DDD5C3]/50">
+              <div className="md:col-span-8 space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-[#5B5648] font-bold block">
+                  Target Domain Name for DNS Analysis
+                </label>
+                <div className="relative">
+                  <Globe className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8CA394]" />
+                  <input
+                    type="text"
+                    placeholder="e.g. qalbiya.com"
+                    value={dnsDomain}
+                    onChange={(e) => setDnsDomain(e.target.value.trim().toLowerCase())}
+                    className="w-full bg-white border border-[#DDD5C3] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#22301F] font-semibold focus:outline-none focus:border-[#22301F]"
+                  />
+                </div>
+                <p className="text-[10px] text-[#5B5648]/70 italic">
+                  Detects your active host automatically. You can type any custom domain to inspect its active live records.
+                </p>
+              </div>
+
+              <div className="md:col-span-4">
+                <button
+                  type="button"
+                  onClick={() => checkLiveDNS(dnsDomain)}
+                  disabled={isCheckingDNS || !dnsDomain}
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#22301F] text-white hover:bg-[#33453A] disabled:bg-gray-300 font-sans text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-all shadow-sm active:scale-[0.98]"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isCheckingDNS ? "animate-spin" : ""}`} />
+                  <span>{isCheckingDNS ? "Scanning DNS..." : "Query Live DNS"}</span>
+                </button>
+              </div>
+            </div>
+
+            {dnsError && (
+              <div className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs rounded-xl flex items-center justify-between">
+                <span>{dnsError}</span>
+                <button type="button" onClick={() => setDnsError(null)} className="text-[10px] font-bold hover:underline">Dismiss</button>
+              </div>
+            )}
+
+            {/* Live DNS Diagnostic Status Badges */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* SPF Diagnostics */}
+              <div className="border border-[#DDD5C3] bg-white rounded-2xl p-5 space-y-4">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <h4 className="font-serif font-bold text-sm text-[#22301F] flex items-center gap-2">
+                    <span className="w-1.5 h-3 bg-[#8CA394] rounded-full inline-block" />
+                    <span>Sender Policy Framework (SPF)</span>
+                  </h4>
+                  {spfStatus === "loading" ? (
+                    <span className="text-[10px] font-mono uppercase bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold animate-pulse">Checking...</span>
+                  ) : spfStatus === "valid" ? (
+                    <span className="text-[10px] font-mono uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping" />
+                      <span>Live & Valid</span>
+                    </span>
+                  ) : spfStatus === "missing" ? (
+                    <span className="text-[10px] font-mono uppercase bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold">Missing SPF</span>
+                  ) : (
+                    <span className="text-[10px] font-mono uppercase bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full font-bold">Unchecked</span>
+                  )}
+                </div>
+
+                <div className="text-xs text-[#5B5648] font-light leading-relaxed space-y-3">
+                  <p>
+                    SPF acts as an authorized list of outgoing mail servers allowed to send email for your domain name. It prevents bad actors from spoofing your sender identity.
+                  </p>
+
+                  {spfRecords.length > 0 ? (
+                    <div className="space-y-1 bg-[#FBFBFB] p-3 rounded-xl border border-gray-100">
+                      <span className="text-[9px] font-mono uppercase text-[#8CA394] font-bold block">Detected Record:</span>
+                      {spfRecords.map((rec, i) => (
+                        <code key={i} className="block font-mono text-[10px] text-emerald-800 break-all select-all font-semibold">
+                          {rec}
+                        </code>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-amber-800 text-[11px] leading-relaxed font-normal">
+                      No active SPF record was detected on <strong>{dnsDomain}</strong>. Emails from this domain might be flagged as Spam or rejected by Google/Outlook servers.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* DMARC Diagnostics */}
+              <div className="border border-[#DDD5C3] bg-white rounded-2xl p-5 space-y-4">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <h4 className="font-serif font-bold text-sm text-[#22301F] flex items-center gap-2">
+                    <span className="w-1.5 h-3 bg-[#B98072] rounded-full inline-block" />
+                    <span>DMARC Verification Status</span>
+                  </h4>
+                  {dmarcStatus === "loading" ? (
+                    <span className="text-[10px] font-mono uppercase bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold animate-pulse">Checking...</span>
+                  ) : dmarcStatus === "valid" ? (
+                    <span className="text-[10px] font-mono uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping" />
+                      <span>Live & Valid</span>
+                    </span>
+                  ) : dmarcStatus === "missing" ? (
+                    <span className="text-[10px] font-mono uppercase bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold font-semibold">Missing DMARC</span>
+                  ) : (
+                    <span className="text-[10px] font-mono uppercase bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full font-bold">Unchecked</span>
+                  )}
+                </div>
+
+                <div className="text-xs text-[#5B5648] font-light leading-relaxed space-y-3">
+                  <p>
+                    DMARC specifies how receiving servers (Gmail, Apple, Outlook) must handle incoming emails that fail SPF/DKIM checks. It prevents spoofing and routes reports.
+                  </p>
+
+                  {dmarcRecords.length > 0 ? (
+                    <div className="space-y-1 bg-[#FBFBFB] p-3 rounded-xl border border-gray-100">
+                      <span className="text-[9px] font-mono uppercase text-[#8CA394] font-bold block">Detected Record:</span>
+                      {dmarcRecords.map((rec, i) => (
+                        <code key={i} className="block font-mono text-[10px] text-emerald-800 break-all select-all font-semibold">
+                          {rec}
+                        </code>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-amber-800 text-[11px] leading-relaxed font-normal">
+                      No DMARC record was detected on <strong>_dmarc.{dnsDomain}</strong>. Email authentication cannot be verified by inbox providers, harming domain reputation.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Implementation Guide Cards */}
+            <div className="space-y-6">
+              <div className="border-b border-[#DDD5C3]/40 pb-2.5">
+                <h4 className="font-serif font-bold text-base text-[#22301F]">Recommended DNS TXT Records to Add</h4>
+                <p className="text-[11px] text-[#5B5648] font-light mt-0.5">
+                  Sign in to your domain registrar (e.g., Vercel, GoDaddy, Namecheap, Cloudflare) and add the following TXT records to your DNS settings.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* DMARC DNS Record Instruction Block */}
+                <div className="bg-white border border-[#DDD5C3] rounded-2xl p-5 space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono bg-[#B98072]/15 text-[#8A5A4D] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                      DMARC TXT Record
+                    </span>
+                    <h5 className="font-serif font-extrabold text-[#22301F] text-sm pt-1">
+                      Improve Email Trust & Prevent Spoofing
+                    </h5>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    {/* Record Name */}
+                    <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#DDD5C3]/40 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Record Type / Host Name</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText("_dmarc", "dmarc-name")}
+                          className="text-[9px] font-mono text-[#8A5A4D] hover:underline font-bold"
+                        >
+                          {copiedText === "dmarc-name" ? "Copied!" : "Copy Host"}
+                        </button>
+                      </div>
+                      <code className="block font-mono text-[11px] text-[#22301F] font-bold">
+                        _dmarc
+                      </code>
+                    </div>
+
+                    {/* Record Value */}
+                    <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#DDD5C3]/40 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">TXT Value</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(`v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@${dnsDomain}`, "dmarc-val")}
+                          className="text-[9px] font-mono text-[#8A5A4D] hover:underline font-bold"
+                        >
+                          {copiedText === "dmarc-val" ? "Copied!" : "Copy Value"}
+                        </button>
+                      </div>
+                      <code className="block font-mono text-[10px] text-[#22301F] leading-tight break-all font-semibold">
+                        v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@{dnsDomain}
+                      </code>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-[#5B5648] font-light leading-relaxed italic">
+                    Note: The <code>p=quarantine</code> policy flags emails that fail authentication as spam. <code>pct=100</code> enforces it on 100% of emails. The <code>rua</code> tag directs aggregate XML diagnostic reports to your mailbox.
+                  </p>
+                </div>
+
+                {/* SPF DNS Record Instruction Block */}
+                <div className="bg-white border border-[#DDD5C3] rounded-2xl p-5 space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono bg-[#8CA394]/15 text-[#33453A] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                      SPF TXT Record
+                    </span>
+                    <h5 className="font-serif font-extrabold text-[#22301F] text-sm pt-1">
+                      Authorize Outgoing Mail Servers (Gmail / Google Workspace)
+                    </h5>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    {/* Record Name */}
+                    <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#DDD5C3]/40 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Record Type / Host Name</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText("@", "spf-name")}
+                          className="text-[9px] font-mono text-[#33453A] hover:underline font-bold"
+                        >
+                          {copiedText === "spf-name" ? "Copied!" : "Copy Host"}
+                        </button>
+                      </div>
+                      <code className="block font-mono text-[11px] text-[#22301F] font-bold">
+                        @ <span className="text-[10px] font-sans font-light text-[#5B5648]">(or blank apex domain)</span>
+                      </code>
+                    </div>
+
+                    {/* Record Value */}
+                    <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#DDD5C3]/40 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">TXT Value</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText("v=spf1 include:_spf.google.com ~all", "spf-val")}
+                          className="text-[9px] font-mono text-[#33453A] hover:underline font-bold"
+                        >
+                          {copiedText === "spf-val" ? "Copied!" : "Copy Value"}
+                        </button>
+                      </div>
+                      <code className="block font-mono text-[10px] text-[#22301F] leading-tight break-all font-semibold">
+                        v=spf1 include:_spf.google.com ~all
+                      </code>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-[#5B5648] font-light leading-relaxed italic">
+                    Note: This authorizes Google Workspace to deliver your emails. The <code>~all</code> soft-fail specifies that mail from other sources will be scrutinized, ensuring smooth transition.
+                  </p>
+                </div>
+              </div>
+
+              {/* Google Workspace DKIM Checklist Card */}
+              <div className="bg-[#FAF4F2]/55 border border-[#DDD5C3] rounded-2xl p-5 space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[9px] font-mono bg-[#22301F]/10 text-[#22301F] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                    Recommended Checklist
+                  </span>
+                  <h4 className="font-serif font-bold text-sm text-[#22301F] pt-1">
+                    DKIM Integration (DomainKeys Identified Mail) for Google Workspace
+                  </h4>
+                </div>
+
+                <div className="text-xs text-[#5B5648] font-light leading-relaxed space-y-2.5">
+                  <p>
+                    DKIM signs your outgoing emails cryptographically, verifying that the content hasn't been altered during transport. It is the third pillar of email deliverability.
+                  </p>
+                  <ol className="list-decimal pl-5 space-y-1">
+                    <li>Log in to your <strong>Google Admin Console</strong> (<code>admin.google.com</code>).</li>
+                    <li>Go to <strong>Apps</strong> &gt; <strong>Google Workspace</strong> &gt; <strong>Gmail</strong> &gt; <strong>Authenticate email</strong>.</li>
+                    <li>Select your domain name, click <strong>Generate new record</strong>, and choose a selector (usually <code>google</code>).</li>
+                    <li>Copy the generated TXT record name (<code>google._domainkey</code>) and the long cryptographic value.</li>
+                    <li>Add this new TXT record to your registrar's DNS zone.</li>
+                    <li>Return to the Google Admin Console and click <strong>Start authentication</strong>.</li>
+                  </ol>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
       )}
 
@@ -2489,6 +2950,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                     src={selectedStudentForModal.photoURL}
                     alt={selectedStudentForModal.displayName}
                     className="w-16 h-16 rounded-full border border-[#DDD5C3] shadow-sm shrink-0"
+                    loading="lazy"
+                    decoding="async"
+                    width={64}
+                    height={64}
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-2xl font-bold text-[#22301F] border border-[#DDD5C3] shrink-0">
@@ -2515,7 +2980,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               {/* Class Intake Status Block */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-[#FFF1F3]/40 border border-[#DDD5C3]/60 rounded-xl p-3.5 space-y-1">
-                  <span className="text-[8px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Program Enrolled</span>
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-[#8CA394] font-extrabold">Course Enrolled</span>
                   <h5 className="font-serif font-extrabold text-[#22301F] text-xs leading-snug">
                     {selectedStudentForModal.courseTitle}
                   </h5>

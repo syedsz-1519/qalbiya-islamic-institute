@@ -41,8 +41,8 @@ const STATIC_FAQS: FAQItem[] = [
   },
   {
     id: "faq-5",
-    question: "What age groups are supported in the kids' programs?",
-    answer: "The Kids Hub programs are thoughtfully designed to support young learners between the ages of 5 and 15. Students are separated into age-appropriate cohorts to ensure the teaching style and interactive curriculum fit their specific learning stage.",
+    question: "What age groups are supported in the kids' courses?",
+    answer: "The Kids Hub courses are thoughtfully designed to support young learners between the ages of 5 and 15. Students are separated into age-appropriate groups to ensure the teaching style and interactive curriculum fit their specific learning stage.",
     category: "Kids Hub",
     order: 5
   }
@@ -107,7 +107,7 @@ export function CourseFAQ({ userRole, onGoToAnalytics }: CourseFAQProps) {
           Frequently Answered Inquiries
         </h3>
         <p className="text-[#5B5648] font-light text-xs md:text-sm max-w-xl mx-auto leading-relaxed">
-          Unveil answers regarding our qualified female instructors, interactive platforms, parental enrolment guides, and kids programs.
+          Unveil answers regarding our qualified female instructors, interactive platforms, parental enrolment guides, and kids courses.
         </p>
       </div>
 

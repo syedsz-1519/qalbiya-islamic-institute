@@ -3,7 +3,219 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qalbiya Islamic Institute</title>
+    <title>QALBIYA Islamic Institute | Sacred Classical Islamic Studies</title>
+    
+    <!-- Google Fonts Preconnect and Optimal Async Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" as="style" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    
+    <!-- Mobile Screen Optimization & Web App Capabilities -->
+    <meta name="theme-color" content="#22301F" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Primary SEO Meta Tags -->
+    <meta id="seo-meta-description" name="description" content="Discover QALBIYA Islamic Institute. We offer structured academic Deeniyat programs, private 1:1 Tajweed classes, and immersive Quranic Arabic learning for kids, teens, and women." />
+    <meta name="keywords" content="Qalbiya, Islamic Institute, Deeniyat, Tajweed 1:1, Quranic Arabic, Islamic Studies, Online Quran Classes, Kids Deeniyat, Women Quran Classes" />
+    <meta name="author" content="Qalbiya Islamic Institute" />
+    <link id="seo-canonical-link" rel="canonical" href="https://qalbiya-islamic-institute.vercel.app/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- Dynamic Metadata / SEO Script -->
+    <script>
+      (function() {
+        function updateMeta() {
+          const hash = window.location.hash || '';
+          // Normalize hash (strip leading #/ or #)
+          const cleanHash = hash.replace(/^#\/?/, "");
+          // Split into path and search params
+          const parts = cleanHash.split('?');
+          const path = parts[0] || '';
+          const search = parts[1] || '';
+
+          let view = 'home';
+          if (path.includes('women')) view = 'women';
+          else if (path.includes('kids')) view = 'kids';
+          else if (path.includes('scholarship')) view = 'scholarship';
+          else if (path.includes('portal')) view = 'portal';
+          else if (path.includes('analytics')) view = 'analytics';
+          else if (path.includes('resources') || path.includes('learn') || path.includes('free-courses')) view = 'resources';
+          else if (path.includes('contact')) view = 'contact';
+          else if (path.includes('about')) view = 'about';
+          else if (path.includes('faq')) view = 'faq';
+          else if (path.includes('refund-policy')) view = 'refund-policy';
+          else if (path.includes('terms-conditions')) view = 'terms-conditions';
+          else if (path.includes('privacy-policy')) view = 'privacy-policy';
+          else if (path.startsWith('course-')) view = 'course-detail';
+
+          // Extract sub-tab and track query params
+          let subTab = '';
+          let track = '';
+          if (search) {
+            const params = new URLSearchParams(search);
+            subTab = params.get('sub') || '';
+            track = params.get('track') || '';
+          }
+
+          const descriptions = {
+            home: "Discover QALBIYA Islamic Institute. We offer structured academic Deeniyat programs, private 1:1 Tajweed classes, and immersive Quranic Arabic learning for kids, teens, and women.",
+            women: "Empower your sacred learning journey. QALBIYA offers structured academic Deeniyat programs and private 1:1 Tajweed classes customized for sisters and women.",
+            kids: "Instill love for the Deen in children. QALBIYA offers interactive Juniors Deeniyat and kids Tajweed classes led by professional educators.",
+            scholarship: "Apply for full tuition waivers or sponsor deserving students through Sadaqah Jariyah at QALBIYA Islamic Institute.",
+            portal: {
+              default: "Access the QALBIYA Student & Parent Portal. Track your course progress, download course materials, join online classes, and view study ledgers.",
+              progress: "Check your academic course progress, view active lessons, and download certifications on the QALBIYA Student Portal.",
+              bookmarks: "Access your bookmarked Quran lessons, Tajweed resources, and Deeniyat reference textbooks on the QALBIYA Student Portal.",
+              profile: "Manage your QALBIYA student account profile, study background, age group, and academic spiritual goals.",
+              emails: "View your verified communications, enrollment ledgers, and official announcements on the QALBIYA Student Portal."
+            },
+            analytics: {
+              default: "QALBIYA Administrative and Registrar Analytics Dashboard. Monitor enrollment ledgers, review course forms, and inspect DNS deliverability.",
+              forms: "Review submitted student registration forms, intake feedback, and academic surveys on the Admin Console.",
+              testimonials: "Moderate student testimonials, success stories, and parent feedback for the QALBIYA public showcase.",
+              messages: "Read administrative contact desk messages, WhatsApp inquiry records, and general admissions inquiries.",
+              faqs: "Update public frequently asked questions, policy disclosures, and help desk entries for QALBIYA.",
+              enrollments: "Monitor live admissions registries, student academic fees ledgers, and batch allocations on the Registrar Dashboard.",
+              domain: "Verify registrar DNS SPF, DKIM, and DMARC record health to maintain reliable communication channels."
+            },
+            resources: {
+              default: "Access free Islamic learning resources, curated textbook materials, Arabic vocabulary builders, and traditional reference texts.",
+              audit: {
+                default: "Access free audited academic Deeniyat course textbooks, Tazkiyah lectures, and classical Arabic calligraphy worksheets.",
+                tarbiyah: "Access free spiritual Tazkiyah lectures and self-purification audios on QALBIYA Audited Curricula.",
+                calligraphy: "Learn the holy Thuluth and Naskh scripts, brush strokes, and classical Arabic calligraphy step-by-step."
+              },
+              tools: "Utilize interactive Quranic Arabic vocabulary flashcards, live recitation feedback tools, and reference text search engines."
+            },
+            contact: "Contact QALBIYA Islamic Institute. Reach our administrative desk for questions about our admissions, schedules, or traditional curricula.",
+            about: "Learn about the founders, classical methodology, and heart-centered vision of QALBIYA Islamic Institute.",
+            faq: "Frequently Asked Questions about QALBIYA courses, custom timetables, fees, certifications, and technical portal requirements.",
+            'refund-policy': "Review QALBIYA Islamic Institute's refund policy, monthly fee structures, and course withdrawal guidelines.",
+            'terms-conditions': "Read the official Terms and Conditions governing enrollment, behavior codes, and digital study tools at QALBIYA.",
+            'privacy-policy': "Our privacy policy outlines how we safeguard student profile information, study records, and registration details.",
+            'course-detail': "Explore program details, schedules, textbooks, and syllabus outlines for specialized classical Islamic study courses at QALBIYA."
+          };
+
+          let desc = '';
+          if (descriptions[view]) {
+            if (typeof descriptions[view] === 'object') {
+              if (view === 'resources' && subTab === 'audit' && track) {
+                desc = descriptions.resources.audit[track] || descriptions.resources.audit.default;
+              } else {
+                desc = descriptions[view][subTab] || descriptions[view].default;
+              }
+            } else {
+              desc = descriptions[view];
+            }
+          } else {
+            desc = "Explore program details, schedules, textbooks, and syllabus outlines for specialized classical Islamic study courses at QALBIYA.";
+          }
+
+          // Build explicit canonical URL
+          let canonical = "https://qalbiya-islamic-institute.vercel.app/";
+          if (view !== 'home') {
+            canonical += "#/" + path;
+            const params = new URLSearchParams();
+            if (subTab) params.set('sub', subTab);
+            if (track) params.set('track', track);
+            
+            const paramString = params.toString();
+            if (paramString) {
+              canonical += '?' + paramString;
+            }
+          }
+
+          const metaDesc = document.getElementById('seo-meta-description');
+          if (metaDesc) metaDesc.setAttribute('content', desc);
+
+          const canonicalLink = document.getElementById('seo-canonical-link');
+          if (canonicalLink) {
+            canonicalLink.setAttribute('href', canonical);
+          }
+        }
+
+        // Run immediately
+        updateMeta();
+        // Also listen to hashchange
+        window.addEventListener('hashchange', updateMeta);
+      })();
+    </script>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qalbiya-islamic-institute.vercel.app/" />
+    <meta property="og:title" content="QALBIYA Islamic Institute | Sacred Classical Islamic Studies" />
+    <meta property="og:description" content="Structured academic Deeniyat, private 1:1 Tajweed, and Quranic Arabic programs for kids, teens, and women. Join our heart-centric spiritual sanctuary today." />
+    <meta property="og:image" content="https://qalbiya-islamic-institute.vercel.app/logo.png" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="https://qalbiya-islamic-institute.vercel.app/" />
+    <meta name="twitter:title" content="QALBIYA Islamic Institute | Sacred Classical Islamic Studies" />
+    <meta name="twitter:description" content="Structured academic Deeniyat, private 1:1 Tajweed, and Quranic Arabic programs for kids, teens, and women. Join our heart-centric spiritual sanctuary today." />
+    <meta name="twitter:image" content="https://qalbiya-islamic-institute.vercel.app/logo.png" />
+
+    <!-- Schema.org Structured Data (JSON-LD) for Local Business & Educational Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "QALBIYA Islamic Institute",
+        "url": "https://qalbiya-islamic-institute.vercel.app",
+        "logo": "https://qalbiya-islamic-institute.vercel.app/logo.png",
+        "description": "An authentic spiritual sanctuary offering highly structured academic Deeniyat programs, private 1:1 Tajweed correction, and Quranic Arabic for kids, teens, and women.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "IN"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+91-81453-63290",
+          "contactType": "Admissions & Inquiries Support",
+          "availableLanguage": ["English", "Urdu", "Hindi"]
+        },
+        "sameAs": [
+          "https://instagram.com/qalbiya_institute"
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "QALBIYA Programs",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Course",
+                "name": "Pre-Diploma in Deeniyat",
+                "description": "A comprehensive 2-year foundation in Fiqh, Seerah, Aqeedah, and Akhlaq for adults and serious beginners."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Course",
+                "name": "Tajweed 1:1 Classes",
+                "description": "Individualized, custom-paced one-on-one sessions for perfect pronunciation correction and Quranic mastery."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Course",
+                "name": "Juniors Deeniyat Mastercourse",
+                "description": "Engaging, fun, and interactive program for children aged 6 to 12 instilling Islamic values."
+              }
+            }
+          ]
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

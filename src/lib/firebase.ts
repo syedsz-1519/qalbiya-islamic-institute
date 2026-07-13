@@ -13,7 +13,7 @@ import {
   updateProfile
 } from "firebase/auth";
 import { 
-  getFirestore, 
+  initializeFirestore, 
   doc, 
   setDoc, 
   getDoc, 
@@ -31,7 +31,11 @@ import firebaseConfig from "../../firebase-applet-config.json";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId || "(default)");
+
+// Use initializeFirestore with experimentalAutoDetectLongPolling to ensure connectivity in sandboxed iframes
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+}, (firebaseConfig as any).firestoreDatabaseId || "(default)");
 
 // Provider with workspace scopes for Forms creation and response reading
 export const provider = new GoogleAuthProvider();
@@ -665,7 +669,7 @@ export async function getFAQs(): Promise<any[]> {
     },
     {
       question: "Can adult women register for the kids' courses on behalf of their children?",
-      answer: "Yes, absolutely! Mothers can register and log in on behalf of their children. The student portal tracks progress and bookmarks for all enrolled programs in one central family dashboard.",
+      answer: "Yes, absolutely! Mothers can register and log in on behalf of their children. The student portal tracks progress and bookmarks for all enrolled courses in one central family dashboard.",
       category: "Admissions",
       order: 3,
       createdAt: new Date().toISOString()
@@ -678,8 +682,8 @@ export async function getFAQs(): Promise<any[]> {
       createdAt: new Date().toISOString()
     },
     {
-      question: "What age groups are supported in the kids' programs?",
-      answer: "Our children's modules are categorized into two major age cohorts: Early Explorers (ages 6–9) and Youth Foundations (ages 10–14). Each cohort uses age-appropriate visual slides and pacing.",
+      question: "What age groups are supported in the kids' courses?",
+      answer: "Our children's modules are categorized into two major age groups: Early Explorers (ages 6–9) and Youth Foundations (ages 10–14). Each group uses age-appropriate visual slides and pacing.",
       category: "Kids Hub",
       order: 5,
       createdAt: new Date().toISOString()

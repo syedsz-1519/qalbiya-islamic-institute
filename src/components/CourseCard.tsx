@@ -7,8 +7,6 @@ interface CourseCardProps {
   formDetails: { formId: string; formUrl: string } | null;
   onExplore: (course: Course) => void;
   user: any;
-  isBookmarked?: boolean;
-  onBookmarkToggle?: (courseId: string) => void;
   isEnrolled?: boolean;
 }
 
@@ -17,8 +15,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   formDetails,
   onExplore,
   user,
-  isBookmarked = false,
-  onBookmarkToggle,
   isEnrolled = false
 }) => {
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -52,21 +48,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         )}
       </div>
 
-      {/* Bookmark ribbon action */}
-      {onBookmarkToggle && (
-        <button
-          id={`btn-card-bookmark-${course.id}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onBookmarkToggle(course.id);
-          }}
-          className="absolute top-4 right-4 p-1.5 bg-[#FAF4F2] hover:bg-white border border-[#DDD5C3] rounded-full text-[#8CA394] hover:text-[#B98072] transition-colors cursor-pointer z-10"
-          title={isBookmarked ? "Remove Bookmark" : "Bookmark Program"}
-        >
-          <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-[#B98072] text-[#B98072]" : ""}`} />
-        </button>
-      )}
-
       <div className="space-y-5">
         
         {/* Category & Duration Row */}
@@ -97,7 +78,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F]" />
             <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-[#B98072] rounded-full animate-pulse" />
-              <span>{(course.instructor || course.schedule) ? "Schedule & Faculty Info" : "Program Information"}</span>
+              <span>{(course.instructor || course.schedule) ? "Schedule & Faculty Info" : "Course Information"}</span>
             </p>
             <p className="font-light leading-relaxed text-[#FAF4F2]/95">
               {course.instructor || course.schedule ? (
@@ -105,14 +86,14 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                   Join <strong className="font-medium text-[#FAF4F2]">{course.instructor}</strong> for interactive study sessions conducted on <span className="font-medium text-[#EDE3CE]">{course.schedule}</span>.
                 </>
               ) : (
-                <span>A complete academic program for children designed to instil enduring Islamic values.</span>
+                <span>A complete academic course for children designed to instil enduring Islamic values.</span>
               )}
             </p>
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] font-mono">
-              {(course.instructor || course.schedule) ? "Session Info" : "Program Info"}
+              {(course.instructor || course.schedule) ? "Session Info" : "Course Info"}
             </span>
             <span className="text-[9px] font-medium text-[#B98072]/80 bg-[#B98072]/5 px-1.5 py-0.5 rounded border border-[#B98072]/15 flex items-center gap-1">
               <span className="inline-block w-1.5 h-1.5 bg-[#B98072] rounded-full" />
@@ -193,7 +174,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the program overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
+                  const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the course overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
                   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
                   setShowShareMenu(false);
                 }}

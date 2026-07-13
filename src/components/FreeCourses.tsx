@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BookOpen, Award, GraduationCap, Check, BookOpenText, Play, Music, Volume2, Sparkles, Download, MessageSquare, ChevronRight } from "lucide-react";
 
 interface Lecture {
@@ -33,7 +33,48 @@ const CALLIGRAPHY_TUTORIALS = [
 ];
 
 export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}) {
-  const [activeTab, setActiveTab] = useState<"tarbiyah" | "calligraphy">("tarbiyah");
+  const [activeTab, setActiveTab] = useState<"tarbiyah" | "calligraphy">((() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.includes("track=calligraphy")) return "calligraphy";
+    } catch (e) {
+      console.warn(e);
+    }
+    return "tarbiyah";
+  }));
+
+  // Sync state to URL and update canonical link/meta dynamically
+  useEffect(() => {
+    try {
+      const hash = window.location.hash || "";
+      const [path, search] = hash.split("?");
+      const params = new URLSearchParams(search || "");
+      params.set("track", activeTab);
+
+      const targetHash = `${path}?${params.toString()}`;
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
+
+      // Update head canonical link
+      const canonicalLink = document.getElementById("seo-canonical-link");
+      if (canonicalLink) {
+        canonicalLink.setAttribute("href", `https://qalbiya-islamic-institute.vercel.app/${path}?${params.toString()}`);
+      }
+
+      // Update head meta description
+      const metaDesc = document.getElementById("seo-meta-description");
+      if (metaDesc) {
+        const desc = activeTab === "tarbiyah"
+          ? "Access free spiritual Tazkiyah lectures and self-purification audios on QALBIYA Audited Curricula."
+          : "Learn the holy Thuluth and Naskh scripts, brush strokes, and classical Arabic calligraphy step-by-step.";
+        metaDesc.setAttribute("content", desc);
+      }
+    } catch (e) {
+      console.warn("SEO tag sync failed", e);
+    }
+  }, [activeTab]);
+
   const [playingLecture, setPlayingLecture] = useState<string | null>(null);
   const [completedLectures, setCompletedLectures] = useState<string[]>([]);
   const [practiceTraceText, setPracticeTraceText] = useState("بسم الله الرحمن الرحيم");
@@ -153,7 +194,7 @@ export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}
               </h3>
 
               <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F]">Ms. Mustara</span>, this complementary program provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.
+                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F]">Ms. Mustara</span>, this complementary course provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.
               </p>
 
               <div className="space-y-3 pt-2">

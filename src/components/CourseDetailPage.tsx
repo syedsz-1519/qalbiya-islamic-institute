@@ -27,6 +27,113 @@ export function CourseDetailPage({
   const [isSubmittingEnroll, setIsSubmittingEnroll] = useState(false);
   const [enrollError, setEnrollError] = useState("");
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  // Applicant registration states
+  const [applicantName, setApplicantName] = useState("");
+  const [applicantPhone, setApplicantPhone] = useState("");
+  const [applicantAge, setApplicantAge] = useState("");
+  const [applicantCity, setApplicantCity] = useState("");
+  const [applicantBackground, setApplicantBackground] = useState("");
+  const [applicantMotivation, setApplicantMotivation] = useState("");
+
+  React.useEffect(() => {
+    if (user) {
+      setApplicantName(prev => prev || user.displayName || "");
+    }
+  }, [user]);
+
+  const renderApplicantFields = () => {
+    return (
+      <div className="space-y-4 border-t border-[#DDD5C3]/30 pt-4">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-[#8A5A4D] font-bold">
+          Applicant Registration Form
+        </p>
+        
+        <div className="space-y-1">
+          <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+            Full Name <span className="text-[#B98072] font-sans">*</span>
+          </label>
+          <input
+            type="text"
+            required
+            value={applicantName}
+            onChange={(e) => setApplicantName(e.target.value)}
+            placeholder="e.g. Fatima Ahmed"
+            className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+            WhatsApp / Phone Number <span className="text-[#B98072] font-sans">*</span>
+          </label>
+          <input
+            type="tel"
+            required
+            value={applicantPhone}
+            onChange={(e) => setApplicantPhone(e.target.value)}
+            placeholder="e.g. +91 98765 43210"
+            className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+              Age <span className="text-[#B98072] font-sans">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={applicantAge}
+              onChange={(e) => setApplicantAge(e.target.value)}
+              placeholder="e.g. 24"
+              className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+              City <span className="text-[#B98072] font-sans">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={applicantCity}
+              onChange={(e) => setApplicantCity(e.target.value)}
+              placeholder="e.g. Mumbai"
+              className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+            Islamic / Educational Background <span className="text-gray-400 font-normal font-sans">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            value={applicantBackground}
+            onChange={(e) => setApplicantBackground(e.target.value)}
+            placeholder="e.g. Completed school, Basic Tajweed level"
+            className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+            Reason for Joining <span className="text-gray-400 font-normal font-sans">(Optional)</span>
+          </label>
+          <textarea
+            value={applicantMotivation}
+            onChange={(e) => setApplicantMotivation(e.target.value)}
+            placeholder="Please write briefly why you want to register..."
+            rows={2}
+            className="w-full text-xs bg-gray-50/50 border border-[#DDD5C3]/60 focus:border-[#B98072] outline-none rounded-xl px-3 py-2 text-[#22301F] placeholder-gray-400 font-sans transition-all resize-none"
+          />
+        </div>
+      </div>
+    );
+  };
   
   // Custom states for Pre-Diploma page
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -103,6 +210,22 @@ export function CourseDetailPage({
       handleLogin();
       return;
     }
+    if (!applicantName.trim()) {
+      setEnrollError("Please fill in your Full Name to submit the registration.");
+      return;
+    }
+    if (!applicantPhone.trim()) {
+      setEnrollError("Please fill in your WhatsApp / Phone Number.");
+      return;
+    }
+    if (!applicantAge.trim()) {
+      setEnrollError("Please fill in your Age.");
+      return;
+    }
+    if (!applicantCity.trim()) {
+      setEnrollError("Please fill in your City.");
+      return;
+    }
     if (!acceptedTerms) {
       setEnrollError("Please review and accept our Enrollment Terms & Conditions checkbox.");
       return;
@@ -114,20 +237,23 @@ export function CourseDetailPage({
       const acceptedAt = new Date().toISOString();
       await onEnrollSuccess(course.id, acceptedAt);
       
-      const studentName = user?.displayName || user?.email?.split('@')[0] || "Sincere Student";
-      const studentEmail = user?.email || "";
+      const formatSelection = course.id === "pre-diploma" ? ` (${pricingMode === "group" ? "Sisters Group - Rs. 499/mo" : "Dedicated 1-on-1 - Rs. 699/mo"})` : "";
       
-      const waMessage = `Assalamu'alaikum wa rehmatullahi wa barakatuhu, Ms. Mustara.
+      const waMessage = `Assalamu'alaikum wa rahmatullahi wa barakatuhu, QALBIYA Admissions Desk.
 
-I would like to enroll in the following course at QALBIYA Islamic Institute:
-📚 *Course:* ${course.title}
+I would like to submit a registration request for:
+📚 *Course:* ${course.title}${formatSelection}
 ⏳ *Duration:* ${course.duration}${course.schedule ? `\n🗓️ *Schedule:* ${course.schedule}` : ''}
 
-*My Details:*
-• *Name:* ${studentName}
-• *Email:* ${studentEmail}
+*Applicant Details:*
+👤 *Name:* ${applicantName}
+📞 *WhatsApp:* ${applicantPhone}
+🎂 *Age:* ${applicantAge}
+📍 *City:* ${applicantCity}
+🎓 *Islamic/Educational Background:* ${applicantBackground || "Not specified"}
+✍️ *Motivation/Why wish to join:* ${applicantMotivation || "Not specified"}
 
-Please guide me with the next steps for cohort registration and onboarding. JazakAllahu Khairan!`;
+Please guide me with the enrollment verification process. JazakAllahu Khairan!`;
 
       const waUrl = `https://wa.me/918145363290?text=${encodeURIComponent(waMessage)}`;
       window.open(waUrl, "_blank");
@@ -143,6 +269,485 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
       setIsSubmittingEnroll(false);
     }
   };
+
+  if (course.id === "tajweed-1on1") {
+    const advantages = [
+      {
+        title: "Dedicated Time, Just for You",
+        desc: "Class timing built entirely around your schedule",
+        icon: <Clock className="w-5 h-5" />
+      },
+      {
+        title: "Personalized Correction",
+        desc: "Every mistake, mispronunciation, and question addressed exclusively for you",
+        icon: <CheckCircle className="w-5 h-5" />
+      },
+      {
+        title: "Your Pace, Your Way",
+        desc: "Move faster or slower, whatever you need",
+        icon: <BookOpen className="w-5 h-5" />
+      },
+      {
+        title: "Weekly Progress Tracking",
+        desc: "See exactly how you're improving, week by week",
+        icon: <Award className="w-5 h-5" />
+      }
+    ];
+
+    const syllabusItems = [
+      {
+        title: "Correct Makharij",
+        desc: "Points of articulation for every Arabic letter to ensure perfect origin of sound."
+      },
+      {
+        title: "Sifaat of Letters",
+        desc: "Understanding the intrinsic characteristics of letters (such as whispering, echoing, etc.)."
+      },
+      {
+        title: "Complete Tajweed Rules",
+        desc: "Deep structure covering basic rules to advanced concepts like Mudood and stops."
+      },
+      {
+        title: "Ongoing Live Correction",
+        desc: "Continuous, patient feedback on your personal recitation to eliminate persistent errors."
+      }
+    ];
+
+    const deliverables = [
+      { title: "Notes/PDFs for every lesson", desc: "Easy to review and keep for future reference." },
+      { title: "Personal mistake-tracking list", desc: "So you can see your own progress clearly over time." },
+      { title: "WhatsApp support outside class hours", desc: "Including daily practice via voice messages and homework reviews." },
+      { title: "Certificate on completion", desc: "Earn your formal certificate after completing the curriculum." }
+    ];
+
+    const details = [
+      { label: "Format", value: "1-on-1 (private), fully online" },
+      { label: "Platform", value: "Google Meet" },
+      { label: "Duration", value: "5 months" },
+      { label: "Classes", value: "3 per week, 1 hour each" },
+      { label: "Fee", value: "Rs. 800/month" }
+    ];
+
+    const faqs = [
+      {
+        q: "Do I need any prior Tajweed knowledge?",
+        a: "No — the only requirement is that you already know how to read the Qur'an. This course starts from correcting your foundation and builds from there."
+      },
+      {
+        q: "What if I miss a class?",
+        a: "Since this is a 1-on-1 class (not a group class), scheduling is flexible and built around you. If a specific class is missed, the topic planned for that day is simply covered in the next class — nothing is lost."
+      },
+      {
+        q: "Is this online or in-person?",
+        a: "Fully online, conducted via Google Meet."
+      },
+      {
+        q: "How is the class time decided?",
+        a: "Class timing is set based on your schedule and availability."
+      },
+      {
+        q: "Will I get a certificate?",
+        a: "Yes — you'll receive a certificate upon completing the course."
+      },
+      {
+        q: "Is a trial class available?",
+        a: "Yes — a trial class is available before you commit, so you can experience the teaching style firsthand."
+      }
+    ];
+
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-24 animate-fade-in text-left">
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5B5648] hover:text-[#B98072] font-bold cursor-pointer transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Course Hub</span>
+        </button>
+
+        {/* SECTION 1 — Hero */}
+        <div className="bg-[#FAF8F1] border border-[#DDD5C3] rounded-[36px] overflow-hidden p-8 sm:p-14 relative shadow-2xs">
+          <div className="absolute inset-0 bg-[radial-gradient(#DDD5C3_1px,transparent_1px)] [background-size:20px_20px] opacity-25 pointer-events-none" />
+          <div className="space-y-6 relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#8CA394]/15 text-[#22301F] border border-[#8CA394]/30 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold">
+              <span className="text-[#B98072]">🔥</span> Popular Course
+            </div>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#22301F] tracking-tight leading-tight">
+              Every ayah. Every correction. Focused solely on you.
+            </h1>
+            <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed">
+              One-on-one Tajweed classes designed around your pace, your pronunciation, and your journey to reciting the Qur'an with confidence and correctness.
+            </p>
+            <div className="pt-4 flex flex-wrap gap-4">
+              <a
+                href="#enroll-section"
+                className="bg-[#22301F] hover:bg-[#33453A] text-white px-7 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02] shadow-sm"
+              >
+                Enroll Now →
+              </a>
+              <a
+                href="#syllabus-section"
+                className="bg-white hover:bg-[#FAF9F6] text-[#22301F] border border-[#DDD5C3] px-7 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02]"
+              >
+                Explore Syllabus
+              </a>
+            </div>
+          </div>
+          {/* Subtle Sage & Sand Aesthetic Background Graphic */}
+          <div className="absolute right-6 bottom-6 hidden md:block w-36 h-36 opacity-20 pointer-events-none">
+            <svg viewBox="0 0 100 100" className="w-full h-full text-[#8CA394]" fill="currentColor">
+              <path d="M50 10 C30 30 10 50 10 70 C10 85 25 90 50 90 C75 90 90 85 90 70 C90 50 70 30 50 10 Z" fillOpacity="0.05" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="50" cy="55" r="8" stroke="currentColor" strokeWidth="1" fill="none" />
+            </svg>
+          </div>
+        </div>
+
+        {/* SECTION 2 — Why 1:1? (Advantages) */}
+        <div className="space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              The Power of 1:1 Instruction
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Why 1:1?
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            {advantages.map((item, idx) => (
+              <div key={idx} className="bg-white border border-[#DDD5C3]/40 p-6 sm:p-8 rounded-2xl flex gap-4.5 items-start hover:border-[#8CA394] transition-all duration-300">
+                <div className="w-10 h-10 rounded-full bg-[#FAF8F1] border border-[#DDD5C3]/60 flex items-center justify-center shrink-0 text-[#8CA394]">
+                  {item.icon}
+                </div>
+                <div className="space-y-1.5 text-left">
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 3 — What You'll Learn */}
+        <div id="syllabus-section" className="space-y-8 scroll-mt-10">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Curriculum & Mastery
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              What You'll Learn
+            </h2>
+            <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed mt-2 max-w-xl mx-auto">
+              From Makharij to Sifaat — the complete rules of Tajweed, taught in depth. This isn't surface-level correction; it's a full, structured mastery of how the Qur'an is meant to be recited.
+            </p>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {syllabusItems.map((item, idx) => (
+              <div key={idx} className="bg-[#FAF9F6] border border-[#DDD5C3]/50 p-5 rounded-2xl flex gap-4 items-start hover:border-[#8CA394] transition-all">
+                <div className="w-7 h-7 rounded-full bg-[#22301F] text-white flex items-center justify-center font-mono text-[10px] font-bold shrink-0 mt-0.5">
+                  0{idx + 1}
+                </div>
+                <div className="text-left space-y-1">
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 4 — What You'll Get */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8A5A4D] font-bold block">
+              Resources & Support
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              What You'll Get
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto">
+            {deliverables.map((item, idx) => (
+              <div key={idx} className="bg-[#FAF8F1]/50 border border-[#DDD5C3]/40 p-5 rounded-2xl flex gap-4 items-start hover:bg-[#FAF8F1]/80 transition-all text-left">
+                <div className="w-6 h-6 rounded-full bg-[#8CA394]/10 text-[#8CA394] border border-[#8CA394]/25 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-serif font-bold text-xs sm:text-sm text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-[11px] sm:text-xs text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 5 — The Outcome */}
+        <div className="bg-[#FAF4F2] border border-[#DDD5C3] rounded-[32px] p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-6 relative overflow-hidden shadow-xs">
+          <div className="absolute -top-10 -left-10 text-[140px] font-serif text-[#8A5A4D]/5 select-none pointer-events-none">
+            “
+          </div>
+          <div className="absolute -bottom-20 -right-10 text-[140px] font-serif text-[#8A5A4D]/5 select-none pointer-events-none">
+            ”
+          </div>
+          
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block relative z-10">
+            The Ultimate Spiritual Outcome
+          </span>
+          
+          <p className="font-serif italic text-base sm:text-xl text-[#22301F] leading-relaxed max-w-xl mx-auto relative z-10">
+            By the end of this course, you'll recite the Qur'an fluently, correctly, and with confidence — not guessing, not hesitating, but reciting the way it was meant to be recited.
+          </p>
+
+          <div className="w-12 h-[1px] bg-[#8A5A4D] mx-auto relative z-10" />
+          <p className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold relative z-10">
+            QALBIYA Islamic Institute Standard
+          </p>
+        </div>
+
+        {/* SECTION 6 — Course Details */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Core Logistics
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Course Details
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="max-w-xl mx-auto bg-white border border-[#DDD5C3] rounded-2xl overflow-hidden shadow-2xs">
+            <div className="divide-y divide-[#DDD5C3]/40">
+              {details.map((detail, idx) => (
+                <div key={idx} className="flex justify-between items-center p-4 sm:p-5 text-xs sm:text-sm">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#5B5648] font-bold">{detail.label}</span>
+                  <span className="font-serif font-bold text-[#22301F] text-right">{detail.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 7 — A Note From Your Teacher */}
+        <div className="border-t border-[#DDD5C3]/40 pt-16 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-8 items-center text-left">
+            <div className="sm:col-span-4 flex justify-center">
+              <div className="w-full max-w-[160px] aspect-[4/5] rounded-[24px] bg-[#FAF8F1] border border-[#DDD5C3] p-4 flex flex-col justify-end relative overflow-hidden shadow-3xs">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                  <Heart className="w-20 h-20 text-[#8A5A4D]" />
+                </div>
+                <div className="relative z-20 space-y-1 text-center bg-white/95 backdrop-blur-xs p-3 rounded-xl border border-[#DDD5C3]/30">
+                  <p className="font-serif font-bold text-xs text-[#22301F]">Ms. Mustara</p>
+                  <p className="text-[8px] font-mono uppercase tracking-wider text-[#8A5A4D] font-bold">Founder</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="sm:col-span-8 space-y-4">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+                Message from the Founder
+              </span>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-[#22301F] tracking-tight">
+                A Note From Your Teacher
+              </h3>
+              
+              <blockquote className="font-serif italic text-sm sm:text-base text-[#5B5648] border-l-2 border-[#8A5A4D] pl-4 leading-relaxed">
+                "I've seen how much confidence a woman gains once her recitation finally feels right — not rushed, not unsure, just correct. That's what I want for you in this class: not just knowledge of the rules, but a recitation you feel proud of."
+              </blockquote>
+
+              <div>
+                <p className="font-serif font-bold text-xs sm:text-sm text-[#22301F]">Ms. Mustara</p>
+                <p className="text-[9px] font-mono uppercase tracking-wider text-[#5B5648] font-bold">Founder of QALBIYA Islamic Institute</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 8 — Who This Is For */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16 max-w-2xl mx-auto">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8A5A4D] font-bold block">
+              Enrollment Suitability
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Who This Is For
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="space-y-6 text-left">
+            <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed text-center">
+              Whether you're starting from scratch or want to refine mistakes you've carried for years — if you're ready for focused, individual correction, this class is built for you.
+            </p>
+            <div className="p-5 bg-[#FAF8F1] border border-[#DDD5C3]/60 rounded-2xl flex gap-3.5 items-center max-w-md mx-auto">
+              <Check className="w-5 h-5 text-[#8CA394] shrink-0 stroke-[2.5]" />
+              <p className="text-xs text-[#22301F] font-medium leading-normal">
+                <strong className="text-[#8A5A4D]">Requirement Note:</strong> No prior Tajweed knowledge needed — the only requirement is that you already know how to read the Qur'an.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 9 — FAQs */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16 max-w-2xl mx-auto">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Answers Hub
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div key={i} className="bg-white border border-[#DDD5C3]/70 rounded-2xl overflow-hidden transition-all duration-200">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left font-serif font-bold text-xs sm:text-sm text-[#22301F] hover:bg-[#FAF8F1]/40 transition-colors cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    {isOpen ? (
+                      <ChevronUp className="w-4 h-4 text-[#8A5A4D] shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-[#8CA394] shrink-0" />
+                    )}
+                  </button>
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-[300px] border-t border-[#DDD5C3]/30 p-6 bg-[#FAF8F1]/10" : "max-h-0"}`}
+                  >
+                    <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECTION 10 — Closing CTA */}
+        <div id="enroll-section" className="bg-[#22301F] text-white rounded-[36px] overflow-hidden p-8 sm:p-14 relative shadow-md max-w-2xl mx-auto">
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-25 pointer-events-none" />
+          
+          <div className="space-y-6 text-center relative z-10">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Begin Your Private Path
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight leading-tight max-w-xl mx-auto">
+              Your Qur'an deserves your full attention — and so do you.
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed max-w-md mx-auto">
+              Ready to learn under direct guidance? Accept the academic guidelines below, and secure your private enrollment onboarding credentials.
+            </p>
+
+            <div className="bg-white/95 text-[#22301F] rounded-[24px] p-6 text-left max-w-md mx-auto space-y-5 shadow-lg border border-white/20">
+              {isEnrolled ? (
+                <div className="bg-emerald-50 border border-emerald-200/60 rounded-2xl p-5 text-center space-y-4 py-8 animate-fade-in">
+                  <div className="w-10 h-10 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full flex items-center justify-center mx-auto">
+                    ✓
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-serif font-bold text-sm text-[#22301F]">Active 1:1 Enrollment Recorded</h4>
+                    <p className="text-[11px] text-gray-500 font-light max-w-xs mx-auto">
+                      Assalamu alaikum! You are registered for the Tajweed 1:1 classes. Check your messages or portal dashboard.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <div className="space-y-1.5 text-center">
+                    <p className="text-[9px] font-mono uppercase tracking-widest text-[#8A5A4D] font-bold">1:1 private plan</p>
+                    <h4 className="font-serif text-lg font-bold text-[#22301F]">Rs. 800 / Month</h4>
+                    <p className="text-[10px] text-[#5B5648] font-light text-center">Fully online | Google Meet | 5 Months Course</p>
+                  </div>
+
+                  {renderApplicantFields()}
+
+                  {/* Terms Acceptance checkbox */}
+                  <div className="space-y-3 border-t border-[#DDD5C3]/40 pt-4">
+                    <label className="flex items-start gap-2.5 text-[11px] text-gray-500 font-light cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={acceptedTerms}
+                        onChange={(e) => setAcceptedTerms(e.target.checked)}
+                        className="accent-[#B98072] mt-0.5 shrink-0"
+                      />
+                      <span>
+                        I accept the <span className="font-semibold text-[#22301F]">QALBIYA Academic Integrity and Conduct Standards</span> and agree to maintain class schedule punctuality.
+                      </span>
+                    </label>
+                  </div>
+
+                  {enrollError && (
+                    <p className="text-[10px] text-red-500 font-mono text-center">
+                      ⚠️ {enrollError}
+                    </p>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleEnroll}
+                    disabled={isSubmittingEnroll}
+                    className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3.5 rounded-full text-xs font-mono uppercase tracking-widest font-bold cursor-pointer transition-transform active:scale-95 shadow-sm inline-flex items-center justify-center gap-2"
+                  >
+                    <FileCheck className="w-4 h-4" />
+                    <span>{isSubmittingEnroll ? "Opening Admissions..." : "Enroll Now via WhatsApp"}</span>
+                  </button>
+
+                  <div className="flex items-center justify-center gap-4 pt-1 text-[11px] font-mono text-[#5B5648] border-t border-gray-100">
+                    <a
+                      href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%20would%20like%20to%20inquire%20about%20the%20Tajweed%201%3A1%20Classes%20course."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#B98072] flex items-center gap-1"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+                      <span>WhatsApp Inquiries</span>
+                    </a>
+                    <span>•</span>
+                    <a
+                      href="https://instagram.com/qalbiya_institute"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#B98072] flex items-center gap-1"
+                    >
+                      <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
+                      <span>DM on Instagram</span>
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (course.id === "pre-diploma-deeniyat") {
     const faqs = [
@@ -577,7 +1182,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               
               <div className="pt-2 flex flex-wrap gap-4">
                 <a
-                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%20would%20like%20to%20inquire%20about%20the%20Pre-Diploma%20in%20Deeniyat%206-Month%20program."
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%20would%20like%20to%20inquire%20about%20the%20Pre-Diploma%20in%20Deeniyat%206-Month%20course."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
@@ -603,10 +1208,10 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   Intake Desk
                 </p>
                 <h3 className="font-serif text-lg font-bold">
-                  Cohort Enrollment Panel
+                  Course Enrollment Panel
                 </h3>
                 <p className="text-[11px] text-[#5B5648] font-light leading-relaxed">
-                  Join the Pre-Diploma in Deeniyat cohort today. Select your plan and submit your registration securely.
+                  Join the Pre-Diploma in Deeniyat course today. Select your plan and submit your registration securely.
                 </p>
               </div>
 
@@ -618,7 +1223,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   <div className="space-y-1">
                     <h4 className="font-serif font-bold text-sm">Active Enrollment Authenticated</h4>
                     <p className="text-[11px] text-gray-500 font-light max-w-xs mx-auto">
-                      Assalamu alaikum! You are actively registered in the Pre-Diploma program. Check your Student Portal dashboard or WhatsApp for updates.
+                      Assalamu alaikum! You are actively registered in the Pre-Diploma course. Check your Student Portal dashboard or WhatsApp for updates.
                     </p>
                   </div>
                 </div>
@@ -645,6 +1250,8 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                       </button>
                     </div>
                   </div>
+
+                  {renderApplicantFields()}
 
                   {formDetails ? (
                     <div className="bg-[#FAF8F1] border border-[#22301F]/15 rounded-2xl p-4 space-y-3.5 text-xs text-[#22301F]">
@@ -677,7 +1284,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                         className="accent-[#B98072] mt-0.5 shrink-0"
                       />
                       <span>
-                        I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
+                        I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and course privacy.
                       </span>
                     </label>
                   </div>
@@ -691,11 +1298,11 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   <button
                     type="button"
                     onClick={handleEnroll}
-                    disabled={isSubmittingEnroll || !acceptedTerms}
+                    disabled={isSubmittingEnroll}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold cursor-pointer transition-transform active:scale-95 shadow-sm inline-flex items-center justify-center gap-2"
                   >
                     <FileCheck className="w-4 h-4" />
-                    <span>{isSubmittingEnroll ? "Joining Cohort..." : "Join Course Now"}</span>
+                    <span>{isSubmittingEnroll ? "Joining Course..." : "Join Course Now"}</span>
                   </button>
 
                   {!user && (
@@ -708,7 +1315,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
 
               {showSuccessToast && (
                 <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-3 text-center text-[11px] font-mono animate-fade-in">
-                  ✓ Enrollment recorded successfully! Welcome to the cohort.
+                  ✓ Enrollment recorded successfully! Welcome to the course.
                 </div>
               )}
             </div>
@@ -745,7 +1352,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
               {course.category === "women" ? "Women Academy" : "Juniors Education"}
             </span>
             <span className="text-[10px] font-mono uppercase tracking-widest bg-[#22301F] text-white px-3 py-1 rounded-full font-bold">
-              {course.duration} Program
+              {course.duration} Course
             </span>
           </div>
 
@@ -796,7 +1403,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
           {/* Detailed Narrative */}
           <div className="space-y-4">
             <h3 className="font-serif text-xl font-bold text-[#22301F] border-b border-[#DDD5C3]/40 pb-2">
-              Academic Program Narrative
+              Academic Course Narrative
             </h3>
             <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
               {course.longDescription}
@@ -972,10 +1579,10 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 Intake Desk
               </span>
               <h3 className="font-serif text-xl font-bold text-[#22301F]">
-                Cohort Enrollment Panel
+                Course Enrollment Panel
               </h3>
               <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                Secure your seat in this highly structured cohort. Registered students gain direct portal tracking, progress logs, and syllabus feedback.
+                Secure your seat in this highly structured course. Registered students gain direct portal tracking, progress logs, and syllabus feedback.
               </p>
             </div>
 
@@ -987,7 +1594,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <div className="space-y-1">
                   <h4 className="font-serif font-bold text-sm text-[#22301F]">Active Enrollment Authenticated</h4>
                   <p className="text-[11px] text-gray-500 font-light max-w-xs mx-auto">
-                    Assalamu alaikum! You are actively registered in this cohort program. Visit your Student Portal dashboard to complete assessments and view lessons.
+                    Assalamu alaikum! You are actively registered in this course. Visit your Student Portal dashboard to complete assessments and view lessons.
                   </p>
                 </div>
               </div>
@@ -1021,6 +1628,8 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                   </div>
                 )}
 
+                {renderApplicantFields()}
+
                 {/* Terms Acceptance checkbox */}
                 <div className="space-y-3 border-t border-[#DDD5C3]/40 pt-4 text-left">
                   <label className="flex items-start gap-2.5 text-[11px] text-gray-500 font-light cursor-pointer select-none">
@@ -1031,7 +1640,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                       className="accent-[#B98072] mt-0.5 shrink-0"
                     />
                     <span>
-                      I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and cohort privacy.
+                      I have reviewed and accept the <span className="font-semibold text-[#22301F]">QALBIYA Islamic Institute Adab Conduct Standards</span> and agree to maintain academic integrity and course privacy.
                     </span>
                   </label>
                 </div>
@@ -1045,7 +1654,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
                 <button
                   type="button"
                   onClick={handleEnroll}
-                  disabled={isSubmittingEnroll || !acceptedTerms}
+                  disabled={isSubmittingEnroll}
                   className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold cursor-pointer transition-transform active:scale-95 shadow-sm inline-flex items-center justify-center gap-2"
                 >
                   <FileCheck className="w-4 h-4" />
@@ -1063,7 +1672,7 @@ Please guide me with the next steps for cohort registration and onboarding. Jaza
 
             {showSuccessToast && (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-3 text-center text-[11px] font-mono animate-fade-in">
-                ✓ Enrollment recorded successfully! Welcome to the cohort.
+                ✓ Enrollment recorded successfully! Welcome to the course.
               </div>
             )}
 

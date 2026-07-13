@@ -60,7 +60,53 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   onUpdateProfile,
   onExploreCourse
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<"progress" | "bookmarks" | "profile" | "emails">("progress");
+  const [activeSubTab, setActiveSubTab] = useState<"progress" | "bookmarks" | "profile" | "emails">((() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.includes("sub=bookmarks")) return "bookmarks";
+      if (hash.includes("sub=profile")) return "profile";
+      if (hash.includes("sub=emails")) return "emails";
+    } catch (e) {
+      console.warn(e);
+    }
+    return "progress";
+  }));
+
+  // Sync state to URL and update canonical link/meta dynamically
+  useEffect(() => {
+    try {
+      const hash = window.location.hash || "";
+      const [path, search] = hash.split("?");
+      const params = new URLSearchParams(search || "");
+      params.set("sub", activeSubTab);
+
+      const targetHash = `${path}?${params.toString()}`;
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
+
+      // Update head canonical link
+      const canonicalLink = document.getElementById("seo-canonical-link");
+      if (canonicalLink) {
+        canonicalLink.setAttribute("href", `https://qalbiya-islamic-institute.vercel.app/${path}?${params.toString()}`);
+      }
+
+      // Update head meta description
+      const metaDesc = document.getElementById("seo-meta-description");
+      if (metaDesc) {
+        const descriptions = {
+          progress: "Check your academic course progress, view active lessons, and download certifications on the QALBIYA Student Portal.",
+          bookmarks: "Access your bookmarked Quran lessons, Tajweed resources, and Deeniyat reference textbooks on the QALBIYA Student Portal.",
+          profile: "Manage your QALBIYA student account profile, study background, age group, and academic spiritual goals.",
+          emails: "View your verified communications, enrollment ledgers, and official announcements on the QALBIYA Student Portal."
+        };
+        metaDesc.setAttribute("content", descriptions[activeSubTab]);
+      }
+    } catch (e) {
+      console.warn("SEO tag sync failed", e);
+    }
+  }, [activeSubTab]);
+
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [studyBackground, setStudyBackground] = useState("");
@@ -323,7 +369,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           </h2>
           <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
             Welcome to the QALBIYA Islamic Institute Student Sanctuary. Sign in to your account to manage your profile, 
-            track your completion progress on weekly syllabi outlines, and bookmark programs you wish 
+            track your completion progress on weekly syllabi outlines, and bookmark courses you wish 
             to join in upcoming semesters.
           </p>
         </div>
@@ -370,6 +416,10 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               referrerPolicy="no-referrer"
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#8CA394] shadow-md shrink-0"
               id="portal-profile-avatar"
+              loading="lazy"
+              decoding="async"
+              width={80}
+              height={80}
             />
           ) : (
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#EDE3CE] flex items-center justify-center font-serif text-3xl text-[#22301F] border-2 border-[#8CA394] shrink-0">
@@ -1091,20 +1141,12 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                           <div className="flex justify-between items-start">
                             <div className="space-y-1">
                               <span className="font-mono text-[9px] uppercase tracking-wider text-[#8A5A4D]">
-                                {course.category === "women" ? "Women's Academy" : "Kids' Program"}
+                                {course.category === "women" ? "Women's Academy" : "Kids' Course"}
                               </span>
                               <h4 className="font-serif text-lg sm:text-xl font-bold text-[#22301F]">
                                 {course.title}
                               </h4>
                             </div>
-                            <button
-                              id={`btn-bookmark-toggle-${course.id}`}
-                              onClick={() => onToggleBookmark(course.id)}
-                              className="p-1.5 hover:bg-[#EDE3CE] rounded-full transition-colors cursor-pointer text-[#8CA394] hover:text-[#B98072]"
-                              title={userBookmarks.includes(course.id) ? "Remove Bookmark" : "Add Bookmark"}
-                            >
-                              <Bookmark className={`w-4 h-4 ${userBookmarks.includes(course.id) ? "fill-[#B98072] text-[#B98072]" : ""}`} />
-                            </button>
                           </div>
 
                           <div className="space-y-1 text-xs text-[#5B5648] font-light">
@@ -1231,9 +1273,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                 <div className="bg-[#FBF8F1] border border-[#DDD5C3] rounded-[24px] p-10 text-center space-y-4 max-w-2xl mx-auto">
                   <Bookmark className="w-10 h-10 text-[#8CA394] mx-auto opacity-50" />
                   <div className="space-y-1">
-                    <h4 className="font-serif text-lg font-bold text-[#22301F]">No programs bookmarked yet</h4>
+                    <h4 className="font-serif text-lg font-bold text-[#22301F]">No courses bookmarked yet</h4>
                     <p className="text-xs text-[#5B5648] font-light max-w-md mx-auto">
-                      Explore our curricula hubs for Muslim women and juniors, and save programs here by clicking the ribbon bookmarks.
+                      Explore our curricula hubs for Muslim women and juniors, and save courses here by clicking the ribbon bookmarks.
                     </p>
                   </div>
                 </div>
@@ -1389,7 +1431,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
                     <div className="space-y-1.5">
                       <label htmlFor="profile-ageGroup" className="block text-xs uppercase tracking-wider font-bold text-[#22301F]">
-                        Cohort Age Group
+                        Course Age Group
                       </label>
                       <select
                         id="profile-ageGroup"
@@ -1444,7 +1486,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       value={goals}
                       onChange={(e) => setGoals(e.target.value)}
                       className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
-                      placeholder="What are you hoping to achieve or master during this semester cohort?"
+                      placeholder="What are you hoping to achieve or master during this semester course?"
                     />
                   </div>
 
@@ -1530,7 +1572,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                     <div className="space-y-1">
                       <h4 className="font-serif text-base font-bold text-[#22301F]">Inbox is Empty</h4>
                       <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                        No enrollment emails have been triggered yet. Once you enroll in any of our flagship programs, the simulated Firebase Cloud Function will trigger and deliver your personalized welcome email.
+                        No enrollment emails have been triggered yet. Once you enroll in any of our flagship courses, the simulated Firebase Cloud Function will trigger and deliver your personalized welcome email.
                       </p>
                     </div>
                   </div>
@@ -1722,7 +1764,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                 </p>
 
                 <p className="font-sans font-light text-xs sm:text-sm text-[#5B5648] max-w-lg mx-auto leading-relaxed">
-                  has successfully completed the comprehensive, cohort syllabus outline, evaluations, and weekly modules of the flagship deeniyat curriculum for
+                  has successfully completed the comprehensive, course syllabus outline, evaluations, and weekly modules of the flagship deeniyat curriculum for
                 </p>
 
                 <p className="font-serif text-xl sm:text-2xl font-bold text-[#22301F] tracking-tight">
@@ -1866,7 +1908,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       value={testimonialContent}
                       onChange={(e) => setTestimonialContent(e.target.value)}
                       className="w-full bg-[#FAF4F2] border border-[#DDD5C3] focus:border-[#8CA394] rounded-xl px-4 py-3 text-xs text-[#2B2A25] focus:outline-none"
-                      placeholder="Share your spiritual transformation, study experience with the female scholars, and how this cohort outline impacted you..."
+                      placeholder="Share your spiritual transformation, study experience with the female scholars, and how this course outline impacted you..."
                     />
                   </div>
 

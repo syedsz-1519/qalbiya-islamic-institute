@@ -52,7 +52,7 @@ export function ContactPage() {
           </div>
           <div className="space-y-1">
             <h3 className="font-serif font-bold text-lg text-[#22301F]">DM on Instagram</h3>
-            <p className="text-xs text-[#5B5648] font-mono">@qalbiya_institute</p>
+            <p className="text-xs text-[#5B5648] font-mono">@qalbiya, institute</p>
           </div>
           <span className="text-[10px] uppercase font-mono tracking-wider text-[#E1306C] font-bold bg-[#E1306C]/10 px-3 py-1 rounded-full">
             Follow & DM

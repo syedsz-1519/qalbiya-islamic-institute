@@ -13,17 +13,19 @@ import { LogoSVG } from "./components/LogoSVG";
 import { Hero } from "./components/Hero";
 import { CourseCard } from "./components/CourseCard";
 import { CourseDetailsModal } from "./components/CourseDetailsModal";
-import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
-import { StudentPortal } from "./components/StudentPortal";
 import { CourseFAQ } from "./components/CourseFAQ";
 import { LearnResources } from "./components/LearnResources";
 import { FreeCourses } from "./components/FreeCourses";
-import { ResourcesHub } from "./components/ResourcesHub";
-import { ScholarshipPage } from "./components/ScholarshipPage";
-import { ContactPage } from "./components/ContactPage";
-import { LegalPages } from "./components/LegalPages";
-import { GeneralFAQ } from "./components/GeneralFAQ";
-import { CourseDetailPage } from "./components/CourseDetailPage";
+
+// Lazy-loaded subcomponents for high-performance bundle size optimization (PageSpeed)
+const AnalyticsDashboard = React.lazy(() => import("./components/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
+const ResourcesHub = React.lazy(() => import("./components/ResourcesHub").then(m => ({ default: m.ResourcesHub })));
+const ScholarshipPage = React.lazy(() => import("./components/ScholarshipPage").then(m => ({ default: m.ScholarshipPage })));
+const ContactPage = React.lazy(() => import("./components/ContactPage").then(m => ({ default: m.ContactPage })));
+const LegalPages = React.lazy(() => import("./components/LegalPages").then(m => ({ default: m.LegalPages })));
+const GeneralFAQ = React.lazy(() => import("./components/GeneralFAQ").then(m => ({ default: m.GeneralFAQ })));
+const CourseDetailPage = React.lazy(() => import("./components/CourseDetailPage").then(m => ({ default: m.CourseDetailPage })));
+
 import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
 
 function parseDurationToWeeks(durationStr: string): number {
@@ -65,6 +67,39 @@ function sortCourses(courses: Course[], sortBy: "newest" | "alphabetical" | "dur
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>("home");
+
+  // Synchronize currentTab with URL hash for search engine deep indexing and back-button support
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        // Strip leading #/ or #
+        const cleanHash = hash.replace(/^#\/?/, "");
+        // Extract tab path prior to any query parameters
+        const tab = cleanHash.split("?")[0];
+        if (tab) {
+          setCurrentTab(tab);
+        }
+      } else {
+        setCurrentTab("home");
+      }
+    };
+
+    handleHashChange(); // Sync initial mount hash
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
+
+  // Update window.location.hash when currentTab changes to support deep linking and prevent duplicate content
+  useEffect(() => {
+    const rawHash = window.location.hash.replace(/^#\/?/, "");
+    const mainHash = rawHash.split("?")[0];
+    if (mainHash !== currentTab) {
+      window.location.hash = "/" + currentTab;
+    }
+  }, [currentTab]);
 
   useEffect(() => {
     try {
@@ -320,7 +355,7 @@ export default function App() {
     const subject = `Admission Inquiry [${contactTopic}] - ${contactName}`;
     const body = `Assalamu'alaikum wa rehmatullahi wa barakatuhu,
 
-I am interested in QALBIYA Islamic Institute's programs and would like to submit an inquiry.
+I am interested in QALBIYA Islamic Institute's courses and would like to submit an inquiry.
 
 --- INQUIRY DETAILS ---
 • Name: ${contactName}
@@ -375,7 +410,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
       setWaSuccess(true);
       
       // Build WhatsApp message and open link
-      const text = encodeURIComponent(`Assalamu'alaikum wa rehmatullahi wa barakatuhu. I am ${waName}. I am interested in QALBIYA Islamic Institute's programs. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
+      const text = encodeURIComponent(`Assalamu'alaikum wa rehmatullahi wa barakatuhu. I am ${waName}. I am interested in QALBIYA Islamic Institute's courses. ${waMessage ? `Inquiry: ${waMessage}` : ""}`);
       const waUrl = `https://wa.me/918145363290?text=${text}`;
       
       // Safe redirect inside sandbox
@@ -472,7 +507,13 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
 
       {/* Main Content Area */}
       <main className="flex-grow">
-        {currentTab === "home" && (
+        <React.Suspense fallback={
+          <div className="py-24 text-center font-mono text-xs text-[#5B5648] flex flex-col items-center justify-center space-y-4 animate-fade-in">
+            <div className="w-10 h-10 border-2 border-[#B98072] border-t-transparent rounded-full animate-spin"></div>
+            <span className="tracking-widest uppercase text-[10px] text-[#8A5A4D]">Preparing sacred sanctuary...</span>
+          </div>
+        }>
+          {currentTab === "home" && (
           <div className="space-y-12">
             <Hero onChoosePath={(path) => setCurrentTab(path)} />
 
@@ -500,8 +541,6 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                       formDetails={activeFormDetails[course.id] || null}
                       onExplore={(c) => setCurrentTab("course-" + c.id)}
                       user={user}
-                      isBookmarked={userBookmarks.includes(course.id)}
-                      onBookmarkToggle={handleBookmarkToggle}
                       isEnrolled={userEnrollments.includes(course.id)}
                     />
                   ))}
@@ -584,25 +623,25 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                       The Heart of the Institute
                     </span>
                     <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
-                      About Our Founder
+                      About Our "Founder"
                     </h3>
                   </div>
 
                   <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    QALBIYA Islamic Institute was founded under the vision and academic guidance of <strong>Ms. Mustara</strong>, a dedicated Islamic scholar and educator. Deeply committed to the traditional sciences of the Deen, she holds multiple classical licenses (<em>Ijazat</em>) in Quranic Tajweed, Hadith sciences, and Fiqh from recognized traditional seminaries.
+                    Qalbiya Islamic Institute was founded by <strong>Mustara</strong>, who has spent the past few years teaching Seerah, Tajweed, and Islamic Studies to students at different stages of their journey.
                   </p>
 
                   <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Having taught hundreds of sisters worldwide, Ms. Mustara realized that modern women and families require a highly structured, semester-based approach to Deeniyat—one that respects their busy modern lives without compromising on academic depth, precision, and spiritual nurture.
+                    Through this experience, she noticed something missing in how deen was often taught, plenty of knowledge, but little guidance on how to actually live it. That realization became the foundation Qalbiya was built on: a place where learning isn't just about gaining ilm, but about real, lasting change.
                   </p>
 
                   <div className="bg-[#FAF4F2] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] font-serif text-sm relative">
                     <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
                     <p className="relative z-10 leading-relaxed font-light pl-4">
-                      My vision for QALBIYA Islamic Institute was to build an authentic spiritual sanctuary—a place where Deen is studied with intellectual rigor, yet polished with prophetic manners (Akhlaq) and heart-purification (Tazkiyah). We welcome you to find focus in an age of distractions.
+                      "My vision for Qalbiya was simple, a place where deen isn't just studied but lived. Where ilm reaches the heart, and shapes how we act. I welcome you to find that here."
                     </p>
                     <div className="mt-3 pl-4 text-right">
-                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; Ms. Mustara</span>
+                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; MS. MUSTARA</span>
                     </div>
                   </div>
                 </div>
@@ -787,7 +826,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5B5648] font-bold" id="women-hub-breadcrumb">
               <button onClick={() => setCurrentTab("home")} className="hover:text-[#B98072] cursor-pointer transition-colors">Homepage</button>
               <ChevronRight className="w-3 h-3 text-[#8CA394]" />
-              <span className="text-[#8A5A4D]">Women's Programs</span>
+              <span className="text-[#8A5A4D]">Women's Courses</span>
             </div>
 
             {/* Hero Section */}
@@ -800,7 +839,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </h1>
               <div className="w-12 h-[1.5px] bg-[#B98072] mx-auto my-4" />
               <p className="text-[#5B5648] text-sm sm:text-base font-light leading-relaxed">
-                Whether you're correcting your recitation, healing your character, or building your foundation from the ground up — there's a program made for exactly where you are.
+                Whether you're correcting your recitation, healing your character, or building your foundation from the ground up — there's a course made for exactly where you are.
               </p>
             </div>
 
@@ -846,7 +885,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-seerah-prophet")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -890,7 +929,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-tajweed-1on1")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -934,7 +973,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-noorani-qaida-women")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -978,7 +1017,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-pre-diploma-deeniyat")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -995,7 +1034,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
                 <a 
-                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Women%27s%20Programs."
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Women%27s%20Courses."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-8 py-3.5 rounded-full text-xs font-mono uppercase tracking-widest font-bold shadow-md cursor-pointer transition-transform hover:scale-[1.02]"
@@ -1025,7 +1064,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5B5648] font-bold" id="kids-hub-breadcrumb">
               <button onClick={() => setCurrentTab("home")} className="hover:text-[#B98072] cursor-pointer transition-colors">Homepage</button>
               <ChevronRight className="w-3 h-3 text-[#8CA394]" />
-              <span className="text-[#8A5A4D]">Kids' Programs</span>
+              <span className="text-[#8A5A4D]">Kids' Courses</span>
             </div>
 
             {/* Hero Section */}
@@ -1050,7 +1089,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <span className="bg-[#B0863A]/10 text-[#B0863A] border border-[#B0863A]/20 rounded-full px-3 py-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
-                      ✨ Star Program
+                      ✨ Star Course
                     </span>
                     <span className="text-[10px] uppercase font-mono tracking-widest text-[#87652A] font-bold">Comprehensive Curriculum</span>
                   </div>
@@ -1068,7 +1107,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     "A complete Islamic foundation, built to last a lifetime."
                   </p>
                   <p className="text-xs text-[#5B5648] font-light leading-relaxed mb-6">
-                    An engaging, fun, and highly interactive program designed to instil an enduring love for Allah, the Prophet ﷺ, and Islamic values in young hearts using visual slides and stories.
+                    An engaging, fun, and highly interactive course designed to instil an enduring love for Allah, the Prophet ﷺ, and Islamic values in young hearts using visual slides and stories.
                   </p>
                 </div>
 
@@ -1084,7 +1123,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-juniors-deeniyat-mastercourse")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -1128,7 +1167,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     onClick={() => setCurrentTab("course-noorani-qaida-kids")}
                     className="w-full bg-[#22301F] hover:bg-[#33453A] text-[#FAF4F2] py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold transition-all hover:scale-[1.01] cursor-pointer"
                   >
-                    View Program
+                    View Course
                   </button>
                 </div>
               </div>
@@ -1145,7 +1184,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
                 <a 
-                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Kids%20Programs."
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%27d%20like%20to%20inquire%20about%20QALBIYA%20Islamic%20Institute%20Kids%20Courses."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-8 py-3.5 rounded-full text-xs font-mono uppercase tracking-widest font-bold shadow-md cursor-pointer transition-transform hover:scale-[1.02]"
@@ -1196,7 +1235,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6 my-6 border-y border-[#DDD5C3]">
                 <div className="space-y-2">
-                  <h4 className="font-serif font-bold text-[#22301F]">Semesters & Cohorts</h4>
+                  <h4 className="font-serif font-bold text-[#22301F]">Semesters & Courses</h4>
                   <p className="text-xs text-[#5B5648] font-light leading-relaxed">
                     We believe in high-contrast educational standards. Our courses are semester-based, 
                     featuring visual slides, homework assessments, and certificates of completion.
@@ -1341,6 +1380,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             </div>
           )
         )}
+        </React.Suspense>
       </main>
 
       {/* Footer */}
@@ -1362,7 +1402,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </h4>
             </div>
             <p className="font-sans text-xs text-[#FAF4F2]/70 font-light leading-relaxed max-w-xs">
-              A premium, traditional cohort learning institute for modern families. Restoring true 
+              A premium, traditional learning institute for modern families. Restoring true 
               intellectual focus and faith foundations.
             </p>
             <div className="pt-2 border-t border-[#FAF9F6]/10 text-xs">
@@ -1400,7 +1440,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             <div className="space-y-2 font-light text-[#FAF4F2]/80">
               <p className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#8CA394]" />
-                <span>Virtual Cohorts Worldwide</span>
+                <span>Virtual Classes Worldwide</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#8CA394]" />

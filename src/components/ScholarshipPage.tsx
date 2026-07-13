@@ -5,16 +5,16 @@ import { Award, ShieldCheck, HeartHandshake, Check, FileText, Send, Sparkles, He
 const BENEFITS = [
   "100% tuition-coverage including textbook sets and software licenses",
   "Assigned personal 1-on-1 female Tajweed mentor",
-  "Comprehensive access to recordings, slide decks, and cohorts",
+  "Comprehensive access to recordings, slide decks, and courses",
   "Graduation diplomas and official recommendation references",
   "Opportunities for paid teaching assistant slots in future semesters"
 ];
 
 const ELIGIBILITY = [
-  "Sincere commitment to attending all live cohort classes weekly",
-  "Financial barriers that prevent paying full cohort tuition rates",
+  "Sincere commitment to attending all live course classes weekly",
+  "Financial barriers that prevent paying full course tuition rates",
   "Dedication to using the acquired knowledge to serve their immediate families & communities",
-  "Ages 16+ for Women's programs, or parent/guardian sponsorship for Kids' courses"
+  "Ages 16+ for Women's courses, or parent/guardian sponsorship for Kids' courses"
 ];
 
 export function ScholarshipPage() {
@@ -83,7 +83,7 @@ ${dedicationPledge}
           Prophetic Legacy Fund
         </span>
         <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
-          Sponsorship & Scholarship Program
+          Sponsorship & Scholarship Support
         </h2>
         <p className="text-[#5B5648] text-sm max-w-xl mx-auto font-light leading-relaxed">
           Ensuring pristine Deeniyat knowledge remains accessible to every sincere heart, regardless of local financial or geographic constraints.
@@ -108,7 +108,7 @@ ${dedicationPledge}
               </div>
 
               <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                Knowledge is a trust (Amanah) that must never be barred behind pricing walls. Our scholarship program provides full tuition coverage for students who exhibit high dedication and genuine financial constraints. Supported by contributions from community sponsors, we grant up to 40 fully covered seats per semester.
+                Knowledge is a trust (Amanah) that must never be barred behind pricing walls. Our scholarship scheme provides full tuition coverage for students who exhibit high dedication and genuine financial constraints. Supported by contributions from community sponsors, we grant up to 40 fully covered seats per semester.
               </p>
             </div>
 

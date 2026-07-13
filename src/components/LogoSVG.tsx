@@ -7,8 +7,8 @@ interface LogoSVGProps {
 }
 
 export function LogoSVG({ className = "w-10 h-10", fillColor = "currentColor", showText = false }: LogoSVGProps) {
-  // Dynamically set viewBox depending on whether the wordmarks are active or not
-  const viewBox = showText ? "0 0 200 280" : "0 0 200 220";
+  // Use a square viewBox for the circular badge variant, and original rectangular for calligraphy-only
+  const viewBox = showText ? "0 0 300 300" : "0 0 200 220";
 
   return (
     <svg
@@ -18,13 +18,35 @@ export function LogoSVG({ className = "w-10 h-10", fillColor = "currentColor", s
       aria-hidden="true"
       style={{ shapeRendering: "geometricPrecision" }}
     >
-      {/* 
-        Pruned and highly optimized custom vector path data representing 
-        the "Qalbiya" (قلبية) teardrop calligraphy. 
-        Engineered for high performance, fast DOM rendering, and flawless scalability.
-      */}
-      <g fill={fillColor} stroke="none" style={{ vectorEffect: "non-scaling-stroke" }}>
-        
+      {/* Definitions for elegant gradients if needed */}
+      <defs>
+        <linearGradient id="logo-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#DFBA73" />
+          <stop offset="50%" stopColor="#C5A059" />
+          <stop offset="100%" stopColor="#9E7D3B" />
+        </linearGradient>
+      </defs>
+
+      {/* Conditionally render the outer circular border from the brand logo */}
+      {showText && (
+        <circle 
+          cx="150" 
+          cy="150" 
+          r="142" 
+          fill="none" 
+          stroke={fillColor === "#5C061B" ? "#5C061B" : fillColor} 
+          strokeWidth="3.5" 
+          style={{ vectorEffect: "non-scaling-stroke" }}
+        />
+      )}
+
+      {/* Calligraphy Group */}
+      <g 
+        fill={fillColor} 
+        stroke="none" 
+        style={{ vectorEffect: "non-scaling-stroke" }}
+        transform={showText ? "translate(50, 22)" : undefined}
+      >
         {/* Central vertical calligraphy stem (Alif/Lam) */}
         <path d="M98,22c0,0,10,26,10,51s-11,50-16,70c-4,15-2,30,8,40s27,7,37-5s13-35,7-55s-20-45-22-65c-2-15,4-25,4-25s-8,17-10,30c-2,20,11,40,16,60s2,40-8,50s-24,10-28-5c-4-20,6-45,8-65s-6-60-6-81Z" />
 
@@ -34,13 +56,13 @@ export function LogoSVG({ className = "w-10 h-10", fillColor = "currentColor", s
         {/* Right flame boundary stroke */}
         <path d="M102,25c6,12,21,32,34,47s24,40,24,60s-20,55-54,63c10-6,18-16,26-26s18-42,14-62s-18-45-42-82Z" />
 
-        {/* Left inner calligraphy glyph loop */}
+        {/* Left calligraphy glyph loop */}
         <path d="M74,129c6-12,18-17,23-7s-5,27-20,33s-23-3-23-16s8-20,16-24c-3,4-8,10-8,17s8,15,18,10s14-15,10-21s-12-8-16,2Z" />
         
         {/* Underneath sweeping connection stroke */}
         <path d="M54,137c0,0-7,20,3,38s35,27,55,27s42-15,42-35s-7-18-17-18s-17,8-12,16s15,10,15,17s-13,13-28,13s-38-8-45-23s-13-35-13-35Z" />
 
-        {/* Right inner calligraphy loop */}
+        {/* Right calligraphy loop */}
         <path d="M127,122c7-10,20-13,27-5s6,22-4,32s-26,13-33,3s-5-17,1-23c-3,3-6,10-3,16s15,7,23,0s10-16,4-22s-14-8-17-5Z" />
 
         {/* Clean, scalable letter-diacritic dots */}
@@ -56,36 +78,35 @@ export function LogoSVG({ className = "w-10 h-10", fillColor = "currentColor", s
 
         {/* High-fidelity elegant Fatha glyph accent */}
         <path d="M74,79c8-7,16-10,22-10s4,4-2,10s-14,10-20,10s0-4,4-10Z" />
-
       </g>
 
-      {/* Elegant Serif Wordmarks rendering */}
+      {/* Elegant Serif Wordmarks rendering (matching circular badge coordinates) */}
       {showText && (
         <g style={{ userSelect: "none" }}>
           <text
-            x="100"
-            y="242"
+            x="150"
+            y="238"
             textAnchor="middle"
-            fill={fillColor}
+            fill={fillColor === "#5C061B" ? "#5C061B" : fillColor}
             style={{
-              fontFamily: "Georgia, serif",
-              fontSize: "23px",
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: "25px",
               fontWeight: "bold",
-              letterSpacing: "0.14em"
+              letterSpacing: "0.15em"
             }}
           >
             QALBIYA
           </text>
           <text
-            x="100"
-            y="266"
+            x="150"
+            y="264"
             textAnchor="middle"
-            fill={fillColor}
+            fill={fillColor === "#5C061B" ? "#5C061B" : fillColor}
             style={{
-              fontFamily: "Georgia, serif",
-              fontSize: "8px",
-              fontWeight: "500",
-              letterSpacing: "0.24em"
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: "8.5px",
+              fontWeight: "600",
+              letterSpacing: "0.26em"
             }}
           >
             — ISLAMIC INSTITUTE —

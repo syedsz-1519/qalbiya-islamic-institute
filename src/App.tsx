@@ -16,7 +16,6 @@ import { CourseDetailsModal } from "./components/CourseDetailsModal";
 import { CourseFAQ } from "./components/CourseFAQ";
 import { LearnResources } from "./components/LearnResources";
 import { FreeCourses } from "./components/FreeCourses";
-
 // Lazy-loaded subcomponents for high-performance bundle size optimization (PageSpeed)
 const AnalyticsDashboard = React.lazy(() => import("./components/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
 const ResourcesHub = React.lazy(() => import("./components/ResourcesHub").then(m => ({ default: m.ResourcesHub })));
@@ -26,6 +25,8 @@ const LegalPages = React.lazy(() => import("./components/LegalPages").then(m => 
 const GeneralFAQ = React.lazy(() => import("./components/GeneralFAQ").then(m => ({ default: m.GeneralFAQ })));
 const CourseDetailPage = React.lazy(() => import("./components/CourseDetailPage").then(m => ({ default: m.CourseDetailPage })));
 
+import { Testimonials } from "./components/Testimonials";
+import { Newsletter } from "./components/Newsletter";
 import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
 
 function parseDurationToWeeks(durationStr: string): number {
@@ -103,10 +104,14 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.removeItem("qalbiya_theme");
-      document.documentElement.classList.remove("dark");
+      const savedTheme = localStorage.getItem("qalbiya_theme");
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     } catch (e) {
-      console.warn("Could not clean up theme setting", e);
+      console.warn("Could not load theme setting", e);
     }
   }, []);
 
@@ -649,6 +654,9 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </div>
             </div>
 
+            {/* Testimonials Section */}
+            <Testimonials />
+
             {/* FAQs on Home Page */}
             <div className="max-w-7xl mx-auto border-t border-[#DDD5C3] pt-12">
               <CourseFAQ
@@ -816,6 +824,9 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                 )}
               </div>
             </div>
+
+            {/* Newsletter Section */}
+            <Newsletter />
           </div>
         )}
 

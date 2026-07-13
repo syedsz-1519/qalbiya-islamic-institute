@@ -41,10 +41,9 @@ export const Hero: React.FC<HeroProps> = ({ onChoosePath }) => {
           <span>A Sanctuary for Spiritual Learning</span>
         </div>
 
-        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#22301F] tracking-tight font-bold leading-[1.15]">
-          Come back to who you <br />
-          <span className="italic font-normal text-[#8CA394]">were</span> before the world <br />
-          got loud.
+        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#22301F] tracking-tight font-bold leading-[1.25] max-w-3xl mx-auto">
+          Knowledge That Reaches the Heart.<br />
+          <span className="italic font-normal text-[#8CA394]">Amal</span> That Changes the Life.
         </h2>
 
         <p className="font-sans text-[#5B5648] text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-light">

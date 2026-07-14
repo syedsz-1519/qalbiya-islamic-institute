@@ -28,13 +28,13 @@
     <script>
       (function() {
         function updateMeta() {
-          const hash = window.location.hash || '';
-          // Normalize hash (strip leading #/ or #)
-          const cleanHash = hash.replace(/^#\/?/, "");
+          const pathName = window.location.pathname || '';
+          // Normalize path (strip leading slash)
+          const cleanPath = pathName.replace(/^\//, "");
           // Split into path and search params
-          const parts = cleanHash.split('?');
+          const parts = cleanPath.split('?');
           const path = parts[0] || '';
-          const search = parts[1] || '';
+          const search = window.location.search || '';
 
           let view = 'home';
           if (path.includes('women')) view = 'women';
@@ -49,7 +49,7 @@
           else if (path.includes('refund-policy')) view = 'refund-policy';
           else if (path.includes('terms-conditions')) view = 'terms-conditions';
           else if (path.includes('privacy-policy')) view = 'privacy-policy';
-          else if (path.startsWith('course-')) view = 'course-detail';
+          else if (path.includes('courses/women/') || path.includes('courses/kids/') || path.startsWith('course-')) view = 'course-detail';
 
           // Extract sub-tab and track query params
           let subTab = '';
@@ -117,7 +117,7 @@
           // Build explicit canonical URL
           let canonical = "https://qalbiya-islamic-institute.vercel.app/";
           if (view !== 'home') {
-            canonical += "#/" + path;
+            canonical += path;
             const params = new URLSearchParams();
             if (subTab) params.set('sub', subTab);
             if (track) params.set('track', track);

@@ -168,11 +168,11 @@ export const COURSES: Course[] = [
     title: 'Tarbiyah Tazkiyah: Spiritual Purification',
     category: 'women',
     flagship: false,
-    duration: 'Self-Paced (Complementary)',
-    schedule: 'On-Demand (Spiritual Audio Vault)',
+    duration: 'Live weekly (Complementary)',
+    schedule: 'Weekly live sessions on Google Meet',
     instructor: 'Ms. Mustara, Founder of QALBIYA Islamic Institute',
-    description: 'A beautiful complementary course providing structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.',
-    longDescription: 'Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, Ms. Mustara, this complementary course provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart. Gain access to the Spiritual Audio Vault, reflection exercises, and practical journals to cultivate muraqabah and prophetic ethics.',
+    description: 'A beautiful complementary course providing structured live weekly sessions on spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.',
+    longDescription: 'Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, Ms. Mustara, this complementary course provides structured live weekly sessions on Google Meet covering spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.',
     outline: [
       'Introduction to Tazkiyah (Purification of the Soul)',
       'Sincerity (Ikhlas) and the Secrets of the Heart',
@@ -181,7 +181,7 @@ export const COURSES: Course[] = [
       'Overcoming spiritual laziness & cultivating prophetic manners'
     ],
     benefits: [
-      '🎧 Instant access to Ms. Mustara\'s spiritual audio vault lectures',
+      '💻 Attend live weekly sessions with Ms. Mustara on Google Meet',
       '📝 Reflective journaling templates to track emotional and spiritual growth',
       '✨ Completely free and complementary audit with zero tuition fees',
       '💬 Access to supportive student forums for community reflections'
@@ -195,11 +195,11 @@ export const COURSES: Course[] = [
     title: 'Classical Arabic Calligraphy',
     category: 'women',
     flagship: false,
-    duration: 'Self-Paced (Complementary)',
-    schedule: 'On-Demand (Step-by-Step Video Audits)',
+    duration: 'Live daily (Complementary)',
+    schedule: 'Daily classes at 4:00 PM IST via Zoom (Starts Aug 1, except Fridays)',
     instructor: 'Ustadha Maryam Amin',
-    description: 'Learn the sacred Thuluth and Naskh scripts, brush strokes, and classical Arabic calligraphy step-by-step.',
-    longDescription: 'Calligraphy is the visual translation of divine words. In this complementary self-paced course, learn the proportions, slant, and measurement guidelines (Nuqat) of classical Thuluth and Naskh scripts, and discover how to write and trace sacred passages with peace and mindfulness.',
+    description: 'Learn the sacred Thuluth and Naskh scripts, brush strokes, and classical Arabic calligraphy live via Zoom starting August 1.',
+    longDescription: 'Calligraphy is the visual translation of divine words. In this complementary course, learn the proportions, slant, and measurement guidelines (Nuqat) of classical Thuluth and Naskh scripts live via Zoom starting August 1.',
     outline: [
       'Mastering the Reed Pen (Qalam) & Ink (Hibr) preparation',
       'The Alif and Basic Proportions in Thuluth Script using Nuqat',

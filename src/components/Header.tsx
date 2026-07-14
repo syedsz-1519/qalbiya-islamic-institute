@@ -37,8 +37,8 @@ export const Header: React.FC<HeaderProps> = ({
   const navItems = [
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
-    { id: "resources", label: "Resources" },
-    { id: "scholarship", label: "Scholarship" },
+    { id: "free-courses", label: "Free Courses" },
+    { id: "contact", label: "Contact" },
   ];
 
   const handleTabClick = (tabId: string) => {
@@ -108,15 +108,16 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Courses Dropdown */}
             <div className="relative group py-1">
               <button
+                onClick={() => handleTabClick("courses")}
                 className={`flex items-center gap-1 py-1 px-1 lg:px-1.5 xl:px-2 text-[9px] lg:text-[10px] xl:text-[11px] uppercase tracking-wider xl:tracking-widest font-bold transition-colors duration-300 cursor-pointer ${
-                  currentTab === "women" || currentTab === "kids"
+                  currentTab.startsWith("courses")
                     ? "text-[#22301F] dark:text-[#FAF4F2]"
                     : "text-[#5B5648] dark:text-[#ABB9AB] hover:text-[#22301F] dark:hover:text-[#FAF4F2]"
                 }`}
               >
                 <span>Courses</span>
                 <ChevronDown className="w-3 h-3 text-[#8CA394] group-hover:rotate-180 transition-transform" />
-                {(currentTab === "women" || currentTab === "kids") && (
+                {currentTab.startsWith("courses") && (
                   <span className="absolute bottom-[-10px] left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#B98072] to-transparent shadow-[0_0_8px_rgba(185,128,114,0.6)] rounded-full" />
                 )}
               </button>
@@ -124,9 +125,9 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Dropdown Menu */}
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white dark:bg-[#0B0E0A] border border-[#DDD5C3] dark:border-[#243524] rounded-2xl shadow-xl py-2 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 z-50">
                 <button
-                  onClick={() => handleTabClick("women")}
+                  onClick={() => handleTabClick("courses/women")}
                   className={`w-full text-left px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer ${
-                    currentTab === "women"
+                    currentTab === "courses/women"
                       ? "bg-[#FAF8F1] dark:bg-[#111610] text-[#8A5A4D] dark:text-[#E0A395]"
                       : "text-[#22301F] dark:text-[#FAF4F2] hover:bg-[#FAF8F1] dark:hover:bg-[#111610] hover:text-[#8A5A4D] dark:hover:text-[#E0A395]"
                   }`}
@@ -134,9 +135,9 @@ export const Header: React.FC<HeaderProps> = ({
                   Women's Courses
                 </button>
                 <button
-                  onClick={() => handleTabClick("kids")}
+                  onClick={() => handleTabClick("courses/kids")}
                   className={`w-full text-left px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer ${
-                    currentTab === "kids"
+                    currentTab === "courses/kids"
                       ? "bg-[#FAF8F1] dark:bg-[#111610] text-[#8A5A4D] dark:text-[#E0A395]"
                       : "text-[#22301F] dark:text-[#FAF4F2] hover:bg-[#FAF8F1] dark:hover:bg-[#111610] hover:text-[#8A5A4D] dark:hover:text-[#E0A395]"
                   }`}
@@ -312,9 +313,9 @@ export const Header: React.FC<HeaderProps> = ({
                 {isMobileCoursesOpen && (
                   <div className="bg-white dark:bg-[#0B0E0A] border-t border-[#DDD5C3]/40 dark:border-[#243524] p-2 space-y-1">
                     <button
-                      onClick={() => handleTabClick("women")}
+                      onClick={() => handleTabClick("courses/women")}
                       className={`w-full py-2.5 px-4 rounded-xl text-left text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                        currentTab === "women"
+                        currentTab === "courses/women"
                           ? "bg-[#FAF8F1] dark:bg-[#111610] text-[#8A5A4D] dark:text-[#E0A395]"
                           : "text-[#22301F] dark:text-[#FAF4F2] hover:bg-[#FAF8F1]/50 dark:hover:bg-[#111610]/50"
                       }`}
@@ -322,9 +323,9 @@ export const Header: React.FC<HeaderProps> = ({
                       Women's Courses
                     </button>
                     <button
-                      onClick={() => handleTabClick("kids")}
+                      onClick={() => handleTabClick("courses/kids")}
                       className={`w-full py-2.5 px-4 rounded-xl text-left text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                        currentTab === "kids"
+                        currentTab === "courses/kids"
                           ? "bg-[#FAF8F1] dark:bg-[#111610] text-[#8A5A4D] dark:text-[#E0A395]"
                           : "text-[#22301F] dark:text-[#FAF4F2] hover:bg-[#FAF8F1]/50 dark:hover:bg-[#111610]/50"
                       }`}

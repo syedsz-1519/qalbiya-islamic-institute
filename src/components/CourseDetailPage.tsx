@@ -749,6 +749,491 @@ Please guide me with the enrollment verification process. JazakAllahu Khairan!`;
     );
   }
 
+  if (course.id === "juniors-deeniyat-mastercourse") {
+    const advantages = [
+      {
+        title: "Gamified & Engaging Lessons",
+        desc: "Interactive quizzes and games that keep kids excited to learn",
+        icon: <Sparkles className="w-5 h-5" />
+      },
+      {
+        title: "Child-Specialist Instructors",
+        desc: "Patient, friendly teachers trained to keep young hearts focused",
+        icon: <Heart className="w-5 h-5" />
+      },
+      {
+        title: "Heart-Centered Focus",
+        desc: "Focus on loving Allah and His Messenger, not just rules",
+        icon: <Award className="w-5 h-5" />
+      },
+      {
+        title: "Visual Slide Material",
+        desc: "Beautifully designed slides, stories, and visual aids",
+        icon: <BookOpen className="w-5 h-5" />
+      }
+    ];
+
+    const syllabusItems = [
+      {
+        title: "Noorani Qaida",
+        desc: "Letter recognition, proper articulation (Makhraj), and fundamental reading rules."
+      },
+      {
+        title: "Essential Duas & Adhkar",
+        desc: "Daily morning & evening supplications, eating, sleeping, and visiting prayers."
+      },
+      {
+        title: "Fiqh & Akhlaq Basics",
+        desc: "Step-by-step Wudu and Salah, cleanliness, and respect for parents and elders."
+      },
+      {
+        title: "Prophets & Seerah Stories",
+        desc: "Inspiring moral stories from the lives of the Prophets and the Companions."
+      }
+    ];
+
+    const deliverables = [
+      { icon: "🎨", title: "Visual Slides & Quizzes", desc: "Interactive materials that make learning fun." },
+      { icon: "📊", title: "Parent Progress Reports", desc: "Weekly reports tracking your child's milestones." },
+      { icon: "📝", title: "Activity Sheets & Homework", desc: "Practical worksheets to reinforce lessons at home." },
+      { icon: "🏆", title: "Milestone Certificates", desc: "Formal certificates of achievement as they progress." }
+    ];
+
+    const faqs = [
+      {
+        q: "What if my child cannot read Arabic at all?",
+        a: "This course is designed precisely for beginners! We start with the absolute basics of the Arabic alphabet using a structured, gamified approach."
+      },
+      {
+        q: "What's the difference between group and private formats?",
+        a: "Private (1-on-1) sessions are tailored to your child's unique learning speed and offer flexible timings. Group classes are small groups on fixed weekly schedules at a lower fee."
+      },
+      {
+        q: "How can parents track progress?",
+        a: "We send parents a comprehensive weekly report on WhatsApp or Email, showing what has been covered and highlighting progress or areas needing practice."
+      }
+    ];
+
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-24 animate-fade-in text-left">
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5B5648] hover:text-[#B98072] font-bold cursor-pointer transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Course Hub</span>
+        </button>
+
+        {/* SECTION 1 — Hero */}
+        <div className="bg-[#FAF8F1] border border-[#DDD5C3] rounded-[36px] overflow-hidden p-8 sm:p-14 relative shadow-2xs">
+          <div className="absolute inset-0 bg-[radial-gradient(#DDD5C3_1px,transparent_1px)] [background-size:20px_20px] opacity-25 pointer-events-none" />
+          <div className="space-y-6 relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#8CA394]/15 text-[#22301F] border border-[#8CA394]/30 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold">
+              <span className="text-[#B0863A]">⭐</span> Flagship Course
+            </div>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#22301F] tracking-tight leading-tight">
+              Raise a child who loves their deen.
+            </h1>
+            <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed">
+              An interactive, gamified program that makes learning Noorani Qaida, daily prayers, and faith basics a joyful, natural journey for children ages 6–12.
+            </p>
+            <div className="pt-4 flex flex-wrap gap-4">
+              <a
+                href="#enroll-section"
+                className="bg-[#22301F] hover:bg-[#33453A] text-white px-7 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02] shadow-sm"
+              >
+                Enroll Now →
+              </a>
+              <a
+                href="#syllabus-section"
+                className="bg-white hover:bg-[#FAF9F6] text-[#22301F] border border-[#DDD5C3] px-7 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02]"
+              >
+                Explore Syllabus
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 2 — Advantages */}
+        <div className="space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              The Antigravity Approach to Kids' Learning
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Why Parents Choose Us
+            </h2>
+            <div className="w-10 h-[2px] bg-[#B98072] mx-auto mt-3" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            {advantages.map((item, idx) => (
+              <div key={idx} className="bg-white border border-[#DDD5C3]/40 p-6 sm:p-8 rounded-2xl flex gap-4.5 items-start hover:border-[#8CA394] transition-all duration-300">
+                <div className="w-10 h-10 rounded-full bg-[#FAF8F1] border border-[#DDD5C3]/60 flex items-center justify-center shrink-0 text-[#8CA394]">
+                  {item.icon}
+                </div>
+                <div className="space-y-1.5 text-left">
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 3 — Syllabus */}
+        <div id="syllabus-section" className="space-y-8 scroll-mt-10">
+          <div className="text-center md:text-left max-w-3xl space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Curriculum Map
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
+              What This Course Covers
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {syllabusItems.map((item, idx) => (
+              <div key={idx} className="bg-white border border-[#DDD5C3]/50 p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-[#8CA394] transition-all duration-300 shadow-3xs group">
+                <div className="flex justify-between items-start">
+                  <div className="w-7 h-7 rounded-full bg-[#FAF8F1] border border-[#DDD5C3]/60 text-[#8A5A4D] text-[10px] font-mono font-bold flex items-center justify-center">
+                    0{idx + 1}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 4 — What You'll Get */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16">
+          <div className="text-center md:text-left max-w-2xl space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block">
+              Supporting Deliverables
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
+              What You'll Get
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {deliverables.map((item, idx) => (
+              <div key={idx} className="bg-[#FAF8F1]/40 border border-[#DDD5C3]/40 p-5 rounded-2xl flex gap-4 items-start transition-all hover:bg-[#FAF8F1]/70">
+                <div className="text-2xl shrink-0 mt-0.5">
+                  {item.icon}
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-serif font-bold text-xs sm:text-sm text-[#22301F]">
+                    {item.title}
+                  </h4>
+                  <p className="text-[11px] text-[#5B5648] font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 5 — Outcome */}
+        <div className="bg-[#FAF4F2] border border-[#DDD5C3] rounded-[32px] p-8 sm:p-12 text-center max-w-4xl mx-auto space-y-6 relative overflow-hidden shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block relative z-10">
+            The Ultimate Spiritual Outcome
+          </span>
+          <p className="font-serif italic text-lg sm:text-2xl text-[#22301F] leading-relaxed max-w-3xl mx-auto relative z-10">
+            "We nurture a strong love for Islam, correct recitation of basic chapters, and a solid foundation in daily Islamic manners and practice."
+          </p>
+        </div>
+
+        {/* SECTION 6 — Course Details Table */}
+        <div className="space-y-6 text-left border-t border-[#DDD5C3]/40 pt-16">
+          <div className="max-w-2xl">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+              Logistics & Fees
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Course Details & Fees
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 max-w-4xl">
+            {/* Group Card */}
+            <div className="bg-white border border-[#DDD5C3] rounded-2xl p-6 space-y-4 hover:border-[#8CA394] transition-all relative">
+              <div className="absolute top-3 right-3 bg-gray-100 text-[#5B5648] text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
+                Group Class
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Pricing Option</p>
+                <h4 className="font-serif text-lg font-bold text-[#22301F]">Group Intake</h4>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
+                <div className="flex justify-between">
+                  <span>Age Group:</span>
+                  <span className="font-medium text-[#22301F]">6-12 years</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Format:</span>
+                  <span className="font-medium text-[#22301F]">Group Class</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform:</span>
+                  <span className="font-medium text-[#22301F]">Google Meet</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Duration:</span>
+                  <span className="font-medium text-[#22301F]">1.5 - 2 years</span>
+                </div>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
+                <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
+                <div className="text-right">
+                  <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 600</span>
+                  <span className="text-[10px] text-gray-400">/mo</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Private Card */}
+            <div className="bg-[#FAF8F1] border-2 border-[#8CA394] rounded-2xl p-6 space-y-4 hover:border-[#33453A] transition-all relative">
+              <div className="absolute top-3 right-3 bg-[#8CA394] text-white text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
+                Private Class
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Premium Option</p>
+                <h4 className="font-serif text-lg font-bold text-[#22301F]">Dedicated 1-on-1</h4>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
+                <div className="flex justify-between">
+                  <span>Age Group:</span>
+                  <span className="font-medium text-[#22301F]">6-12 years</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Format:</span>
+                  <span className="font-medium text-[#22301F]">Private 1-on-1</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform:</span>
+                  <span className="font-medium text-[#22301F]">Google Meet</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Duration:</span>
+                  <span className="font-medium text-[#22301F]">1.5 - 2 years</span>
+                </div>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
+                <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
+                <div className="text-right">
+                  <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 1,000</span>
+                  <span className="text-[10px] text-gray-400">/mo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 7 — Teacher's Note */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center border-t border-[#DDD5C3]/40 pt-16">
+          <div className="md:col-span-4 flex justify-center">
+            <div className="w-full max-w-[240px] aspect-[4/5] rounded-[24px] bg-[#FAF8F1] border border-[#DDD5C3] p-4 flex flex-col justify-end relative overflow-hidden shadow-xs">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-10" />
+              <div className="relative z-20 space-y-1 text-center bg-white/90 backdrop-blur-xs p-3 rounded-xl border border-[#DDD5C3]/40">
+                <p className="font-serif font-bold text-xs text-[#22301F]">Ms. Mustara</p>
+                <p className="text-[8px] font-mono uppercase tracking-wider text-[#8A5A4D]">Founder & Principal</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-8 space-y-6 text-left">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+              Message from the Principal
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              A Note From Ms. Mustara
+            </h3>
+            <blockquote className="font-serif italic text-base sm:text-lg text-[#5B5648] border-l-2 border-[#8A5A4D] pl-4 leading-relaxed">
+              "Deen is not a set of dry rules to be memorized under pressure. It's a living light. In this course, we focus on making children fall in love with Allah and His Messenger first, so their practice comes from a place of joy, not obligation."
+            </blockquote>
+          </div>
+        </div>
+
+        {/* SECTION 8 — Who This Is For */}
+        <div className="space-y-6 text-left border-t border-[#DDD5C3]/40 pt-16 max-w-4xl">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block">
+            Ideal Candidate Profile
+          </span>
+          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+            Who This Is For
+          </h3>
+          <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed">
+            For Muslim children aged 6 to 12 who want to learn how to recite the Qur'an correctly and build a lifelong foundation in their faith.
+          </p>
+        </div>
+
+        {/* SECTION 9 — FAQs */}
+        <div className="space-y-8 border-t border-[#DDD5C3]/40 pt-16">
+          <div className="text-center md:text-left max-w-2xl space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+              Answers Hub
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4 max-w-3xl mx-auto">
+            {faqs.map((faq, idx) => {
+              const [isOpen, setIsOpen] = useState(false);
+              return (
+                <div key={idx} className="border border-[#DDD5C3]/60 rounded-2xl bg-white overflow-hidden transition-all duration-300">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full px-6 py-4.5 flex justify-between items-center text-left hover:bg-[#FAF8F1]/40 cursor-pointer"
+                  >
+                    <span className="font-serif font-bold text-xs sm:text-sm text-[#22301F]">{faq.q}</span>
+                    <span className="text-xs text-[#8CA394] font-mono shrink-0">{isOpen ? "[-]" : "[+]"}</span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-5 pt-1 text-xs text-[#5B5648] font-light leading-relaxed border-t border-gray-50 bg-gray-50/50">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECTION 10 — Closing CTA */}
+        <div id="enroll-section" className="bg-[#22301F] text-white rounded-[36px] overflow-hidden p-6 sm:p-12 relative shadow-md">
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            <div className="lg:col-span-7 space-y-6 text-left">
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#8CA394] font-bold block">
+                Begin Their Path
+              </span>
+              <h2 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
+                Raise a child who loves their faith.
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
+                Registered students receive personalized dashboard credentials, comprehensive study kits, and direct parent-teacher communications.
+              </p>
+              
+              <div className="pt-2 flex flex-wrap gap-4">
+                <a
+                  href="https://wa.me/918145363290?text=Assalamu%27alaikum!%20I%20would%20like%20to%20inquire%20about%20the%20Juniors%20Deeniyat%20Mastercourse%20for%20my%20child."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
+                >
+                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  <span>WhatsApp Admissions Desk</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 bg-white/95 text-[#22301F] rounded-[28px] p-6 sm:p-8 space-y-6 text-left shadow-lg border border-white/20">
+              <div className="space-y-1">
+                <p className="text-[9px] font-mono uppercase tracking-widest text-[#8A5A4D] font-bold block">
+                  Intake Desk
+                </p>
+                <h3 className="font-serif text-lg font-bold">
+                  Course Enrollment
+                </h3>
+              </div>
+
+              {isEnrolled ? (
+                <div className="bg-emerald-50 border border-emerald-200/60 rounded-2xl p-5 text-center space-y-4 py-8 animate-fade-in">
+                  <div className="w-10 h-10 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full flex items-center justify-center mx-auto">
+                    ✓
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-serif font-bold text-sm">Active Enrollment Authenticated</h4>
+                    <p className="text-[11px] text-gray-500 font-light max-w-xs mx-auto">
+                      Assalamu alaikum! Your child is registered in this course. Check your Parent Dashboard or WhatsApp for updates.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono uppercase tracking-widest text-[#5B5648] font-bold block">
+                      Select Study Format
+                    </label>
+                    <div className="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setPricingMode("group")}
+                        className={`py-2 text-center text-xs font-bold rounded-lg cursor-pointer transition-all ${pricingMode === "group" ? "bg-white text-[#22301F] shadow-2xs" : "text-[#5B5648]/70 hover:text-[#22301F]"}`}
+                      >
+                        Group Class (Rs. 600/mo)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPricingMode("personal")}
+                        className={`py-2 text-center text-xs font-bold rounded-lg cursor-pointer transition-all ${pricingMode === "personal" ? "bg-white text-[#22301F] shadow-2xs" : "text-[#5B5648]/70 hover:text-[#22301F]"}`}
+                      >
+                        Private 1-on-1 (Rs. 1,000/mo)
+                      </button>
+                    </div>
+                  </div>
+
+                  {renderApplicantFields()}
+
+                  {/* Terms Acceptance checkbox */}
+                  <div className="space-y-3 border-t border-[#DDD5C3]/40 pt-4 text-left">
+                    <label className="flex items-start gap-2.5 text-[11px] text-gray-500 font-light cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={acceptedTerms}
+                        onChange={(e) => setAcceptedTerms(e.target.checked)}
+                        className="accent-[#B98072] mt-0.5 shrink-0"
+                      />
+                      <span>
+                        I accept the Adab Conduct Standards and agree to support my child's regular attendance and study.
+                      </span>
+                    </label>
+                  </div>
+
+                  {enrollError && (
+                    <p className="text-[10px] text-red-500 font-mono">
+                      ⚠️ {enrollError}
+                    </p>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleEnroll}
+                    disabled={isSubmittingEnroll}
+                    className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-mono uppercase tracking-widest font-bold cursor-pointer transition-transform active:scale-95 shadow-sm inline-flex items-center justify-center gap-2"
+                  >
+                    <FileCheck className="w-4 h-4" />
+                    <span>{isSubmittingEnroll ? "Enrolling child..." : "Enroll Child Now"}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (course.id === "pre-diploma-deeniyat") {
     const faqs = [
       {
@@ -982,7 +1467,93 @@ Please guide me with the enrollment verification process. JazakAllahu Khairan!`;
           </p>
         </div>
 
-        {/* SECTION 5 - A Note From Your Teacher */}
+        {/* SECTION 5 - Course Details & Logistics */}
+        <div className="space-y-6 text-left border-t border-[#DDD5C3]/40 pt-16">
+          <div className="max-w-2xl">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
+              Schedule & Logistics
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+              Course Logistics & Fees
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 max-w-4xl">
+            {/* Group Card */}
+            <div className="bg-white border border-[#DDD5C3] rounded-2xl p-6 space-y-4 hover:border-[#8CA394] transition-all relative">
+              <div className="absolute top-3 right-3 bg-gray-100 text-[#5B5648] text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
+                Group Class
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Pricing Option</p>
+                <h4 className="font-serif text-lg font-bold text-[#22301F]">Sisters Group</h4>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
+                <div className="flex justify-between">
+                  <span>Format:</span>
+                  <span className="font-medium text-[#22301F]">Sisters Group</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform:</span>
+                  <span className="font-medium text-[#22301F]">Google Meet</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Duration:</span>
+                  <span className="font-medium text-[#22301F]">6 months</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Weekly Classes:</span>
+                  <span className="font-medium text-[#22301F]">Set schedule</span>
+                </div>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
+                <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
+                <div className="text-right">
+                  <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 499</span>
+                  <span className="text-[10px] text-gray-400">/mo</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Personal Card */}
+            <div className="bg-[#FAF8F1] border-2 border-[#8CA394] rounded-2xl p-6 space-y-4 hover:border-[#33453A] transition-all relative">
+              <div className="absolute top-3 right-3 bg-[#8CA394] text-white text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
+                Personal (1-on-1)
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Premium Option</p>
+                <h4 className="font-serif text-lg font-bold text-[#22301F]">Dedicated 1-on-1</h4>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
+                <div className="flex justify-between">
+                  <span>Format:</span>
+                  <span className="font-medium text-[#22301F]">1:1 Dedicated</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform:</span>
+                  <span className="font-medium text-[#22301F]">Google Meet</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Duration:</span>
+                  <span className="font-medium text-[#22301F]">6 months</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Weekly Classes:</span>
+                  <span className="font-medium text-[#22301F]">Custom flexible</span>
+                </div>
+              </div>
+              <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
+                <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
+                <div className="text-right">
+                  <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 699</span>
+                  <span className="text-[10px] text-gray-400">/mo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 6 - A Note From Your Teacher */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center border-t border-[#DDD5C3]/40 pt-16">
           <div className="md:col-span-4 flex justify-center">
             <div className="w-full max-w-[240px] aspect-[4/5] rounded-[24px] bg-[#FAF8F1] border border-[#DDD5C3] p-4 flex flex-col justify-end relative overflow-hidden shadow-xs">
@@ -1016,107 +1587,22 @@ Please guide me with the enrollment verification process. JazakAllahu Khairan!`;
           </div>
         </div>
 
-        {/* SECTION 6 & 7 - Course Details & Who It Is For */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 border-t border-[#DDD5C3]/40 pt-16">
-          <div className="lg:col-span-5 space-y-6 text-left flex flex-col justify-center">
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block">
-              Enrollment Suitability
-            </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
-              Who This Is For
-            </h3>
-            <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed">
-              For every beginner who's ready to stop learning her deen in fragments — and finally build one solid, lasting foundation.
+        {/* SECTION 7 - Who This Is For */}
+        <div className="space-y-6 text-left border-t border-[#DDD5C3]/40 pt-16 max-w-4xl">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8A5A4D] font-bold block">
+            Enrollment Suitability
+          </span>
+          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
+            Who This Is For
+          </h3>
+          <p className="text-sm sm:text-base text-[#5B5648] font-light leading-relaxed">
+            For every beginner who's ready to stop learning her deen in fragments — and finally build one solid, lasting foundation.
+          </p>
+          <div className="p-5 bg-[#FAF8F1] border border-[#DDD5C3]/60 rounded-2xl flex gap-3.5 items-center max-w-2xl">
+            <Check className="w-5 h-5 text-[#8CA394] shrink-0" />
+            <p className="text-xs text-[#22301F] font-medium leading-normal">
+              No Arabic reading experience or Islamic studies background required. We guide you from zero.
             </p>
-            <div className="p-5 bg-[#FAF8F1] border border-[#DDD5C3]/60 rounded-2xl flex gap-3.5 items-center">
-              <Check className="w-5 h-5 text-[#8CA394] shrink-0" />
-              <p className="text-xs text-[#22301F] font-medium leading-normal">
-                No Arabic reading experience or Islamic studies background required. We guide you from zero.
-              </p>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
-              Schedule & Logistics
-            </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
-              Course Logistics & Fees
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-              {/* Group Card */}
-              <div className="bg-white border border-[#DDD5C3] rounded-2xl p-6 space-y-4 hover:border-[#8CA394] transition-all relative">
-                <div className="absolute top-3 right-3 bg-gray-100 text-[#5B5648] text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
-                  Group Class
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Pricing Option</p>
-                  <h4 className="font-serif text-lg font-bold text-[#22301F]">Sisters Group</h4>
-                </div>
-                <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
-                  <div className="flex justify-between">
-                    <span>Format:</span>
-                    <span className="font-medium text-[#22301F]">Sisters Group</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Platform:</span>
-                    <span className="font-medium text-[#22301F]">Google Meet</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span className="font-medium text-[#22301F]">6 months</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Weekly Classes:</span>
-                    <span className="font-medium text-[#22301F]">Set schedule</span>
-                  </div>
-                </div>
-                <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
-                  <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
-                  <div className="text-right">
-                    <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 499</span>
-                    <span className="text-[10px] text-gray-400">/mo</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Personal Card */}
-              <div className="bg-[#FAF8F1] border-2 border-[#8CA394] rounded-2xl p-6 space-y-4 hover:border-[#33453A] transition-all relative">
-                <div className="absolute top-3 right-3 bg-[#8CA394] text-white text-[8px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
-                  Personal (1-on-1)
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-mono text-[#8A5A4D] uppercase tracking-wider">Premium Option</p>
-                  <h4 className="font-serif text-lg font-bold text-[#22301F]">Dedicated 1-on-1</h4>
-                </div>
-                <div className="border-t border-[#DDD5C3]/40 pt-3 space-y-2 text-xs text-[#5B5648] font-light">
-                  <div className="flex justify-between">
-                    <span>Format:</span>
-                    <span className="font-medium text-[#22301F]">1:1 Dedicated</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Platform:</span>
-                    <span className="font-medium text-[#22301F]">Google Meet</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span className="font-medium text-[#22301F]">6 months</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Weekly Classes:</span>
-                    <span className="font-medium text-[#22301F]">Custom flexible</span>
-                  </div>
-                </div>
-                <div className="border-t border-[#DDD5C3]/40 pt-3 flex items-baseline justify-between">
-                  <span className="text-xs text-[#5B5648]">Monthly Fee:</span>
-                  <div className="text-right">
-                    <span className="font-serif text-xl font-bold text-[#22301F]">Rs. 699</span>
-                    <span className="text-[10px] text-gray-400">/mo</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

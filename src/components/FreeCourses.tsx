@@ -33,6 +33,15 @@ const CALLIGRAPHY_TUTORIALS = [
 ];
 
 export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}) {
+  const [daysLeft, setDaysLeft] = useState(0);
+
+  useEffect(() => {
+    const targetDate = new Date("2026-08-01T16:00:00+05:30");
+    const diff = targetDate.getTime() - Date.now();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    setDaysLeft(days > 0 ? days : 0);
+  }, []);
+
   const [activeTab, setActiveTab] = useState<"tarbiyah" | "calligraphy">((() => {
     try {
       const hash = window.location.hash;
@@ -180,21 +189,21 @@ export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
           
           {/* Left: About course (7 cols) */}
-          <div className="lg:col-span-7 bg-[#FAF9F6] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+          <div className="lg:col-span-7 bg-[#FAF9F6] dark:bg-[#2D1217]/35 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[32px] p-6 sm:p-8 space-y-6 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-mono uppercase bg-[#8CA394]/20 text-[#33453A] border border-[#8CA394]/30 px-3 py-1 rounded-full font-bold">
                   Complementary Audit
                 </span>
-                <span className="text-xs text-gray-400 font-mono">Self-Paced Track</span>
+                <span className="text-xs text-[#B98072] font-mono font-bold">Live Weekly via Google Meet</span>
               </div>
 
-              <h3 className="font-serif text-2xl font-bold text-[#22301F]">
+              <h3 className="font-serif text-2xl font-bold text-[#22301F] dark:text-[#FFE5EC]">
                 Tarbiyah Tazkiyah: Nurturing the Soul
               </h3>
 
-              <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F]">Ms. Mustara</span>, this complementary course provides structured insights into spiritual discipline, mindfulness in prayers, sincere actions, and curing the ailments of the heart.
+              <p className="text-xs sm:text-sm text-[#5B5648] dark:text-[#FCD5CE] font-light leading-relaxed">
+                Tazkiyah is the sacred Islamic process of purification of the soul. Under the guidance of our respected founder, <span className="font-semibold text-[#22301F] dark:text-[#FFE5EC]">Ms. Mustara</span>, this complementary course holds live weekly sessions to help you cultivate spiritual discipline, mindfulness in prayers, and cure the ailments of the heart.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -303,16 +312,26 @@ export function FreeCourses({ showHeader = true }: { showHeader?: boolean } = {}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
           
           {/* Left: Lessons (7 cols) */}
-          <div className="lg:col-span-7 bg-[#FAF9F6] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6">
-            <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase bg-[#B98072]/20 text-[#8A5A4D] border border-[#B98072]/30 px-3 py-1 rounded-full font-bold inline-block mb-3">
-                Traditional Arts Hub
-              </span>
-              <h3 className="font-serif text-2xl font-bold text-[#22301F]">
+          <div className="lg:col-span-7 bg-[#FAF9F6] dark:bg-[#2D1217]/35 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[32px] p-6 sm:p-8 space-y-6">
+            <div className="space-y-3 text-left">
+              <div className="flex flex-wrap gap-2 items-center mb-1">
+                <span className="text-[10px] font-mono uppercase bg-[#B98072]/20 text-[#8A5A4D] border border-[#B98072]/20 px-3 py-1 rounded-full font-bold">
+                  Traditional Arts Hub
+                </span>
+                <span className="text-[9px] font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 px-3 py-1 rounded-full font-bold">
+                  Live via Zoom
+                </span>
+                {daysLeft > 0 && (
+                  <span className="text-[9px] font-mono bg-[#B0863A]/10 text-[#B0863A] border border-[#B0863A]/20 px-3 py-1 rounded-full font-bold animate-pulse">
+                    Starts in {daysLeft} days
+                  </span>
+                )}
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-[#22301F] dark:text-[#FFE5EC]">
                 The Sacred Art of Arabic Calligraphy
               </h3>
-              <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                Calligraphy is more than visual writing; it is a spiritual practice of focus (Tarkeez) and discipline. Learn the traditional Thuluth and Naskh script strokes under authentic measurement standards (Nuqat) with our high-contrast visual guides.
+              <p className="text-xs sm:text-sm text-[#5B5648] dark:text-[#FCD5CE] font-light leading-relaxed">
+                Calligraphy is more than visual writing; it is a spiritual practice of focus (Tarkeez) and discipline. <strong>Live daily classes will begin from Aug 1 (except Fridays) at 4:00 PM IST via Zoom.</strong> Learn Thuluth and Naskh script strokes under authentic measurement standards with live stencils and instruction.
               </p>
             </div>
 

@@ -20,233 +20,99 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Compute text for TTS syllabus readout
-  const ttsText = `${course.title}. Instructed by ${course.instructor}. Duration: ${course.duration}. Schedule: ${course.schedule}. Course overview: ${course.description} The primary curriculum outline includes: ${course.outline.slice(0, 3).join(", ")}`;
+  const logistics = (() => {
+    switch (course.id) {
+      case "pre-diploma-deeniyat":
+        return { format: "Group or 1-on-1", fee: "Rs. 499/mo (Group) / Rs. 699/mo (Private)" };
+      case "tajweed-1on1":
+        return { format: "Private 1-on-1", fee: "Rs. 800/month" };
+      case "juniors-deeniyat-mastercourse":
+        return { format: "Group or Private", fee: "Rs. 600/mo (Group) / Rs. 1,000/mo (Private)" };
+      case "noorani-qaida-women":
+        return { format: "Sisters Group", fee: "Rs. 499/month" };
+      case "seerah-prophet":
+        return { format: "Sisters Group", fee: "Rs. 499/month" };
+      case "noorani-qaida-kids":
+        return { format: "Group or Private", fee: "Rs. 600/mo (Group) / Rs. 1,000/mo (Private)" };
+      case "tarbiyah-tazkiyah":
+        return { format: "Weekly Live Sessions", fee: "Free Access" };
+      case "arabic-calligraphy":
+        return { format: "Daily Live Class (starts Aug 1)", fee: "Free Access" };
+      default:
+        return { format: "Flexible Online", fee: "Contact Admissions" };
+    }
+  })();
 
   return (
-    <div className={`bg-[#FBF8F1] dark:bg-[#111610] border ${course.isFree ? 'border-emerald-600/40 dark:border-emerald-500/40 shadow-sm hover:shadow-emerald-100/50 dark:hover:shadow-emerald-950/20 shadow-emerald-50 dark:shadow-emerald-950/10' : 'border-[#DDD5C3] dark:border-[#243524]'} rounded-[28px] p-6 md:p-8 flex flex-col justify-between hover:border-[#8CA394]/80 dark:hover:border-[#7E9C7E]/80 transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-2xl relative group`} id={`course-card-${course.id}`}>
+    <div className={`bg-[#FBF8F1] dark:bg-[#2D1217]/50 border ${course.isFree ? 'border-emerald-600/30 dark:border-emerald-500/30' : 'border-[#DDD5C3] dark:border-[#4A2027]'} rounded-[32px] p-8 flex flex-col justify-between hover:border-[#B98072]/50 dark:hover:border-[#E0A395]/50 transition-all duration-300 relative group text-left`} id={`course-card-${course.id}`}>
       
-      {/* Flagship / Enrolled / New Indicator Accent */}
+      {/* Badge Indicator Accent */}
       <div className="absolute top-0 left-8 -translate-y-1/2 flex gap-2 z-10">
         {course.flagship && (
-          <div className="bg-[#B0863A] dark:bg-[#C5A059] text-white border border-[#87652A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm">
+          <div className="bg-[#B98072] text-white border border-[#8A5A4D] rounded-full px-3.5 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold shadow-xs">
             <Star className="w-2.5 h-2.5 fill-white text-white" />
-            <span>Flagship Course</span>
+            <span>Flagship</span>
           </div>
         )}
         {course.isNew && (
-          <div className="bg-[#B98072] text-white border border-[#8A5A4D] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`new-badge-${course.id}`}>
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse mr-0.5" />
+          <div className="bg-[#B0863A] text-white border border-[#87652A] rounded-full px-3.5 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold shadow-xs">
             <span>New</span>
           </div>
         )}
         {course.isFree && (
-          <div className="bg-emerald-700 text-white border border-emerald-800 rounded-full px-3 py-0.5 flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`free-badge-${course.id}`}>
-            <Sparkles className="w-2.5 h-2.5 text-white animate-pulse" />
-            <span>Free Access &bull; Sustainability Program</span>
-          </div>
-        )}
-        {isEnrolled && (
-          <div className="bg-[#8CA394] text-white border border-[#33453A] rounded-full px-3 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold shadow-sm" id={`enrolled-badge-${course.id}`}>
-            <Check className="w-2.5 h-2.5 text-white" />
-            <span>Enrolled</span>
+          <div className="bg-emerald-700 text-white border border-emerald-800 rounded-full px-3.5 py-0.5 flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold shadow-xs">
+            <span>Free Access</span>
           </div>
         )}
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         
         {/* Category & Duration Row */}
-        <div className="flex justify-between items-center text-xs font-mono">
-          <span className={`uppercase tracking-widest text-[10px] font-bold ${course.category === 'women' ? 'text-[#8A5A4D] dark:text-[#E0A395]' : 'text-[#87652A] dark:text-[#DFBA73]'}`}>
-            {course.category === "women" ? "Women Courses" : "Kids Courses"}
+        <div className="flex justify-between items-center text-[10px] font-mono font-bold uppercase tracking-widest text-[#8CA394] dark:text-[#E0A395]">
+          <span>
+            {course.category === "women" ? "Women Academy" : "Kids Hub"}
           </span>
-          <span className="flex items-center gap-1 text-[#5B5648]/80 dark:text-[#ABB9AB]/80">
-            <Clock className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E]" />
+          <span className="flex items-center gap-1 text-gray-400 font-normal">
+            <Clock className="w-3.5 h-3.5" />
             {course.duration}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className={`font-serif text-xl md:text-2xl font-bold text-[#22301F] dark:text-[#FAF4F2] leading-tight transition-colors duration-300 ${course.category === 'women' ? 'group-hover:text-[#B98072] dark:group-hover:text-[#E0A395]' : 'group-hover:text-[#B0863A] dark:group-hover:text-[#DFBA73]'}`}>
+        <h3 className="font-serif text-2xl font-bold text-[#22301F] dark:text-[#FFE5EC] leading-tight group-hover:text-[#B98072] transition-colors duration-300">
           {course.title}
         </h3>
 
         {/* Short Description */}
-        <p className="font-sans text-[#5B5648] dark:text-[#ABB9AB] text-xs md:text-sm leading-relaxed font-light line-clamp-3">
+        <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs sm:text-sm leading-relaxed font-light line-clamp-2">
           {course.description}
         </p>
 
-        {/* Highlights / Features list */}
-        <div className="space-y-2 pt-2.5 text-xs text-[#5B5648] dark:text-[#ABB9AB] font-sans border-t border-[#DDD5C3]/40 dark:border-[#243524]/40 relative group/tooltip cursor-help" id={`highlights-${course.id}`}>
-          {/* Hover Tooltip Container */}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 bg-[#22301F] dark:bg-[#121812] text-[#FAF4F2] text-xs p-3.5 rounded-2xl shadow-2xl opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-all duration-300 ease-out z-30 font-sans border border-[#B0863A]/40 transform translate-y-1 group-hover/tooltip:translate-y-0 text-left">
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#22301F] dark:border-t-[#121812]" />
-            <p className="font-serif font-bold mb-1.5 text-[#EDE3CE] dark:text-[#DFBA73] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-[#B98072] rounded-full animate-pulse" />
-              <span>{(course.instructor || course.schedule) ? "Schedule & Faculty Info" : "Course Information"}</span>
-            </p>
-            <p className="font-light leading-relaxed text-[#FAF4F2]/95">
-              {course.instructor || course.schedule ? (
-                <>
-                  Join <strong className="font-medium text-[#FAF4F2]">{course.instructor}</strong> for interactive study sessions conducted on <span className="font-medium text-[#EDE3CE]">{course.schedule}</span>.
-                </>
-              ) : (
-                <span>A complete academic course for children designed to instil enduring Islamic values.</span>
-              )}
-            </p>
+        {/* At-a-glance Info Panel */}
+        <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-[#DDD5C3]/40 dark:border-[#4A2027]/40 text-xs">
+          <div>
+            <span className="block font-mono text-[9px] uppercase tracking-wider text-gray-400">Format</span>
+            <span className="font-bold text-[#22301F] dark:text-[#FFE5EC]">{logistics.format}</span>
           </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-[#8CA394] dark:text-[#7E9C7E] font-mono">
-              {(course.instructor || course.schedule) ? "Session Info" : "Course Info"}
-            </span>
-            <span className="text-[9px] font-medium text-[#B98072]/80 bg-[#B98072]/5 px-1.5 py-0.5 rounded border border-[#B98072]/15 flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 bg-[#B98072] rounded-full" />
-              <span>Hover for Summary</span>
-            </span>
+          <div>
+            <span className="block font-mono text-[9px] uppercase tracking-wider text-gray-400">Fee Structure</span>
+            <span className="font-bold text-[#22301F] dark:text-[#FFE5EC]">{logistics.fee}</span>
           </div>
-
-          {course.schedule ? (
-            <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
-              <span className="truncate">{course.schedule}</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
-              <span className="truncate">Duration: {course.duration}</span>
-            </div>
-          )}
-
-          {course.instructor && (
-            <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-[#8CA394] dark:text-[#7E9C7E] shrink-0" />
-              <span className="truncate">Instructed by {course.instructor}</span>
-            </div>
-          )}
         </div>
-
-        {/* Google Form Intake Status Banner */}
-        {formDetails ? (
-          <div className="bg-[#8CA394]/10 border border-[#8CA394]/30 rounded-xl p-3 flex items-center justify-between text-[11px] text-[#33453A] font-sans">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-[#8CA394] rounded-full animate-ping" />
-              <span className="font-bold">Intake open &bull; Register now</span>
-            </span>
-            <a 
-              href={formDetails.formUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[#33453A] hover:text-[#22301F] font-bold hover:underline"
-              id={`link-google-form-${course.id}`}
-            >
-              <span>Google Form</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-        ) : course.isFree ? (
-          <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 text-[11px] text-emerald-800 font-sans flex items-center justify-between shadow-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shrink-0" />
-              <span className="font-bold text-emerald-950">Sustainability Program &bull; Free Access</span>
-            </span>
-            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200">Self-Paced</span>
-          </div>
-        ) : (
-          <div className="bg-[#FAF4F2] border border-[#DDD5C3]/50 rounded-xl p-3 text-[11px] text-[#5B5648]/60 font-sans">
-            <span>Intake schedule pending initialization by administrators</span>
-          </div>
-        )}
 
       </div>
 
-      {/* Actions row */}
-      <div className="mt-8 pt-4 border-t border-[#DDD5C3]/40 flex items-center justify-between relative">
-        
-        {/* Share Button with popover */}
-        <div className="relative">
-          <button
-            id={`btn-share-${course.id}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowShareMenu(!showShareMenu);
-            }}
-            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-bold text-[#5B5648] hover:text-[#B98072] transition-colors cursor-pointer"
-            title="Share Course with Friends/Sisters"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share</span>
-          </button>
-
-          {showShareMenu && (
-            <div className="absolute bottom-full left-0 mb-2 w-56 bg-[#FAF4F2] border border-[#DDD5C3] rounded-2xl p-2.5 shadow-xl z-20 space-y-1 animate-fade-in text-left">
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[#8CA394] px-2 py-1 font-bold">
-                Forward to Sisters
-              </p>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const shareText = `Assalamu Alaikum! 🌸 I wanted to share this beautiful course "${course.title}" from Qalbiya Islamic Institute with you. Let's study together! Here is the course overview: ${course.description} \n\nCheck details and enroll here: https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
-                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
-                  setShowShareMenu(false);
-                }}
-                className="w-full text-left px-2.5 py-2 text-xs text-[#22301F] hover:bg-[#8CA394]/10 hover:text-[#B98072] rounded-xl flex items-center gap-2 transition-colors cursor-pointer font-medium"
-              >
-                <span className="w-2 h-2 bg-[#25D366] rounded-full shrink-0" />
-                <span>Share via WhatsApp</span>
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const shareText = `Assalamu Alaikum! 🌸 Check out "${course.title}" at Qalbiya Islamic Institute! Follow us to learn more. Course duration: ${course.duration}. Instructor: ${course.instructor}.`;
-                  navigator.clipboard.writeText(shareText);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                  setShowShareMenu(false);
-                }}
-                className="w-full text-left px-2.5 py-2 text-xs text-[#22301F] hover:bg-[#8CA394]/10 hover:text-[#B98072] rounded-xl flex items-center gap-2 transition-colors cursor-pointer font-medium"
-              >
-                <span className="w-2 h-2 bg-[#E1306C] rounded-full shrink-0" />
-                <span>Instagram Text</span>
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const link = `https://qalbiya-islamic-institute.vercel.app/?course=${course.id}`;
-                  navigator.clipboard.writeText(link);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                  setShowShareMenu(false);
-                }}
-                className="w-full text-left px-2.5 py-2 text-xs text-[#22301F] hover:bg-[#8CA394]/10 hover:text-[#B98072] rounded-xl flex items-center gap-2 transition-colors cursor-pointer font-medium"
-              >
-                <Copy className="w-3.5 h-3.5 text-[#8CA394] shrink-0" />
-                <span>Copy Invite Link</span>
-              </button>
-            </div>
-          )}
-
-          {copied && (
-            <div className="absolute bottom-full left-0 mb-2 px-3 py-1 bg-[#22301F] text-white text-[10px] rounded-lg shadow-md z-30 font-medium">
-              Copied to clipboard!
-            </div>
-          )}
-        </div>
-        
-        {/* Explore more button */}
+      {/* Single, prominent Action Button */}
+      <div className="mt-6">
         <button
           id={`btn-explore-card-${course.id}`}
           onClick={() => onExplore(course)}
-          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-bold text-[#22301F] hover:text-[#B98072] hover:underline transition-colors cursor-pointer"
+          className="w-full bg-[#B98072] hover:bg-[#8A5A4D] text-white py-3 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-102 shadow-xs"
         >
-          <span>Syllabus & Details</span>
+          <span>View Course Details</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
-
       </div>
 
     </div>

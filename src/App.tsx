@@ -27,7 +27,7 @@ const CourseDetailPage = React.lazy(() => import("./components/CourseDetailPage"
 
 import { Testimonials } from "./components/Testimonials";
 import { Newsletter } from "./components/Newsletter";
-import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight } from "lucide-react";
+import { BookOpen, MapPin, Mail, Phone, Heart, Globe, Award, HelpCircle, Instagram, MessageCircle, Sparkles, ShieldAlert, PhoneCall, MessageSquare, ChevronUp, ChevronRight, Search, ArrowUpDown, SlidersHorizontal, ArrowRight, Clock, Star } from "lucide-react";
 
 function parseDurationToWeeks(durationStr: string): number {
   const normalized = durationStr.toLowerCase();
@@ -66,41 +66,141 @@ function sortCourses(courses: Course[], sortBy: "newest" | "alphabetical" | "dur
   return list;
 }
 
-export default function App() {
-  const [currentTab, setCurrentTab] = useState<string>("home");
+function FeaturedCarousel({ setCurrentTab }: { setCurrentTab: (tab: string) => void }) {
+  const flagshipCourses = COURSES.filter(c => c.id === "pre-diploma-deeniyat" || c.id === "juniors-deeniyat-mastercourse");
+  const [index, setIndex] = useState(0);
 
-  // Synchronize currentTab with URL hash for search engine deep indexing and back-button support
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash) {
-        // Strip leading #/ or #
-        const cleanHash = hash.replace(/^#\/?/, "");
-        // Extract tab path prior to any query parameters
-        const tab = cleanHash.split("?")[0];
-        if (tab) {
-          setCurrentTab(tab);
-        }
-      } else {
-        setCurrentTab("home");
-      }
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % flagshipCourses.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [flagshipCourses.length]);
+
+  const course = flagshipCourses[index];
+
+  return (
+    <div className="max-w-4xl mx-auto relative px-4">
+      <div className="bg-[#FAF8F1] dark:bg-[#2D1217]/50 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[32px] p-8 md:p-10 shadow-sm relative overflow-hidden transition-all duration-500 min-h-[350px] flex flex-col justify-between text-left">
+        <div className="absolute right-6 top-6 font-mono text-[9px] uppercase tracking-widest text-[#B98072] font-bold bg-[#B98072]/10 dark:bg-[#B98072]/20 px-3 py-1 rounded-full">
+          Flagship Program
+        </div>
+        
+        <div className="space-y-4">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] dark:text-[#E0A395] font-bold block">
+            {course.category === "women" ? "Women Academy" : "Juniors Education"}
+          </span>
+          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC]">
+            {course.title}
+          </h3>
+          <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-sm font-light leading-relaxed max-w-2xl">
+            {course.longDescription || course.description}
+          </p>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-[#DDD5C3]/40 dark:border-[#4A2027]/40 text-xs">
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-wider text-gray-400">Duration</p>
+              <p className="font-bold text-[#22301F] dark:text-[#FFE5EC]">{course.duration}</p>
+            </div>
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-wider text-gray-400">Format</p>
+              <p className="font-bold text-[#22301F] dark:text-[#FFE5EC]">
+                {course.id === "pre-diploma-deeniyat" ? "Group or Personal" : "Private or Group"}
+              </p>
+            </div>
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-wider text-gray-400">Platform</p>
+              <p className="font-bold text-[#22301F] dark:text-[#FFE5EC]">Google Meet</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-6 flex flex-wrap gap-4 items-center justify-between">
+          <button
+            onClick={() => {
+              const path = course.category === "women"
+                ? `courses/women/${course.id}`
+                : `courses/kids/${course.id}`;
+              setCurrentTab(path);
+            }}
+            className="bg-[#B98072] hover:bg-[#8A5A4D] text-white px-6 py-3 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest transition-transform hover:scale-102 cursor-pointer shadow-sm"
+          >
+            View Course Details
+          </button>
+          
+          <div className="flex gap-1.5">
+            {flagshipCourses.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className={`w-2 h-2 rounded-full cursor-pointer transition-all ${
+                  i === index ? "bg-[#B98072] w-5" : "bg-[#DDD5C3] dark:bg-[#243524]"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    const path = window.location.pathname;
+    return path === "/" || path === "" ? "home" : path.slice(1);
+  });
+
+  // Synchronize currentTab with URL pathname for deep linking and back-button support
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const tab = path === "/" || path === "" ? "home" : path.slice(1);
+      setCurrentTab(tab);
     };
 
-    handleHashChange(); // Sync initial mount hash
-    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("popstate", handlePopState);
     return () => {
-      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
-  // Update window.location.hash when currentTab changes to support deep linking and prevent duplicate content
+  // Update URL pathname when currentTab changes, ensuring SPA transition
   useEffect(() => {
-    const rawHash = window.location.hash.replace(/^#\/?/, "");
-    const mainHash = rawHash.split("?")[0];
-    if (mainHash !== currentTab) {
-      window.location.hash = "/" + currentTab;
+    const currentPath = window.location.pathname;
+    const expectedPath = currentTab === "home" ? "/" : "/" + currentTab;
+    if (currentPath !== expectedPath) {
+      window.history.pushState(null, "", expectedPath);
     }
   }, [currentTab]);
+
+  // Intercept all local link clicks globally to enable seamless SPA transitions
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+      if (anchor) {
+        const href = anchor.getAttribute("href");
+        if (href && (href.startsWith("/") || href.startsWith(window.location.origin))) {
+          // Exclude direct file downloads or hash-only links
+          if (href.startsWith("#") || anchor.getAttribute("download") !== null || anchor.getAttribute("target") === "_blank") {
+            return;
+          }
+          e.preventDefault();
+          const url = new URL(anchor.href);
+          const path = url.pathname;
+          const cleanPath = path === "/" ? "home" : path.slice(1);
+          setCurrentTab(cleanPath);
+          window.scrollTo({ top: 0 });
+        }
+      }
+    };
+    document.addEventListener("click", handleGlobalClick);
+    return () => {
+      document.removeEventListener("click", handleGlobalClick);
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -518,319 +618,92 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             <span className="tracking-widest uppercase text-[10px] text-[#8A5A4D]">Preparing sacred sanctuary...</span>
           </div>
         }>
-          {currentTab === "home" && (
-          <div className="space-y-12">
-            <Hero onChoosePath={(path) => setCurrentTab(path)} />
+            {currentTab === "home" && (
+            <div className="space-y-20">
+              <Hero onChoosePath={(path) => setCurrentTab(path)} />
 
-            {/* Featured Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in" id="flagship-section">
-              <div className="border-t border-[#DDD5C3] pt-12">
-                <div className="text-center space-y-3 mb-16">
-                  <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">
-                    Syllabi Highlights
-                  </span>
-                  <h3 className="font-serif text-3xl font-bold text-[#22301F]">
-                    Our Flagship Intakes
-                  </h3>
-                  <p className="text-[#5B5648] font-light text-sm max-w-xl mx-auto">
-                    Highly structured academic paths crafted to fit the lifestyle of modern Muslim 
-                    families and busy women.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                  {COURSES.filter(c => c.flagship || c.isFree).map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      course={course}
-                      formDetails={activeFormDetails[course.id] || null}
-                      onExplore={(c) => setCurrentTab("course-" + c.id)}
-                      user={user}
-                      isEnrolled={userEnrollments.includes(course.id)}
-                    />
-                  ))}
-                </div>
-
-                {/* Sponsorship & Scholarship Promo Card */}
-                <div className="mt-12 max-w-5xl mx-auto">
-                  <div className="relative bg-[#FAF4F2]/90 border border-[#DDD5C3] rounded-[32px] p-8 md:p-10 overflow-hidden shadow-sm group hover:border-[#8CA394] transition-all duration-300">
-                    {/* Watermark Heart Outline */}
-                    <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none group-hover:scale-105 group-hover:opacity-[0.06] transition-transform duration-500">
-                      <Heart className="w-64 h-64 text-[#33453A]" strokeWidth={1} />
+              {/* Split-Path Section */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  {/* For Her Card */}
+                  <div className="bg-white/60 dark:bg-[#2D1217]/50 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[32px] p-8 md:p-10 space-y-6 text-left relative overflow-hidden group hover:border-[#B98072] transition-all duration-300 shadow-sm flex flex-col justify-between">
+                    <div className="space-y-4">
+                      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#B98072] font-bold block">For Her</span>
+                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC]">Women's Academy</h3>
+                      <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs sm:text-sm font-light leading-relaxed">
+                        Structured classical studies, Seerah, Tajweed, and heart-centered Deeniyat courses designed for sisters at all stages of their spiritual journey.
+                      </p>
                     </div>
-                    
-                    <div className="relative z-10 space-y-6 md:max-w-2xl text-left">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#EAE8E3] text-[#33453A] text-[9px] uppercase font-mono tracking-widest font-bold rounded-full">
-                        <Heart className="w-3.5 h-3.5 text-[#33453A]" />
-                        <span>Sadaqah Jariyah</span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <h4 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] tracking-tight">
-                          Sponsorship & Scholarship
-                        </h4>
-                        <p className="font-sans text-[#5B5648] text-xs sm:text-sm font-light leading-relaxed">
-                          Support deserving students or apply for full tuition waivers. We believe sacred Deen education must be accessible to all.
-                        </p>
-                      </div>
-
-                      <div>
-                        <button
-                          onClick={() => setCurrentTab("scholarship")}
-                          className="inline-flex items-center gap-2 bg-[#8CA394] hover:bg-[#33453A] text-white px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:scale-[1.02] shadow-sm cursor-pointer"
-                        >
-                          <span>Apply or Sponsor</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* About Founder Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-[#DDD5C3] animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
-                
-                {/* Left Column: Artistic Portrait Frame with Islamic Arch / Soft Watercolor Pink styling */}
-                <div className="lg:col-span-5 flex justify-center">
-                  <div className="relative w-72 h-96 max-w-full rounded-[40px] overflow-hidden shadow-2xl border-4 border-white/60 bg-gradient-to-tr from-[#FCEDE9] to-[#FBDBD3]">
-                    
-                    {/* Artistic Islamic arch background overlay */}
-                    <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800')" }}></div>
-                    
-                    {/* Elegant Watercolor dome ornament watermark inside the frame */}
-                    <div className="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-8 text-center z-10">
-                      <div className="w-16 h-16 mx-auto rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
-                        <LogoSVG 
-                          className="w-11 h-11" 
-                          fillColor="#FAF4F2" 
-                        />
-                      </div>
-                      
-                      <div className="space-y-2 bg-[#22301F]/85 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-white shadow-lg">
-                        <span className="font-mono text-[9px] uppercase tracking-widest text-[#B0863A] font-bold">Principal Scholar</span>
-                        <h4 className="font-serif text-lg font-bold">Ms. Mustara</h4>
-                        <p className="text-[10px] text-gray-200 font-light font-sans">Holder of Traditional Ijazat & Classical Licenses</p>
-                      </div>
-                    </div>
-
-                    {/* Pink Watercolor Blotches behind portrait container */}
-                    <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-radial from-[#B98072]/45 to-transparent pointer-events-none blur-2xl z-0"></div>
-                  </div>
-                </div>
-
-                {/* Right Column: Narrative Biography & Vision statement */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div className="space-y-3">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
-                      The Heart of the Institute
-                    </span>
-                    <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#22301F] tracking-tight">
-                      About Our "Founder"
-                    </h3>
-                  </div>
-
-                  <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Qalbiya Islamic Institute was founded by <strong>Mustara</strong>, who has spent the past few years teaching Seerah, Tajweed, and Islamic Studies to students at different stages of their journey.
-                  </p>
-
-                  <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Through this experience, she noticed something missing in how deen was often taught: plenty of knowledge, but little guidance on how to actually live it. That realization became the foundation Qalbiya was built on — a place where learning isn't just about gaining ilm, but about real, lasting change.
-                  </p>
-
-                  <div className="bg-[#FAF4F2] dark:bg-[#2D1217] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] dark:text-[#FFE5EC] font-serif text-sm relative">
-                    <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
-                    <p className="relative z-10 leading-relaxed font-light pl-4">
-                      "My vision for Qalbiya was simple, a place where deen isn't just studied but lived. Where ilm reaches the heart, and shapes how we act. I welcome you to find that here."
-                    </p>
-                    <div className="mt-3 pl-4 text-right">
-                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D] dark:text-[#E0A395]">&mdash; Ms. Mustara</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Testimonials Section */}
-            <Testimonials />
-
-            {/* FAQs on Home Page */}
-            <div className="max-w-7xl mx-auto border-t border-[#DDD5C3] pt-12">
-              <CourseFAQ
-                userRole={userRole}
-                onGoToAnalytics={() => setCurrentTab("analytics")}
-              />
-            </div>
-
-            {/* Admissions Inquiry Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-[#DDD5C3]">
-              <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">
-                  Support Desk
-                </span>
-                <h2 className="font-serif text-3xl font-bold text-[#22301F] tracking-tight">
-                  Admission Inquiry Form
-                </h2>
-                <p className="text-xs sm:text-sm text-[#5B5648] font-light leading-relaxed">
-                  Have specific questions about our curricula, age criteria, or textbook requirements? Connect with our administration.
-                </p>
-                <div className="w-8 h-[1px] bg-[#B98072] mx-auto mt-2" />
-              </div>
-
-              <div className="max-w-2xl mx-auto bg-[#FBF8F1] border border-[#DDD5C3] rounded-[32px] p-6 sm:p-8 space-y-6 text-left">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-[#8A5A4D] font-bold block">
-                    Inquiry Form
-                  </span>
-                  <h3 className="font-serif text-2xl font-bold text-[#22301F] tracking-tight">
-                    Submit an Admissions Case
-                  </h3>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                    Send our administrative desk a direct message. We review case inquiries daily and respond within 12 hours.
-                  </p>
-                </div>
-
-                {contactSuccess ? (
-                  <div className="bg-[#8CA394]/15 border border-[#8CA394]/40 rounded-2xl p-6 text-center space-y-3 py-10">
-                    <div className="w-10 h-10 bg-[#8CA394]/20 text-[#33453A] border border-[#8CA394]/40 rounded-full flex items-center justify-center mx-auto">
-                      ✓
-                    </div>
-                    <h4 className="font-serif font-bold text-[#22301F]">Inquiry Submitted Successfully</h4>
-                    <p className="text-xs text-[#5B5648] max-w-sm mx-auto font-light leading-relaxed">
-                      Assalamu alaikum! Thank you for reaching out to QALBIYA Islamic Institute. Your inquiry has been routed to our staff messaging dashboard, and an advisor will contact you soon.
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="sm:col-span-2">
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Full Name *
-                      </label>
-                      <input
-                        id="contact-input-name"
-                        type="text"
-                        required
-                        value={contactName}
-                        onChange={(e) => setContactName(e.target.value)}
-                        placeholder="e.g. Amina Siddiqui"
-                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Email Address *
-                      </label>
-                      <input
-                        id="contact-input-email"
-                        type="email"
-                        required
-                        value={contactEmail}
-                        onChange={(e) => setContactEmail(e.target.value)}
-                        placeholder="amina@example.com"
-                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Phone Number
-                      </label>
-                      <input
-                        id="contact-input-phone"
-                        type="tel"
-                        value={contactPhone}
-                        onChange={(e) => setContactPhone(e.target.value)}
-                        placeholder="e.g. +1 (555) 019-2834"
-                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394]"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Topic of Interest
-                      </label>
-                      <select
-                        id="contact-input-topic"
-                        value={contactTopic}
-                        onChange={(e) => setContactTopic(e.target.value)}
-                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#8CA394]"
-                      >
-                        <option value="General Inquiry">General Admissions Question</option>
-                        <option value="Women's Intake">Women Course Hub</option>
-                        <option value="Kids' Intake">Kids Course Hub</option>
-                        <option value="Feedback & Support">Platform Feedback or Support</option>
-                        <option value="Sponsorship & Partnering">Scholarship Sponsorships</option>
-                      </select>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Preferred Reply Channel
-                      </label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
-                          <input
-                            type="radio"
-                            name="channel"
-                            checked={contactChannel === "email"}
-                            onChange={() => setContactChannel("email")}
-                            className="accent-[#8CA394]"
-                          />
-                          <span>Email Response</span>
-                        </label>
-                        <label className="flex items-center gap-2 text-xs font-sans text-[#5B5648] cursor-pointer">
-                          <input
-                            type="radio"
-                            name="channel"
-                            checked={contactChannel === "whatsapp"}
-                            onChange={() => setContactChannel("whatsapp")}
-                            className="accent-[#8CA394]"
-                          />
-                          <span>WhatsApp Outreach</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label className="text-[10px] font-mono uppercase tracking-widest text-[#5B5648]/80 block mb-1 font-bold">
-                        Message / Questions *
-                      </label>
-                      <textarea
-                        id="contact-input-message"
-                        required
-                        value={contactMessage}
-                        onChange={(e) => setContactMessage(e.target.value)}
-                        placeholder="Assalamu'alaikum wa rehmatullahi wa barakatuhu, I would like to inquire about..."
-                        rows={4}
-                        className="w-full bg-white border border-[#DDD5C3] rounded-xl px-4 py-2.5 text-xs placeholder-[#5B5648]/40 focus:outline-none focus:border-[#8CA394] resize-none"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-2 pt-2">
+                    <div className="pt-4">
                       <button
-                        id="btn-submit-contact"
-                        type="submit"
-                        disabled={isSubmittingContact}
-                        className="w-full bg-[#22301F] hover:bg-[#33453A] disabled:bg-[#DDD5C3] text-white disabled:text-[#5B5648]/40 py-3 rounded-full text-xs font-bold uppercase tracking-widest btn-shadow cursor-pointer transition-all hover:scale-[1.01]"
+                        onClick={() => setCurrentTab("courses/women")}
+                        className="inline-flex items-center gap-2 bg-[#B98072] hover:bg-[#8A5A4D] text-white px-6 py-3.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest transition-transform cursor-pointer"
                       >
-                        {isSubmittingContact ? "Sending Message..." : "Submit Case to Registrar"}
+                        <span>Explore Courses</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                  </form>
-                )}
+                  </div>
+
+                  {/* For Your Child Card */}
+                  <div className="bg-white/60 dark:bg-[#2D1217]/50 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[32px] p-8 md:p-10 space-y-6 text-left relative overflow-hidden group hover:border-[#8CA394] transition-all duration-300 shadow-sm flex flex-col justify-between">
+                    <div className="space-y-4">
+                      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#8CA394] font-bold block">For Your Child</span>
+                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC]">Kids' Hub</h3>
+                      <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs sm:text-sm font-light leading-relaxed">
+                        Interactive, gamified Noorani Qaida and Deeniyat programs that make learning faith a joyful, natural journey for children ages 6–12.
+                      </p>
+                    </div>
+                    <div className="pt-4">
+                      <button
+                        onClick={() => setCurrentTab("courses/kids")}
+                        className="inline-flex items-center gap-2 bg-[#8CA394] hover:bg-[#33453A] text-white px-6 py-3.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest transition-transform cursor-pointer"
+                      >
+                        <span>Explore Kids Hub</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Social Proof Strip */}
+              <Testimonials />
+
+              {/* Featured Program Carousel */}
+              <div className="py-12 border-t border-[#DDD5C3]/40 dark:border-[#4A2027]/40">
+                <div className="text-center space-y-3 mb-10">
+                  <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">Featured Intakes</span>
+                  <h3 className="font-serif text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC]">Our Flagship Programs</h3>
+                  <p className="text-[#5B5648] dark:text-[#FCD5CE] font-light text-xs sm:text-sm max-w-xl mx-auto">
+                    Highly structured academic paths designed for transformational learning and spiritual connection.
+                  </p>
+                </div>
+                <FeaturedCarousel setCurrentTab={setCurrentTab} />
+              </div>
+
+              {/* Closing CTA */}
+              <div className="text-center py-16 max-w-3xl mx-auto space-y-6 border-t border-[#DDD5C3]/40 dark:border-[#4A2027]/40 animate-fade-in">
+                <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-[#22301F] dark:text-[#FFE5EC] leading-snug">
+                  Your journey back doesn't start when you're ready.<br />
+                  <span className="italic font-normal text-[#B98072]">It starts when you decide.</span>
+                </h3>
+                <div className="pt-4">
+                  <button
+                    onClick={() => setCurrentTab("courses")}
+                    className="bg-[#22301F] hover:bg-[#33453A] dark:bg-[#FAF4F2] dark:hover:bg-[#FFF0F3] text-white dark:text-[#1E0C0F] px-8 py-4 rounded-full text-xs font-mono font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-md cursor-pointer"
+                  >
+                    Start Your Journey
+                  </button>
+                </div>
+              </div>
+
+              {/* Newsletter section */}
+              <Newsletter />
             </div>
+          )}
 
-            {/* Newsletter Section */}
-            <Newsletter />
-          </div>
-        )}
-
-        {currentTab === "women" && (
+        {currentTab === "courses/women" && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
             
             {/* Breadcrumb */}
@@ -888,7 +761,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     key={course.id}
                     course={course}
                     formDetails={activeFormDetails[course.id] || null}
-                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    onExplore={(c) => setCurrentTab("courses/women/" + c.id)}
                     user={user}
                     isEnrolled={userEnrollments.includes(course.id)}
                   />
@@ -933,7 +806,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
           </div>
         )}
 
-        {currentTab === "kids" && (
+        {currentTab === "courses/kids" && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
             
             {/* Breadcrumb */}
@@ -991,7 +864,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                     key={course.id}
                     course={course}
                     formDetails={activeFormDetails[course.id] || null}
-                    onExplore={(c) => setCurrentTab("course-" + c.id)}
+                    onExplore={(c) => setCurrentTab("courses/kids/" + c.id)}
                     user={user}
                     isEnrolled={userEnrollments.includes(course.id)}
                   />
@@ -1201,19 +1074,28 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
           />
         )}
 
-        {currentTab.startsWith("course-") && (() => {
-          const courseId = currentTab.replace("course-", "");
-          const course = COURSES.find(c => c.id === courseId);
-          if (!course) return <div className="py-20 text-center font-serif text-[#22301F]">Course not found.</div>;
+        {(currentTab.startsWith("courses/women/") || currentTab.startsWith("courses/kids/")) && (() => {
+          let courseId = "";
+          if (currentTab.startsWith("courses/women/")) {
+            courseId = currentTab.replace("courses/women/", "");
+          } else if (currentTab.startsWith("courses/kids/")) {
+            courseId = currentTab.replace("courses/kids/", "");
+          }
+          let lookupId = courseId;
+          if (courseId === "tajweed-1-1") {
+            lookupId = "tajweed-1on1";
+          }
+          const course = COURSES.find(c => c.id === lookupId);
+          if (!course) return <div className="py-20 text-center font-serif text-[#22301F] dark:text-[#FFE5EC]">Course not found.</div>;
           return (
             <CourseDetailPage
               course={course}
               formDetails={activeFormDetails[course.id] || null}
               onClose={() => {
                 if (course.category === "women") {
-                  setCurrentTab("women");
+                  setCurrentTab("courses/women");
                 } else {
-                  setCurrentTab("kids");
+                  setCurrentTab("courses/kids");
                 }
               }}
               user={user}
@@ -1284,30 +1166,29 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
             </div>
           </div>
 
-          {/* Quick links Column */}
+          {/* Programs Column */}
           <div className="space-y-4 font-sans text-xs">
-            <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Admissions</h5>
+            <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Programs</h5>
             <div className="flex flex-col space-y-2">
-              <button onClick={() => setCurrentTab("women")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Women Courses Hub</button>
-              <button onClick={() => setCurrentTab("kids")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Kids Courses Hub</button>
-              <button onClick={() => setCurrentTab("about")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Founders & Vision</button>
-              <button onClick={() => setCurrentTab("scholarship")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer text-[#B98072] font-semibold">Scholarships & Fund</button>
+              <button onClick={() => setCurrentTab("courses/women")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Women's Academy</button>
+              <button onClick={() => setCurrentTab("courses/kids")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Kids' Hub</button>
+              <button onClick={() => setCurrentTab("about")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">About Us & Founder</button>
             </div>
           </div>
 
-          {/* Legal & Policies Column */}
+          {/* Legal & Help Column */}
           <div className="space-y-4 font-sans text-xs">
-            <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Legal & Policies</h5>
+            <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Help & Policies</h5>
             <div className="flex flex-col space-y-2">
+              <button onClick={() => setCurrentTab("scholarship")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer font-medium text-[#B98072]">Scholarship</button>
               <button onClick={() => setCurrentTab("refund-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Refund Policy</button>
               <button onClick={() => setCurrentTab("terms-conditions")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Terms & Conditions</button>
               <button onClick={() => setCurrentTab("privacy-policy")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Privacy Policy</button>
-              <button onClick={() => setCurrentTab("faq")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">General FAQ</button>
-              <button onClick={() => setCurrentTab("contact")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">Contact Us</button>
+              <button onClick={() => setCurrentTab("faq")} className="text-left hover:text-[#B0863A] transition-colors cursor-pointer">FAQ</button>
             </div>
           </div>
 
-          {/* Contact Column */}
+          {/* Admissions Office Column */}
           <div className="space-y-4 font-sans text-xs">
             <h5 className="font-serif font-bold uppercase tracking-wider text-[#B0863A]">Admissions Office</h5>
             <div className="space-y-2 font-light text-[#FAF4F2]/80">
@@ -1321,9 +1202,8 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#8CA394]" />
-                <span>+91 8145363290</span>
+                <span>+91 81453 63290</span>
               </p>
-              <p className="text-[10px] text-gray-400 font-mono">Alternative: +1 (800) 555-DEEN</p>
             </div>
           </div>
 

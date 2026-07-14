@@ -46,43 +46,28 @@ export const Hero: React.FC<HeroProps> = ({ onChoosePath }) => {
           <span>A Sanctuary for Spiritual Learning</span>
         </div>
 
-        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#22301F] dark:text-[#FAF4F2] tracking-tight font-bold leading-[1.25] max-w-3xl mx-auto">
-          Knowledge That Reaches the Heart.<br />
-          <span className="italic font-normal text-[#8CA394] dark:text-[#7E9C7E]">Amal</span> That Changes the Life.
+        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#22301F] dark:text-[#FFE5EC] tracking-tight font-bold leading-[1.25] max-w-3xl mx-auto">
+          Come back to who you were before the world got loud.
         </h2>
 
-        <p className="font-sans text-[#5B5648] dark:text-[#ABB9AB] text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-light">
-          Learn Qur'an, Tajweed, and Deen — live, online, from the comfort of your home. Not just to know it, but to live it.
+        <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-light">
+          Qalbiya Institute is where hearts are nurtured, not just minds informed. Programs for women rebuilding their connection with Allah, and for children growing up rooted in faith.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
           <button
-            onClick={() => onChoosePath("women")}
+            onClick={() => onChoosePath("courses/women")}
             className="bg-[#B98072] text-[#FAF4F2] px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-[#8A5A4D] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
           >
-            Explore Women Courses
+            For Her
           </button>
           <button
-            onClick={() => onChoosePath("kids")}
+            onClick={() => onChoosePath("courses/kids")}
             className="bg-[#8CA394] text-white px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-[#33453A] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
           >
-            Kids Hub
+            For Your Child
           </button>
         </div>
-      </div>
-
-      {/* Scripture Reference Quote */}
-      <div className="mt-16 border-double border-4 border-[#DFBA73]/40 dark:border-[#DFBA73]/20 bg-[#FAF4F2]/50 dark:bg-[#0B0E0A]/40 rounded-3xl p-8 text-center max-w-4xl mx-auto relative z-10 shadow-sm backdrop-blur-xs">
-        <p className="font-arabic text-3xl md:text-4xl text-[#22301F]/90 dark:text-[#ECE5D8] mb-3 tracking-wide text-center" dir="rtl">
-          قُلْ هَلْ يَسْتَوِي الَّذِينَ يَعْلَمُونَ وَالَّذِينَ لَا يَعْلَمُونَ ۗ
-        </p>
-        <p className="font-serif italic text-[#22301F] dark:text-[#ECE5D8] text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-          "Say: Are those who know equal to those who do not know?"
-        </p>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#5B5648] dark:text-[#ABB9AB] mt-2.5 flex items-center justify-center gap-1.5">
-          <Award className="w-3.5 h-3.5 text-[#B0863A] dark:text-[#DFBA73]" />
-          <span>The Holy Qur'an, Surah Az-Zumar (39:9)</span>
-        </p>
       </div>
 
     </section>

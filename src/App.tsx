@@ -459,7 +459,7 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF0F3] via-[#FFE5EC] to-[#FFD6E0] dark:from-[#0B0E0A] dark:via-[#111610] dark:to-[#0B0E0A] text-[#22301F] dark:text-[#FAF4F2] flex flex-col justify-between relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF0F3] via-[#FFE5EC] to-[#FFD6E0] dark:from-[#1E0C0F] dark:via-[#2D1217] dark:to-[#1E0C0F] text-[#22301F] dark:text-[#FFE5EC] flex flex-col justify-between relative overflow-hidden transition-colors duration-500">
       
       {/* Premium Animated Pink Background Blobs & Floating Orbs */}
       <div className="absolute top-[-15%] left-[-15%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-radial from-[#FFCCD5]/50 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0"></div>

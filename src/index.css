@@ -95,66 +95,66 @@
 
 /* Dynamic High-Contrast Evening Night Study Mode */
 .dark body {
-  background-color: #0B0E0A !important;
-  color: #ECE5D8 !important;
+  background-color: #1E0C0F !important;
+  color: #FFE5EC !important;
 }
 
 /* Ensure global elements are readable and dark styled */
 .dark p, .dark span, .dark li, .dark label, .dark button:not(.bg-\[\#D4AF37\]):not(.bg-\[\#E0A395\]), .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: #ECE5D8;
+  color: #FFE5EC;
 }
 
 .dark input, .dark textarea, .dark select {
-  background-color: #121812 !important;
-  color: #FAF4F2 !important;
-  border-color: #2E402D !important;
+  background-color: #2D1217 !important;
+  color: #FFF0F3 !important;
+  border-color: #4A2027 !important;
 }
 
 /* Specific background and border adaptation utilities */
 .dark .bg-\[\#FAF4F2\], .dark .bg-white, .dark .bg-[#FAF4F2], .dark .bg-white\/95 {
-  background-color: #0B0E0A !important;
+  background-color: #1E0C0F !important;
 }
 
 .dark .bg-\[\#FBF8F1\], .dark .bg-[#FBF8F1] {
-  background-color: #111610 !important;
+  background-color: #2D1217 !important;
 }
 
 .dark .bg-\[\#EDE3CE\]\/30, .dark .bg-\[\#EDE3CE\]\/20, .dark .bg-[#EDE3CE]/20, .dark .bg-[#EDE3CE]/10 {
-  background-color: rgba(46, 64, 45, 0.35) !important;
+  background-color: rgba(92, 6, 27, 0.35) !important;
 }
 
 .dark .border-\[\#DDD5C3\], .dark .border-[#DDD5C3], .dark .border-[#DDD5C3]/40, .dark .border-[#DDD5C3]/30, .dark .border-[#DDD5C3]/60 {
-  border-color: #243524 !important;
+  border-color: #4A2027 !important;
 }
 
 /* Stitched line decor for darker reading theme */
 .dark .stitched-line {
-  background-image: repeating-linear-gradient(to bottom, #425D41 0 6px, transparent 6px 14px) !important;
+  background-image: repeating-linear-gradient(to bottom, #8A5A4D 0 6px, transparent 6px 14px) !important;
 }
 
 .dark .stitched-line-horizontal {
-  background-image: repeating-linear-gradient(to right, #425D41 0 6px, transparent 6px 14px) !important;
+  background-image: repeating-linear-gradient(to right, #8A5A4D 0 6px, transparent 6px 14px) !important;
 }
 
 .dark .text-\[\#22301F\], .dark .text-[#22301F] {
-  color: #FAF4F2 !important;
+  color: #FFF0F3 !important;
 }
 
 .dark .text-\[\#5B5648\], .dark .text-[#5B5648] {
-  color: #ABB9AB !important;
+  color: #FCD5CE !important;
 }
 
 .dark .text-\[\#8CA394\], .dark .text-[#8CA394] {
-  color: #7E9C7E !important;
+  color: #E0A395 !important;
 }
 
 /* Re-adjust glow motifs for low light evening reading */
 .dark .motif-glow {
-  background: radial-gradient(circle at center, #1E2D1D 0%, rgba(11,14,10,0) 70%) !important;
+  background: radial-gradient(circle at center, #5C061B 0%, rgba(30,12,15,0) 70%) !important;
 }
 
 .dark svg {
-  stroke-opacity: 0.6;
+  stroke-opacity: 0.8;
 }
 
 .dark svg.text-\[\#B98072\], .dark svg.text-[#B98072] {
@@ -162,7 +162,7 @@
 }
 
 .dark svg.text-\[\#8CA394\], .dark svg.text-[#8CA394] {
-  color: #7E9C7E !important;
+  color: #E0A395 !important;
 }
 
 /* Elegant Soft Pink & Rose-Gold Animated Background Elements */

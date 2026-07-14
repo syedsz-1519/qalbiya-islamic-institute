@@ -637,16 +637,16 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
                   </p>
 
                   <p className="font-sans text-[#5B5648] text-sm md:text-base font-light leading-relaxed">
-                    Through this experience, she noticed something missing in how deen was often taught, plenty of knowledge, but little guidance on how to actually live it. That realization became the foundation Qalbiya was built on: a place where learning isn't just about gaining ilm, but about real, lasting change.
+                    Through this experience, she noticed something missing in how deen was often taught: plenty of knowledge, but little guidance on how to actually live it. That realization became the foundation Qalbiya was built on — a place where learning isn't just about gaining ilm, but about real, lasting change.
                   </p>
 
-                  <div className="bg-[#FAF4F2] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] font-serif text-sm relative">
+                  <div className="bg-[#FAF4F2] dark:bg-[#2D1217] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] dark:text-[#FFE5EC] font-serif text-sm relative">
                     <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
                     <p className="relative z-10 leading-relaxed font-light pl-4">
                       "My vision for Qalbiya was simple, a place where deen isn't just studied but lived. Where ilm reaches the heart, and shapes how we act. I welcome you to find that here."
                     </p>
                     <div className="mt-3 pl-4 text-right">
-                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D]">&mdash; MS. MUSTARA</span>
+                      <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D] dark:text-[#E0A395]">&mdash; Ms. Mustara</span>
                     </div>
                   </div>
                 </div>
@@ -1037,87 +1037,131 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
         )}
 
         {currentTab === "about" && (
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 space-y-16">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 space-y-24 animate-fade-in">
             
-            {/* Mission Header */}
-            <div className="text-center space-y-4">
-              <span className="text-[10px] uppercase font-bold font-mono tracking-[0.25em] text-[#8CA394]">
-                The Heritage
-              </span>
-              <h2 className="font-serif text-4xl font-bold text-[#22301F] leading-tight">
-                About QALBIYA Islamic Institute
+            {/* SECTION 1 — Opening Hook */}
+            <div className="text-center py-6 max-w-3xl mx-auto space-y-6">
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#22301F] dark:text-[#FFE5EC] leading-[1.25] tracking-tight">
+                Qalbiya wasn't built because the world needed another Islamic page. It was built because so many of us needed a way back.
               </h2>
-              <div className="w-12 h-[1.5px] bg-[#B98072] mx-auto mt-4" />
+              <div className="w-16 h-[2px] bg-[#B98072] mx-auto mt-8" />
             </div>
 
-            {/* Main Editorial Text Blocks */}
-            <div className="font-sans text-[#5B5648] leading-relaxed font-light text-sm sm:text-base space-y-8">
-              <p className="font-serif italic text-[#22301F] text-base sm:text-lg">
-                "Our mission is simple: to make deep, foundational, and heart-centric Islamic study accessible, beautifully presented, and academically structured for modern families."
-              </p>
-              
+            {/* SECTION 2 — The Gap / The Why */}
+            <div className="max-w-2xl mx-auto text-center font-sans text-[#5B5648] dark:text-[#FCD5CE] leading-relaxed font-light text-sm sm:text-base space-y-6">
               <p>
-                In a fast-paced digital world, finding high-quality spiritual guidance can be 
-                overwhelming. High-quality learning requires structure, consistency, and highly qualified 
-                mentors. We founded QALBIYA Islamic Institute to solve this problem.
+                So many of us grew up knowing the rules of our deen, but never really knowing the heart of it. We memorized without meaning. We prayed without presence. And somewhere between the noise of the dunya and the pressure to keep up, our connection with Allah became something we performed — not something we felt.
               </p>
+              <p className="font-medium text-[#22301F] dark:text-[#FFE5EC]">
+                Qalbiya exists to change that. Not through guilt. Not through more information. But through a return — slow, honest, and rooted.
+              </p>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6 my-6 border-y border-[#DDD5C3]">
-                <div className="space-y-2">
-                  <h4 className="font-serif font-bold text-[#22301F]">Semesters & Courses</h4>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                    We believe in high-contrast educational standards. Our courses are semester-based, 
-                    featuring visual slides, homework assessments, and certificates of completion.
+            {/* SECTION 3 — Founder Story */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left py-12 border-y border-[#DDD5C3]/40 dark:border-[#4A2027]/40">
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="relative w-64 h-80 max-w-full rounded-[36px] overflow-hidden shadow-xl border-4 border-white/60 dark:border-[#2D1217] bg-gradient-to-tr from-[#FFF0F3] to-[#FFE5EC]">
+                  <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800')" }}></div>
+                  <div className="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-8 text-center z-10">
+                    <div className="w-14 h-14 mx-auto rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+                      <LogoSVG className="w-9 h-9" fillColor="#FAF4F2" />
+                    </div>
+                    <div className="space-y-1.5 bg-[#22301F]/85 dark:bg-[#1E0C0F]/90 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 text-white shadow-lg">
+                      <span className="font-mono text-[8px] uppercase tracking-widest text-[#B0863A] font-bold">Principal Scholar</span>
+                      <h4 className="font-serif text-base font-bold">Ms. Mustara</h4>
+                      <p className="text-[9px] text-gray-200 font-light font-sans">Traditional Ijazat & Classical Licenses</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-7 space-y-6">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC] tracking-tight">
+                  About our Founder
+                </h3>
+                <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-sm md:text-base font-light leading-relaxed">
+                  Qalbiya Islamic Institute was founded by <strong>Mustara</strong>, who has spent the past few years teaching Seerah, Tajweed, and Islamic Studies to students at different stages of their journey.
+                </p>
+                <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-sm md:text-base font-light leading-relaxed">
+                  Through this experience, she noticed something missing in how deen was often taught: plenty of knowledge, but little guidance on how to actually live it. That realization became the foundation Qalbiya was built on — a place where learning isn't just about gaining ilm, but about real, lasting change.
+                </p>
+                <div className="bg-[#FAF4F2] dark:bg-[#2D1217] border-l-4 border-[#B98072] rounded-r-3xl p-6 italic text-[#22301F] dark:text-[#FFE5EC] font-serif text-sm relative">
+                  <span className="absolute top-2 left-3 text-5xl font-serif text-[#B98072]/20 select-none">“</span>
+                  <p className="relative z-10 leading-relaxed font-light pl-4">
+                    "My vision for Qalbiya was simple, a place where deen isn't just studied but lived. Where ilm reaches the heart, and shapes how we act. I welcome you to find that here."
+                  </p>
+                  <div className="mt-3 pl-4 text-right">
+                    <span className="text-xs uppercase font-bold tracking-wider font-mono text-[#8A5A4D] dark:text-[#E0A395]">&mdash; Ms. Mustara</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4 — Mission Statement */}
+            <div className="bg-gradient-to-tr from-[#FAF4F2] to-[#FBDBD3]/30 dark:from-[#2D1217] dark:to-[#1E0C0F]/40 border border-[#DDD5C3] dark:border-[#4A2027] rounded-[36px] p-10 md:p-12 text-center shadow-sm relative overflow-hidden">
+              <div className="absolute -top-40 -left-40 w-96 h-96 motif-glow opacity-30 rounded-full pointer-events-none" />
+              <div className="max-w-2xl mx-auto space-y-4 relative z-10">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-[#B98072] font-bold">Our Mission</span>
+                <p className="font-serif text-xl sm:text-2xl font-bold text-[#22301F] dark:text-[#FFE5EC] leading-relaxed tracking-tight">
+                  Qalbiya Islamic Institute exists to help hearts return — women to their Lord, and children to a faith they'll carry with love, not obligation.
+                </p>
+              </div>
+            </div>
+
+            {/* SECTION 5 — What Makes Qalbiya Different */}
+            <div className="space-y-10">
+              <div className="text-center">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#22301F] dark:text-[#FFE5EC]">
+                  What Makes Qalbiya Different
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white/50 dark:bg-[#2D1217]/50 border border-[#DDD5C3]/40 dark:border-[#4A2027]/40 rounded-3xl p-6 text-center space-y-4 hover:border-[#B98072]/30 transition-colors duration-300">
+                  <div className="w-10 h-10 bg-[#FAF4F2] dark:bg-[#1E0C0F] border border-[#DDD5C3] dark:border-[#4A2027] rounded-full flex items-center justify-center font-serif text-sm font-bold text-[#B98072] mx-auto shadow-xs">
+                    1
+                  </div>
+                  <h4 className="font-serif font-bold text-[#22301F] dark:text-[#FFE5EC] text-base">Rooted in Authentic Knowledge</h4>
+                  <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs font-light leading-relaxed">
+                    Every lesson is grounded in authentic Qur'an and Sunnah — no diluted, trend-based Islam.
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <h4 className="font-serif font-bold text-[#22301F]">Certified Scholarship</h4>
-                  <p className="text-xs text-[#5B5648] font-light leading-relaxed">
-                    All our female instructors hold certified diplomas (Ijazah) in Tajweed and 
-                    Deeniyat, combined with trained backgrounds in child and adult pedagogy.
+                <div className="bg-white/50 dark:bg-[#2D1217]/50 border border-[#DDD5C3]/40 dark:border-[#4A2027]/40 rounded-3xl p-6 text-center space-y-4 hover:border-[#B98072]/30 transition-colors duration-300">
+                  <div className="w-10 h-10 bg-[#FAF4F2] dark:bg-[#1E0C0F] border border-[#DDD5C3] dark:border-[#4A2027] rounded-full flex items-center justify-center font-serif text-sm font-bold text-[#B98072] mx-auto shadow-xs">
+                    2
+                  </div>
+                  <h4 className="font-serif font-bold text-[#22301F] dark:text-[#FFE5EC] text-base">Heart-Centered Learning</h4>
+                  <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs font-light leading-relaxed">
+                    We teach for transformation, not just information — the heart is engaged, not just the mind.
+                  </p>
+                </div>
+                <div className="bg-white/50 dark:bg-[#2D1217]/50 border border-[#DDD5C3]/40 dark:border-[#4A2027]/40 rounded-3xl p-6 text-center space-y-4 hover:border-[#B98072]/30 transition-colors duration-300">
+                  <div className="w-10 h-10 bg-[#FAF4F2] dark:bg-[#1E0C0F] border border-[#DDD5C3] dark:border-[#4A2027] rounded-full flex items-center justify-center font-serif text-sm font-bold text-[#B98072] mx-auto shadow-xs">
+                    3
+                  </div>
+                  <h4 className="font-serif font-bold text-[#22301F] dark:text-[#FFE5EC] text-base">Built for Real Life</h4>
+                  <p className="font-sans text-[#5B5648] dark:text-[#FCD5CE] text-xs font-light leading-relaxed">
+                    Designed for real, busy, imperfect lives — not idealized ones.
                   </p>
                 </div>
               </div>
+            </div>
 
-              <h4 className="font-serif font-bold text-[#22301F] text-lg">Our Four Pillars</h4>
-              <ul className="space-y-4 pt-2">
-                <li className="flex gap-4">
-                  <div className="w-6 h-6 bg-[#F1E7D3] rounded-full flex items-center justify-center font-mono text-[10px] text-[#87652A] font-bold border border-[#DDD5C3] shrink-0 mt-0.5">
-                    1
-                  </div>
-                  <div>
-                    <h5 className="font-serif font-bold text-[#22301F] text-sm">Aqeedah (Sound Intellect)</h5>
-                    <p className="text-xs text-[#5B5648] font-light mt-0.5">Nourishing the mind through crystal-clear theological understanding and sound rational theology.</p>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <div className="w-6 h-6 bg-[#F1E7D3] rounded-full flex items-center justify-center font-mono text-[10px] text-[#87652A] font-bold border border-[#DDD5C3] shrink-0 mt-0.5">
-                    2
-                  </div>
-                  <div>
-                    <h5 className="font-serif font-bold text-[#22301F] text-sm">Fiqh (Practical Practice)</h5>
-                    <p className="text-xs text-[#5B5648] font-light mt-0.5">Equipping students with exact, step-by-step clarity regarding acts of worship and daily jurisprudence.</p>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <div className="w-6 h-6 bg-[#F1E7D3] rounded-full flex items-center justify-center font-mono text-[10px] text-[#87652A] font-bold border border-[#DDD5C3] shrink-0 mt-0.5">
-                    3
-                  </div>
-                  <div>
-                    <h5 className="font-serif font-bold text-[#22301F] text-sm">Tajweed (Articulate Recitation)</h5>
-                    <p className="text-xs text-[#5B5648] font-light mt-0.5">Preserving the authentic, beautiful pronunciation of letters in perfect harmony with historical recitations.</p>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <div className="w-6 h-6 bg-[#F1E7D3] rounded-full flex items-center justify-center font-mono text-[10px] text-[#87652A] font-bold border border-[#DDD5C3] shrink-0 mt-0.5">
-                    4
-                  </div>
-                  <div>
-                    <h5 className="font-serif font-bold text-[#22301F] text-sm">Akhlaq (Ethical Polish)</h5>
-                    <p className="text-xs text-[#5B5648] font-light mt-0.5">Cultivating prophetic manners, heart-purification (Tazkiyah), and deep mental presence in prayer.</p>
-                  </div>
-                </li>
-              </ul>
+            {/* SECTION 6 — Closing CTA */}
+            <div className="text-center py-10 max-w-2xl mx-auto space-y-6">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#22301F] dark:text-[#FFE5EC] leading-relaxed">
+                If your heart has been quietly asking for a way back — you're in the right place.
+              </h3>
+              <button
+                onClick={() => {
+                  setCurrentTab("home");
+                  setTimeout(() => {
+                    const el = document.getElementById("flagship-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }, 120);
+                }}
+                className="inline-flex justify-center items-center gap-2 bg-[#B98072] hover:bg-[#8A5A4D] text-white py-3.5 px-8 rounded-full text-xs font-mono font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-md cursor-pointer"
+              >
+                <span>Explore Programs</span>
+              </button>
             </div>
 
           </div>

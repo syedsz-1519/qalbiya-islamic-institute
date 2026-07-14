@@ -10,7 +10,8 @@
 
 @layer base {
   body {
-    background-color: #FCEDE9; /* Premium Soft Rosy Pink-Cream background */
+    background: linear-gradient(180deg, #FFF0F3 0%, #FFE5EC 50%, #FFD6E0 100%);
+    background-attachment: fixed;
     color: #111B11; /* Maximum contrast Ultra-Deep Forest Green */
     font-family: var(--font-serif);
     text-rendering: optimizeLegibility;

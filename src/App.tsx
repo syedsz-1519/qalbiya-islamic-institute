@@ -459,12 +459,12 @@ Please guide me with the next steps. JazakAllahu Khairan!`;
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FCEDE9] via-[#FAF4F2] to-[#FCEEEB] text-[#22301F] flex flex-col justify-between relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF0F3] via-[#FFE5EC] to-[#FFD6E0] dark:from-[#0B0E0A] dark:via-[#111610] dark:to-[#0B0E0A] text-[#22301F] dark:text-[#FAF4F2] flex flex-col justify-between relative overflow-hidden transition-colors duration-500">
       
       {/* Premium Animated Pink Background Blobs & Floating Orbs */}
-      <div className="absolute top-[-15%] left-[-15%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-radial from-[#FCDED9]/40 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0"></div>
-      <div className="absolute bottom-[-15%] right-[-15%] w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] rounded-full bg-radial from-[#FBDBD3]/45 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-two z-0"></div>
-      <div className="absolute top-[40%] left-[20%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] rounded-full bg-radial from-[#FCE6E2]/35 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0" style={{ animationDelay: '6s' }}></div>
+      <div className="absolute top-[-15%] left-[-15%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-radial from-[#FFCCD5]/50 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0"></div>
+      <div className="absolute bottom-[-15%] right-[-15%] w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] rounded-full bg-radial from-[#FFB3C1]/50 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-two z-0"></div>
+      <div className="absolute top-[40%] left-[20%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] rounded-full bg-radial from-[#FFE5EC]/45 via-transparent to-transparent pointer-events-none blur-3xl animate-float-orb-one z-0" style={{ animationDelay: '6s' }}></div>
 
       {/* Elegant Drifting Pink Sparks & Soft Particles */}
       <div className="absolute bottom-0 left-[10%] w-2 h-2 rounded-full bg-[#B98072]/30 pointer-events-none blur-xs animate-rise-particle-1"></div>
